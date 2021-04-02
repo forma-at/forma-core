@@ -6,7 +6,7 @@ RESTful API service to create, read, update and delete data from the web and mob
 
 **1.** Clone this repository using the terminal command or GitHub Desktop.
 ```bash
-git clone https://github.com/Forma-AT/forma-core
+git clone https://github.com/Forma-AT/forma-core.git
 ```
 **2.** Install the dependencies using npm
 ```bash
