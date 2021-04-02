@@ -1,7 +1,7 @@
 {
   "name": "forma-core",
   "version": "1.0.0",
-  "description": "Forma RESTful API service.",
+  "description": "Forma RESTful API service",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
