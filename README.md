@@ -39,6 +39,7 @@ Exposed API endpoints by the forma-core service
 
 ## Project structure
 
+- **dist** contains the compiled source code
 - **node_modules** contains the project dependencies
 - **src** contains the project source code
   - *server.ts* creates the server, sets up middlewares and attaches API route listeners
