@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import routes from './routes';
 
 // Create Express app
 const app = express();
@@ -18,6 +19,9 @@ app.options("*", cors());
 app.get('/api', (req, res) => {
   res.status(200).send('API is running.');
 });
+
+// Attach route listeners
+app.use('/api', routes);
 
 // Start listening on port
 app.listen(port, () => console.log(`Forma API service listening on port ${port}.`));
