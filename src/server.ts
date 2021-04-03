@@ -16,7 +16,7 @@ app.use(cors());
 app.options("*", cors());
 
 // Test API
-app.get('/api', (req, res) => {
+app.get('/', (req, res) => {
   res.status(200).send('API is running.');
 });
 
