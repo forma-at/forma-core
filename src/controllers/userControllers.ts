@@ -1,12 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
-import { User } from '../models';
+import { Request, Response } from 'express';
 
-export const signin = (req: Request, res: Response, next: NextFunction) => {};
+export const signup = async (req: Request, res: Response) => {};
 
-export const signup = (req: Request, res: Response, next: NextFunction) => {};
+export const signin = (req: Request, res: Response) => {};
 
-export const verify = (req: Request, res: Response, next: NextFunction) => {};
+export const verify = (req: Request, res: Response) => {};
 
-export const forgot = (req: Request, res: Response, next: NextFunction) => {};
+export const forgot = (req: Request, res: Response) => {};
 
-export const reset = (req: Request, res: Response, next: NextFunction) => {};
+export const reset = (req: Request, res: Response) => {};
