@@ -1,7 +1,9 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
+import 'dotenv/config';
 import cors from 'cors';
 import routes from './routes';
+import { openDbConnection } from './repositories';
 
 // Create Express app
 const app = express();
@@ -16,12 +18,17 @@ app.use(cors());
 app.options("*", cors());
 
 // Test API
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.status(200).send('API is running.');
 });
 
 // Attach route listeners
 app.use('/api', routes);
 
-// Start listening on port
-app.listen(port, () => console.log(`Forma API service listening on port ${port}.`));
+// Connect to database
+openDbConnection().then(() => {
+
+  // Start listening to requests on port
+  app.listen(port, () => console.log(`Forma API service listening on port ${port}.`));
+
+});
