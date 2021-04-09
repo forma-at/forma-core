@@ -1,1 +1,2 @@
-export * from './validate';
+export * from './validator';
+export * from './errorHandler';

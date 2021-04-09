@@ -4,6 +4,7 @@ import 'dotenv/config';
 import cors from 'cors';
 import routes from './routes';
 import { openDbConnection } from './repositories';
+import { errorHandler } from './middlewares';
 
 // Create Express app
 const app = express();
@@ -24,6 +25,9 @@ app.get('/', (req: Request, res: Response) => {
 
 // Attach route listeners
 app.use('/api', routes);
+
+// Set up error handler middleware
+app.use(errorHandler);
 
 // Connect to database
 openDbConnection().then(() => {
