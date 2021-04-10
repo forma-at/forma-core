@@ -7,7 +7,7 @@ export const validate = (validations: ValidationChain[]) => {
     await Promise.all(validations.map(validation => validation.run(req)));
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return next(new ValidationException(errors.array()));
+      return next(new ValidationException(undefined, errors.array()));
     } else {
       return next();
     }
