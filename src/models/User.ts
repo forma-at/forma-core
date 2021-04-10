@@ -6,6 +6,8 @@ class User {
   email: string;
   password: string;
   emailConfirmed: boolean;
+  createdAt: number;
+  updatedAt: number;
 
   constructor(user: User) {
     Object.assign(this, user);

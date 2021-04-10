@@ -12,6 +12,8 @@ class School {
     region: string;
     country: string;
   }
+  createdAt: number;
+  updatedAt: number;
 
   constructor(school: School) {
     Object.assign(this, school);
