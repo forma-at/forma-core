@@ -6,6 +6,7 @@ export const errorHandler = async (error: HttpException, req: Request, res: Resp
   const status = error.status || HttpStatusCodes.INTERNAL_SERVER_ERROR;
   const message = error.message || 'Something went wrong. Please try again.';
   const details = error.details ? { details: error.details } : {};
+  if (status === HttpStatusCodes.INTERNAL_SERVER_ERROR) console.error(error);
   res.status(status).send({
     status,
     message,
