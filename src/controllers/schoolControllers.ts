@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { School } from '../models';
 
 export const signin = (req: Request, res: Response, next: NextFunction) => {};
 

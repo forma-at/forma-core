@@ -1,7 +1,2 @@
-import * as schoolControllers from './schoolControllers';
-import * as userControllers from './userControllers';
-
-export {
-  userControllers,
-  schoolControllers,
-};
+export * as schoolControllers from './schoolControllers';
+export * as userControllers from './userControllers';
