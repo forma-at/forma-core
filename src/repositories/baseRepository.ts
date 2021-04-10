@@ -1,10 +1,10 @@
-import { FilterQuery } from 'mongodb';
+import { FilterQuery, Collection } from 'mongodb';
 import { v4 as uuid } from 'uuid';
-import { db } from './database';
+import { databaseClient } from '../utils';
 
 type EntityConstructor<T> = new (raw: any) => T;
 
-export class BaseRepository<T> {
+export abstract class BaseRepository<T> {
 
   // Entity class
   private readonly entity: EntityConstructor<T>;
@@ -18,10 +18,15 @@ export class BaseRepository<T> {
     this.collection = collection;
   }
 
+  // Database connection to specified collection
+  db(): Collection {
+    return databaseClient.db().collection(this.collection);
+  }
+
   // Create entity
   async create(params: Partial<Omit<T, 'id'>>): Promise<T> {
     const now = Date.now();
-    const result = await db().collection(this.collection).insertOne({
+    const result = await this.db().insertOne({
       id: uuid(),
       ...params,
       createdAt: now,
@@ -32,7 +37,7 @@ export class BaseRepository<T> {
 
   // Find one entry in the collection
   async findOne(filter: FilterQuery<T>): Promise<T> {
-    const result = await db().collection(this.collection).findOne(filter);
+    const result = await this.db().findOne(filter);
     if (result) {
       return new this.entity(result);
     }
@@ -40,7 +45,7 @@ export class BaseRepository<T> {
 
   // Find many entries in the collection
   async findMany(filter: FilterQuery<T>): Promise<T[]> {
-    const results = await db().collection(this.collection).find(filter);
+    const results = await this.db().find(filter);
     const arrayResults = await results.toArray();
     return arrayResults.map(item => new this.entity(item));
   }

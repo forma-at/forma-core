@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import 'dotenv/config';
 import cors from 'cors';
 import routes from './routes';
-import { openDbConnection } from './repositories';
+import { databaseClient } from './utils';
 import { errorHandler } from './middlewares';
 
 // Create Express app
@@ -30,7 +30,7 @@ app.use('/api', routes);
 app.use(errorHandler);
 
 // Connect to database
-openDbConnection().then(() => {
+databaseClient.connect().then(() => {
 
   // Start listening to requests on port
   app.listen(port, () => console.log(`Forma API service listening on port ${port}.`));
