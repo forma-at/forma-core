@@ -1,7 +1,2 @@
-import { User } from './User';
-import { School } from './School';
-
-export {
-  User,
-  School,
-};
+export { default as User } from './User';
+export { default as School } from './School';

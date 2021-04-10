@@ -1,9 +1,8 @@
-export class School {
+class School {
 
-  uuid: string;
+  id: string;
   name: string;
   email: string;
-  phone: string;
   password: string;
   address: {
     line1: string;
@@ -14,8 +13,10 @@ export class School {
     country: string;
   }
 
-  private constructor(school: { [key: string]: any }) {
+  constructor(school: School) {
     Object.assign(this, school);
   }
 
 }
+
+export default School;
