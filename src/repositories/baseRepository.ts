@@ -1,5 +1,4 @@
 import { FilterQuery, Collection } from 'mongodb';
-import { v4 as uuid } from 'uuid';
 import { databaseClient } from '../utils';
 
 type EntityConstructor<T> = new (raw: any) => T;
@@ -24,15 +23,27 @@ export abstract class BaseRepository<T> {
   }
 
   // Create entity
-  async create(params: Partial<Omit<T, 'id'>>): Promise<T> {
+  async create(params: Partial<T>): Promise<T> {
     const now = Date.now();
     const result = await this.db().insertOne({
-      id: uuid(),
       ...params,
       createdAt: now,
       updatedAt: now,
     });
     return new this.entity(result.ops[0]);
+  }
+
+  // Update entity
+  async update(filter: FilterQuery<T>, params: Partial<T>): Promise<T> {
+    const now = Date.now();
+    const options = { returnOriginal: false };
+    const result = await this.db().findOneAndUpdate(filter, {
+      $set: {
+        ...params,
+        updatedAt: now,
+      },
+    }, options);
+    return new this.entity(result.value);
   }
 
   // Find one entry in the collection

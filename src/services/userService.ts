@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { v4 as uuid } from 'uuid';
 import { userRepository } from '../repositories';
 import { ValidationException } from '../exceptions';
 import { User } from '../models';
@@ -29,6 +30,7 @@ class UserService {
     } else {
       const passwordHashed = await bcrypt.hash(password, 10);
       return userRepository.create({
+        id: uuid(),
         email: email,
         firstName: firstName,
         lastName: lastName,
