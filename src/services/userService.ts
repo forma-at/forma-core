@@ -22,8 +22,23 @@ class UserService {
     });
   }
 
+  // Check if account exists with email and password
+  async signin(email: string, password: string) {
+    const user = await userRepository.getUserByEmail(email);
+    if (!user) {
+      throw new ValidationException('InvalidEmailOrPassword');
+    } else {
+      const doPasswordsMatch = await bcrypt.compare(password, user.password);
+      if (!doPasswordsMatch) {
+        throw new ValidationException('InvalidEmailOrPassword');
+      } else {
+        return user;
+      }
+    }
+  }
+
   // Create a new user account
-  async signup(email: string, firstName: string, lastName: string, password: string): Promise<User> {
+  async createAccount(email: string, firstName: string, lastName: string, password: string): Promise<User> {
     const emailInUse = await userRepository.getUserByEmail(email);
     if (emailInUse) {
       throw new ValidationException('EmailAddressInUse');
@@ -37,21 +52,6 @@ class UserService {
         password: passwordHashed,
         emailConfirmed: false,
       });
-    }
-  }
-
-  // Check if account exists with email and password
-  async signin(email: string, password: string) {
-    const user = await userRepository.getUserByEmail(email);
-    if (!user) {
-      throw new ValidationException('InvalidEmailOrPassword');
-    } else {
-      const doPasswordsMatch = await bcrypt.compare(password, user.password);
-      if (!doPasswordsMatch) {
-        throw new ValidationException('InvalidEmailOrPassword');
-      } else {
-        return user;
-      }
     }
   }
 
