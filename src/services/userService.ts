@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import { userRepository } from '../repositories';
-import { ValidationException } from '../exceptions';
+import { NotFoundException, ValidationException } from '../exceptions';
 import { User } from '../models';
 
 class UserService {
@@ -52,6 +52,20 @@ class UserService {
       } else {
         return user;
       }
+    }
+  }
+
+  // Verify a user account with email address
+  async verifyAccount(email: string) {
+    const user = await userRepository.getUserByEmail(email);
+    if (!user) {
+      throw new NotFoundException('The user was not found.');
+    } else if (!user.emailConfirmed) {
+      return userRepository.update({ id: user.id }, {
+        emailConfirmed: true,
+      });
+    } else {
+      return user;
     }
   }
 
