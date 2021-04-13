@@ -4,7 +4,7 @@ import { ExpiringCode } from '../models';
 class ExpiringCodeRepository extends BaseRepository<ExpiringCode> {
 
   constructor() {
-    super(ExpiringCode, 'expiringCodes');
+    super(ExpiringCode, 'expiring-codes');
   }
 
 }
