@@ -22,12 +22,13 @@ export const authorization = async (req: Request, res: Response, next: NextFunct
             message: 'Authorization token invalid.',
           });
         } else {
-          req.user = await userService.getUserById(decoded.userId);
-          if (!req.user) {
+          const user = await userService.getUserById(decoded.userId);
+          if (!user) {
             return res.status(HttpStatusCodes.UNAUTHORIZED).json({
               message: 'Authorization token invalid.',
             });
           } else {
+            req.user = user;
             return next();
           }
         }

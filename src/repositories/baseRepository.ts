@@ -47,7 +47,7 @@ export abstract class BaseRepository<T> {
   }
 
   // Find one entry in the collection
-  async findOne(filter: FilterQuery<T>): Promise<T> {
+  async findOne(filter: FilterQuery<T>): Promise<T | void> {
     const result = await this.db().findOne(filter);
     if (result) {
       return new this.entity(result);
