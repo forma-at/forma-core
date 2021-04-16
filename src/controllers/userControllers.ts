@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
 import { userService, expiringCodeService, emailService } from '../services';
+import { ValidationException } from '../exceptions';
 
 export const getUserInfo = async (req: Request, res: Response) => {
   const user = req.user;
-  res.status(HttpStatusCodes.OK).json({ user });
+  return res.status(HttpStatusCodes.OK).json({ user });
 };
 
 export const signin = async (req: Request, res: Response, next: NextFunction) => {
@@ -12,22 +13,18 @@ export const signin = async (req: Request, res: Response, next: NextFunction) =>
   try {
     const user = await userService.getUserByEmail(email);
     if (!user) {
-      res.status(HttpStatusCodes.BAD_REQUEST).json({
-        message: 'Invalid email address or password.',
-      });
+      return next(new ValidationException('Invalid email address or password.'));
     } else {
       const doPasswordsMatch = await userService.comparePasswords(user, password);
       if (!doPasswordsMatch) {
-        res.status(HttpStatusCodes.BAD_REQUEST).json({
-          message: 'Invalid email address or password.',
-        });
+        return next(new ValidationException('Invalid email address or password.'));
       } else {
         const token = await userService.createJWT(user);
-        res.status(HttpStatusCodes.OK).json({ token });
+        return res.status(HttpStatusCodes.OK).json({ token });
       }
     }
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -37,9 +34,9 @@ export const createAccount = async (req: Request, res: Response, next: NextFunct
     const user = await userService.createAccount(email, firstName, lastName, password);
     const { code } = await expiringCodeService.addEmailVerificationCode(user.email);
     await emailService.sendEmail(user, 'accountCreated', { code });
-    res.status(HttpStatusCodes.CREATED).json({ user });
+    return res.status(HttpStatusCodes.CREATED).json({ user });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -49,16 +46,14 @@ export const verifyAccount = async (req: Request, res: Response, next: NextFunct
     const user = await userService.getUserByEmail(email);
     const isCodeValid = await expiringCodeService.checkEmailVerificationCode(email, code);
     if (!user || !isCodeValid) {
-      res.status(HttpStatusCodes.BAD_REQUEST).json({
-        message: 'The code is invalid or expired.',
-      });
+      return next(new ValidationException('The code is invalid or expired.'));
     } else {
       await userService.verifyAccount(user);
       await emailService.sendEmail(user, 'accountVerified');
-      res.status(HttpStatusCodes.OK).json({ ok: true });
+      return res.status(HttpStatusCodes.OK).json({ ok: true });
     }
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -67,14 +62,14 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
   try {
     const user = await userService.getUserByEmail(email);
     if (!user) {
-      res.status(HttpStatusCodes.OK).json({ ok: true });
+      return res.status(HttpStatusCodes.OK).json({ ok: true });
     } else {
       const { code } = await expiringCodeService.addForgotPasswordCode(user.email);
       await emailService.sendEmail(user, 'passwordForgot', { code });
-      res.status(HttpStatusCodes.OK).json({ ok: true });
+      return res.status(HttpStatusCodes.OK).json({ ok: true });
     }
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -84,15 +79,13 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
     const user = await userService.getUserByEmail(email);
     const isCodeValid = await expiringCodeService.checkForgotPasswordCode(email, code);
     if (!user || !isCodeValid) {
-      res.status(HttpStatusCodes.BAD_REQUEST).json({
-        message: 'The code is invalid or expired.',
-      });
+      return next(new ValidationException('The code is invalid or expired.'));
     } else {
       await userService.changePassword(user, password);
       await emailService.sendEmail(user, 'passwordReset');
-      res.status(HttpStatusCodes.OK).json({ ok: true });
+      return res.status(HttpStatusCodes.OK).json({ ok: true });
     }
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
