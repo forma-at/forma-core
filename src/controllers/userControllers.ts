@@ -3,12 +3,16 @@ import HttpStatusCodes from 'http-status-codes';
 import { userService, expiringCodeService, emailService } from '../services';
 import { ValidationException } from '../exceptions';
 
-export const getUserInfo = async (req: Request, res: Response) => {
-  const user = req.user;
-  return res.status(HttpStatusCodes.OK).json({ user });
+export const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user;
+    return res.status(HttpStatusCodes.OK).json({ user });
+  } catch (err) {
+    return next(err);
+  }
 };
 
-export const signin = async (req: Request, res: Response, next: NextFunction) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password }: Body.Signin = req.body;
   try {
     const user = await userService.getUserByEmail(email);

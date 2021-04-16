@@ -11,12 +11,12 @@ router.get(
 );
 
 router.post(
-  '/signin',
+  '/login',
   validate([
     body('email').isEmail(),
     body('password').isString(),
   ]),
-  userControllers.signin,
+  userControllers.login,
 );
 
 router.put(
