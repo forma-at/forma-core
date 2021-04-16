@@ -10,9 +10,22 @@ export const getUserInfo = async (req: Request, res: Response) => {
 export const signin = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password }: Body.Signin = req.body;
   try {
-    const user = await userService.signin(email, password);
-    const token = await userService.createJWT(user);
-    res.status(HttpStatusCodes.OK).json({ token });
+    const user = await userService.getUserByEmail(email);
+    if (!user) {
+      res.status(HttpStatusCodes.BAD_REQUEST).json({
+        message: 'Invalid email address or password.',
+      });
+    } else {
+      const doPasswordsMatch = await userService.comparePasswords(user, password);
+      if (!doPasswordsMatch) {
+        res.status(HttpStatusCodes.BAD_REQUEST).json({
+          message: 'Invalid email address or password.',
+        });
+      } else {
+        const token = await userService.createJWT(user);
+        res.status(HttpStatusCodes.OK).json({ token });
+      }
+    }
   } catch (err) {
     next(err);
   }

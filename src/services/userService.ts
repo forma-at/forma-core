@@ -33,21 +33,6 @@ class UserService {
     });
   }
 
-  // Check if account exists with email and password
-  async signin(email: string, password: string) {
-    const user = await userRepository.getUserByEmail(email);
-    if (!user) {
-      throw new ValidationException('InvalidEmailOrPassword');
-    } else {
-      const doPasswordsMatch = await bcrypt.compare(password, user.password);
-      if (!doPasswordsMatch) {
-        throw new ValidationException('InvalidEmailOrPassword');
-      } else {
-        return user;
-      }
-    }
-  }
-
   // Create a new user account
   async createAccount(email: string, firstName: string, lastName: string, password: string) {
     const emailInUse = await userRepository.getUserByEmail(email);
@@ -75,6 +60,11 @@ class UserService {
     } else {
       return user;
     }
+  }
+
+  // Compare the password of a user to the input
+  async comparePasswords(user: User, password: string) {
+    return await bcrypt.compare(password, user.password);
   }
 
   // Change the password of a user
