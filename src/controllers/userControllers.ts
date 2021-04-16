@@ -28,21 +28,53 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
 export const verify = async (req: Request, res: Response, next: NextFunction) => {
   const { email, code } = req.body;
   try {
-    const isValid = await expiringCodeService.checkEmailVerificationCode(email, code);
-    if (!isValid) {
+    const user = await userService.getUserByEmail(email);
+    const isCodeValid = await expiringCodeService.checkEmailVerificationCode(email, code);
+    if (!user || !isCodeValid) {
       res.status(HttpStatusCodes.BAD_REQUEST).json({
         message: 'The code is invalid or expired.',
       });
     } else {
-      const user = await userService.verifyAccount(email);
+      await userService.verifyAccount(user);
       await emailService.sendEmail(user, 'accountVerified');
-      res.status(HttpStatusCodes.OK).json({ user });
+      res.status(HttpStatusCodes.OK).json({ ok: true });
     }
   } catch (err) {
     next(err);
   }
 };
 
-export const forgot = (req: Request, res: Response) => {};
+export const forgot = async (req: Request, res: Response, next: NextFunction) => {
+  const { email } = req.body;
+  try {
+    const user = await userService.getUserByEmail(email);
+    if (!user) {
+      res.status(HttpStatusCodes.OK).json({ ok: true });
+    } else {
+      const { code } = await expiringCodeService.addForgotPasswordCode(user.email);
+      await emailService.sendEmail(user, 'passwordForgot', { code });
+      res.status(HttpStatusCodes.OK).json({ ok: true });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
 
-export const reset = (req: Request, res: Response) => {};
+export const reset = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, code, password } = req.body;
+  try {
+    const user = await userService.getUserByEmail(email);
+    const isCodeValid = await expiringCodeService.checkForgotPasswordCode(email, code);
+    if (!user || !isCodeValid) {
+      res.status(HttpStatusCodes.BAD_REQUEST).json({
+        message: 'The code is invalid or expired.',
+      });
+    } else {
+      await userService.changePassword(user, password);
+      await emailService.sendEmail(user, 'passwordReset');
+      res.status(HttpStatusCodes.OK).json({ ok: true });
+    }
+  } catch (err) {
+    next(err);
+  }
+};

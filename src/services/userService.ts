@@ -2,10 +2,20 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import { userRepository } from '../repositories';
-import { NotFoundException, ValidationException } from '../exceptions';
+import { ValidationException } from '../exceptions';
 import { User } from '../models';
 
 class UserService {
+
+  // Get a user by id number
+  async getUserById(id: string) {
+    return userRepository.getUserById(id);
+  }
+
+  // Get a user by email address
+  async getUserByEmail(email: string) {
+    return userRepository.getUserByEmail(email);
+  }
 
   // Create a JsonWebToken for a user
   async createJWT(user: User): Promise<string> {
@@ -38,7 +48,7 @@ class UserService {
   }
 
   // Create a new user account
-  async createAccount(email: string, firstName: string, lastName: string, password: string): Promise<User> {
+  async createAccount(email: string, firstName: string, lastName: string, password: string) {
     const emailInUse = await userRepository.getUserByEmail(email);
     if (emailInUse) {
       throw new ValidationException('EmailAddressInUse');
@@ -56,17 +66,22 @@ class UserService {
   }
 
   // Verify a user account with email address
-  async verifyAccount(email: string) {
-    const user = await userRepository.getUserByEmail(email);
-    if (!user) {
-      throw new NotFoundException('The user was not found.');
-    } else if (!user.emailConfirmed) {
+  async verifyAccount(user: User) {
+    if (!user.emailConfirmed) {
       return userRepository.update({ id: user.id }, {
         emailConfirmed: true,
       });
     } else {
       return user;
     }
+  }
+
+  // Change the password of a user
+  async changePassword(user: User, password: string) {
+    const passwordHashed = await bcrypt.hash(password, 10);
+    return userRepository.update({ id: user.id }, {
+      password: passwordHashed,
+    });
   }
 
 }
