@@ -1,8 +1,14 @@
 import { Router } from 'express';
-import { validate, body } from '../middlewares';
+import { validate, body, authorization } from '../middlewares';
 import { userControllers } from '../controllers';
 
 const router = Router();
+
+router.get(
+  '/',
+  authorization,
+  userControllers.getUserInfo,
+);
 
 router.post(
   '/signin',
@@ -13,15 +19,15 @@ router.post(
   userControllers.signin,
 );
 
-router.post(
-  '/signup',
+router.put(
+  '/',
   validate([
     body('email').isEmail(),
     body('firstName').isString(),
     body('lastName').isString(),
     body('password').isString(),
   ]),
-  userControllers.signup,
+  userControllers.createAccount,
 );
 
 router.post(
@@ -30,25 +36,25 @@ router.post(
     body('email').isEmail(),
     body('code').isString(),
   ]),
-  userControllers.verify,
+  userControllers.verifyAccount,
 );
 
 router.post(
-  '/forgot',
+  '/forgotPassword',
   validate([
     body('email').isEmail(),
   ]),
-  userControllers.forgot,
+  userControllers.forgotPassword,
 );
 
 router.post(
-  '/reset',
+  '/resetPassword',
   validate([
     body('email').isEmail(),
     body('code').isString(),
     body('password').isString(),
   ]),
-  userControllers.reset,
+  userControllers.resetPassword,
 );
 
 export default router;

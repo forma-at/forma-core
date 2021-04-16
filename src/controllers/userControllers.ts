@@ -1,33 +1,37 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
 import { userService, expiringCodeService, emailService } from '../services';
-import * as Requests from '../types/requests';
+
+export const getUserInfo = async (req: Request, res: Response) => {
+  const user = req.user;
+  res.status(HttpStatusCodes.OK).json({ user });
+};
 
 export const signin = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, password }: Requests.Signin = req.body;
+  const { email, password }: Body.Signin = req.body;
   try {
     const user = await userService.signin(email, password);
     const token = await userService.createJWT(user);
-    res.status(HttpStatusCodes.OK).json({ user, token });
+    res.status(HttpStatusCodes.OK).json({ token });
   } catch (err) {
     next(err);
   }
 };
 
-export const signup = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, firstName, lastName, password }: Requests.Signup = req.body;
+export const createAccount = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, firstName, lastName, password }: Body.Signup = req.body;
   try {
     const user = await userService.createAccount(email, firstName, lastName, password);
     const { code } = await expiringCodeService.addEmailVerificationCode(user.email);
     await emailService.sendEmail(user, 'accountCreated', { code });
-    res.status(HttpStatusCodes.OK).json({ user });
+    res.status(HttpStatusCodes.CREATED).json({ user });
   } catch (err) {
     next(err);
   }
 };
 
-export const verify = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, code }: Requests.VerifyAccount = req.body;
+export const verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, code }: Body.VerifyAccount = req.body;
   try {
     const user = await userService.getUserByEmail(email);
     const isCodeValid = await expiringCodeService.checkEmailVerificationCode(email, code);
@@ -45,8 +49,8 @@ export const verify = async (req: Request, res: Response, next: NextFunction) =>
   }
 };
 
-export const forgot = async (req: Request, res: Response, next: NextFunction) => {
-  const { email }: Requests.ForgotPassword = req.body;
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+  const { email }: Body.ForgotPassword = req.body;
   try {
     const user = await userService.getUserByEmail(email);
     if (!user) {
@@ -61,8 +65,8 @@ export const forgot = async (req: Request, res: Response, next: NextFunction) =>
   }
 };
 
-export const reset = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, code, password }: Requests.ResetPassword = req.body;
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, code, password }: Body.ResetPassword = req.body;
   try {
     const user = await userService.getUserByEmail(email);
     const isCodeValid = await expiringCodeService.checkForgotPasswordCode(email, code);

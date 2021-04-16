@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
+import { JWTPayload } from 'Router';
 import { userRepository } from '../repositories';
 import { ValidationException } from '../exceptions';
 import { User } from '../models';
@@ -20,7 +21,7 @@ class UserService {
   // Create a JsonWebToken for a user
   async createJWT(user: User): Promise<string> {
     return new Promise((resolve, reject) => {
-      const payload = { id: user.id };
+      const payload: JWTPayload = { userId: user.id };
       const secret = process.env.JWT_SECRET;
       jwt.sign(payload, secret, (err: Error, token: string) => {
         if (err) {

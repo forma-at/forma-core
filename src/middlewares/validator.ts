@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { body, validationResult, ValidationChain } from 'express-validator';
+import { body, query, validationResult, ValidationChain } from 'express-validator';
 import { ValidationException } from '../exceptions';
 
 export const validate = (validations: ValidationChain[]) => {
@@ -14,4 +14,4 @@ export const validate = (validations: ValidationChain[]) => {
   };
 };
 
-export { body };
+export { body, query };
