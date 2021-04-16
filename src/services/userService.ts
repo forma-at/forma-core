@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import validator from 'validator';
 import { v4 as uuid } from 'uuid';
 import { JWTPayload } from 'Router';
 import { userRepository } from '../repositories';
@@ -7,6 +8,15 @@ import { ValidationException } from '../exceptions';
 import { User } from '../models';
 
 class UserService {
+
+  // Password policy object
+  private readonly PASSWORD_POLICY: validator.strongPasswordOptions = {
+    minLength: 8,
+    minNumbers: 1,
+    minLowercase: 1,
+    minUppercase: 1,
+    minSymbols: 0,
+  };
 
   // Get a user by id number
   async getUserById(id: string) {
@@ -37,7 +47,11 @@ class UserService {
   async createAccount(email: string, firstName: string, lastName: string, password: string) {
     const emailInUse = await userRepository.getUserByEmail(email);
     if (emailInUse) {
-      throw new ValidationException('EmailAddressInUse');
+      throw new ValidationException('This email address is already in use.');
+    } else if (!validator.isEmail(email)) {
+      throw new ValidationException('The email address is invalid.')
+    } else if (!validator.isStrongPassword(password, this.PASSWORD_POLICY)) {
+      throw new ValidationException('The password is too weak.');
     } else {
       const passwordHashed = await bcrypt.hash(password, 10);
       return userRepository.create({
@@ -69,10 +83,14 @@ class UserService {
 
   // Change the password of a user
   async changePassword(user: User, password: string) {
-    const passwordHashed = await bcrypt.hash(password, 10);
-    return userRepository.update({ id: user.id }, {
-      password: passwordHashed,
-    });
+    if (!validator.isStrongPassword(password, this.PASSWORD_POLICY)) {
+      throw new ValidationException('The password is too weak.');
+    } else {
+      const passwordHashed = await bcrypt.hash(password, 10);
+      return userRepository.update({ id: user.id }, {
+        password: passwordHashed,
+      });
+    }
   }
 
 }

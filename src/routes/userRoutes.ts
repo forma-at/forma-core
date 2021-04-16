@@ -13,7 +13,7 @@ router.get(
 router.post(
   '/login',
   validate([
-    body('email').isEmail(),
+    body('email').isString(),
     body('password').isString(),
   ]),
   userControllers.login,
@@ -22,7 +22,7 @@ router.post(
 router.put(
   '/',
   validate([
-    body('email').isEmail(),
+    body('email').isString(),
     body('firstName').isString(),
     body('lastName').isString(),
     body('password').isString(),
@@ -33,7 +33,7 @@ router.put(
 router.post(
   '/verify',
   validate([
-    body('email').isEmail(),
+    body('email').isString(),
     body('code').isString(),
   ]),
   userControllers.verifyAccount,
@@ -42,7 +42,7 @@ router.post(
 router.post(
   '/forgotPassword',
   validate([
-    body('email').isEmail(),
+    body('email').isString(),
   ]),
   userControllers.forgotPassword,
 );
@@ -50,7 +50,7 @@ router.post(
 router.post(
   '/resetPassword',
   validate([
-    body('email').isEmail(),
+    body('email').isString(),
     body('code').isString(),
     body('password').isString(),
   ]),
