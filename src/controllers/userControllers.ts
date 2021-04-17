@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
 import { userService, expiringCodeService, emailService } from '../services';
-import { ValidationException } from '../exceptions';
+import { ValidationException, NotFoundException } from '../exceptions';
 
 export const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -50,7 +50,7 @@ export const verifyAccount = async (req: Request, res: Response, next: NextFunct
     const user = await userService.getUserByEmail(email);
     const isCodeValid = await expiringCodeService.checkEmailVerificationCode(email, code);
     if (!user || !isCodeValid) {
-      return next(new ValidationException('The code is invalid or expired.'));
+      return next(new NotFoundException('The code is invalid or expired.'));
     } else {
       await userService.verifyAccount(user);
       await emailService.sendEmail(user, 'accountVerified');
@@ -83,7 +83,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
     const user = await userService.getUserByEmail(email);
     const isCodeValid = await expiringCodeService.checkForgotPasswordCode(email, code);
     if (!user || !isCodeValid) {
-      return next(new ValidationException('The code is invalid or expired.'));
+      return next(new NotFoundException('The code is invalid or expired.'));
     } else {
       await userService.changePassword(user, password);
       await emailService.sendEmail(user, 'passwordReset');
