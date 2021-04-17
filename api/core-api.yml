@@ -1,0 +1,178 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: Forma Core-API documentation
+  description: Documentation for Forma's Core-API with all available endpoints, parameters and responses.
+externalDocs:
+  description: View Forma's Core-API repository
+  url: https://github.com/Forma-AT/forma-core
+tags:
+  - name: user
+    description: User and authentication related endpoints
+paths:
+  /api/user/:
+    put:
+      tags:
+        - user
+      summary: Create a new account
+      description: Create a new account with email address, first name, last name and passsword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - firstName
+                - lastName
+                - password
+              properties:
+                email:
+                  type: string
+                  examle: johndoe@example.com
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Doe
+                password:
+                  type: string
+                  example: kHs85N225d
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: The provided input was malformatted or the email is in use already
+  /api/user/login:
+    post:
+      tags:
+        - user
+      summary: Log in as a user
+      description: Log into a user account with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  example: tHz421%8dv3}!_bVC63M
+      responses:
+        '200':
+          description: Logged in successfully
+        '400':
+          description: The email address or password is invalid
+  /api/user/verify:
+    post:
+      tags:
+        - user
+      summary: Verify account
+      description: Verify a user account with the code received via email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - code
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+                code:
+                  type: string
+                  example: HEsK1YBaB57Lw0NxqoM24
+      responses:
+        '200':
+          description: Account verified successfully
+        '404':
+          description: The email address or the verification code is invalid
+  /api/user/forgotPassword:
+    post:
+      tags:
+        - user
+      summary: Forgot password
+      description: Request a password reset code to the email address
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+      responses:
+        '200':
+          description: A password reset code has been sent to the email address
+  /api/user/resetPassword:
+    post:
+      tags:
+        - user
+      summary: Reset password
+      description: Reset the user's password using a code received via email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - code
+                - password
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+                code:
+                  type: string
+                  example: cnffAF07MxuPkchQHlsOL
+                password:
+                  type: string
+                  example: SU}{hF70c,)^6w@DKR^7
+      responses:
+        '200':
+          description: The password was reset successfully
+        '400':
+          description: The provided password is too weak
+        '404':
+          description: The email address or the reset code is invalid
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        password:
+          type: string
+        emailConfirmed:
+          type: boolean
+        createdAt:
+          type: number
+        updatedAt:
+          type: number
+#  securitySchemes:
+#    api_key:
+#      type: apiKey
+#      name: api_key
+#      in: header
