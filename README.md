@@ -13,6 +13,7 @@ git clone https://github.com/Forma-AT/forma-core.git
 npm i
 ```
 **3.** Get the `.env` file containing the environment variables and place it in the root directory of the project.
+
 **4.** Start the server in development mode with TypeScript compilation and hot-reloading enabled
 ```bash
 npm run dev
