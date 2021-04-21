@@ -12,11 +12,11 @@ class ExpiringCodeService {
   private readonly FORGOT_PASSWORD: ExpiringCodeType = 'FORGOT_PASSWORD';
 
   // Add a new expiring code
-  private async addCode(email: string, type: ExpiringCodeType): Promise<ExpiringCode> {
-    const currentCode = await expiringCodeRepository.findOne({ email, type });
+  private async addCode(userId: string, type: ExpiringCodeType): Promise<ExpiringCode> {
+    const currentCode = await expiringCodeRepository.findOne({ userId, type });
     if (!currentCode) {
       return expiringCodeRepository.create({
-        email: email,
+        userId: userId,
         type: type,
         code: nanoid(),
         expiredAt: moment().add(1, 'day').endOf('hours').toDate(),
@@ -24,10 +24,10 @@ class ExpiringCodeService {
     } else {
       const shouldUpdateCode = moment().isAfter(moment(currentCode.updatedAt).add(5, 'minutes'));
       if (shouldUpdateCode) {
-        return expiringCodeRepository.update({ email, type }, {
+        return expiringCodeRepository.update({ userId, type }, {
           code: nanoid(),
           expiredAt: moment().add(1, 'day').endOf('hours').toDate(),
-        })
+        });
       } else {
         return currentCode;
       }
@@ -35,8 +35,8 @@ class ExpiringCodeService {
   }
 
   // Check for the validity of a code
-  private async checkCode(email: string, code: string, type: ExpiringCodeType): Promise<boolean> {
-    const currentCode = await expiringCodeRepository.findOne({ email, type });
+  private async checkCode(userId: string, code: string, type: ExpiringCodeType): Promise<boolean> {
+    const currentCode = await expiringCodeRepository.findOne({ userId, type });
     if (!currentCode || currentCode.code !== code) {
       return false;
     } else {
@@ -45,23 +45,23 @@ class ExpiringCodeService {
   }
 
   // Add a new 'email verification' code
-  addEmailVerificationCode(email: string) {
-    return this.addCode(email, this.EMAIL_VERIFICATION);
+  addEmailVerificationCode(userId: string) {
+    return this.addCode(userId, this.EMAIL_VERIFICATION);
   }
 
   // Add a new 'forgot password' code
-  addForgotPasswordCode(email: string) {
-    return this.addCode(email, this.FORGOT_PASSWORD)
+  addForgotPasswordCode(userId: string) {
+    return this.addCode(userId, this.FORGOT_PASSWORD)
   }
 
   // Check if 'email verification' code is valid
-  checkEmailVerificationCode(email: string, code: string) {
-    return this.checkCode(email, code, this.EMAIL_VERIFICATION);
+  checkEmailVerificationCode(userId: string, code: string) {
+    return this.checkCode(userId, code, this.EMAIL_VERIFICATION);
   }
 
   // Check if 'forgot password' code is valid
-  checkForgotPasswordCode(email: string, code: string) {
-    return this.checkCode(email, code, this.FORGOT_PASSWORD);
+  checkForgotPasswordCode(userId: string, code: string) {
+    return this.checkCode(userId, code, this.FORGOT_PASSWORD);
   }
 
 }

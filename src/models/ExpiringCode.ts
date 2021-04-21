@@ -1,6 +1,6 @@
 class ExpiringCode {
 
-  email: string;
+  userId: string;
   code: string;
   type: 'EMAIL_VERIFICATION' | 'FORGOT_PASSWORD';
   expiredAt: Date;
