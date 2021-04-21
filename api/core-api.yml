@@ -10,7 +10,54 @@ tags:
   - name: user
     description: User and authentication related endpoints
 paths:
-  /api/user/:
+  /api/user/auth:
+    post:
+      tags:
+        - user
+      summary: Authenticate user
+      description: Authenticate user with email address and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  example: tHz421%8dv3}!_bVC63M
+      responses:
+        '200':
+          description: Authentication successful
+        '400':
+          description: The email address or password is incorrect
+  /api/user/forgotPassword:
+    post:
+      tags:
+        - user
+      summary: Forgot password
+      description: Request a password reset code to the email address
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+      responses:
+        '200':
+          description: A password reset code has been sent to the email address
+  /api/user:
     put:
       tags:
         - user
@@ -39,104 +86,63 @@ paths:
                   example: Doe
                 password:
                   type: string
-                  example: kHs85N225d
-      responses:
-        '201':
-          description: User created successfully
-        '400':
-          description: The provided input was malformatted or the email is in use already
-  /api/user/login:
-    post:
-      tags:
-        - user
-      summary: Log in as a user
-      description: Log into a user account with email and password
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-                - password
-              properties:
-                email:
-                  type: string
-                  example: johndoe@example.com
-                password:
-                  type: string
                   example: tHz421%8dv3}!_bVC63M
       responses:
-        '200':
-          description: Logged in successfully
+        '201':
+          description: User account creation successful
         '400':
-          description: The email address or password is invalid
-  /api/user/verify:
+          description: The password is too weak, or the email is invalid or in use already
+  /api/user/{userId}/verify:
     post:
       tags:
         - user
       summary: Verify account
       description: Verify a user account with the code received via email
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          example: dba3d8db-ad67-4fd3-b0b3-9c196721c713
       requestBody:
         content:
           application/json:
             schema:
               type: object
               required:
-                - email
                 - code
               properties:
-                email:
-                  type: string
-                  example: johndoe@example.com
                 code:
                   type: string
                   example: HEsK1YBaB57Lw0NxqoM24
       responses:
         '200':
-          description: Account verified successfully
+          description: Account verification successful
         '404':
-          description: The email address or the verification code is invalid
-  /api/user/forgotPassword:
-    post:
-      tags:
-        - user
-      summary: Forgot password
-      description: Request a password reset code to the email address
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-              properties:
-                email:
-                  type: string
-                  example: johndoe@example.com
-      responses:
-        '200':
-          description: A password reset code has been sent to the email address
-  /api/user/resetPassword:
+          description: The verification code is invalid or expired
+  /api/user/{userId}/resetPassword:
     post:
       tags:
         - user
       summary: Reset password
-      description: Reset the user's password using a code received via email
+      description: Reset the user's password using the code received via email
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          example: dba3d8db-ad67-4fd3-b0b3-9c196721c713
       requestBody:
         content:
           application/json:
             schema:
               type: object
               required:
-                - email
                 - code
                 - password
               properties:
-                email:
-                  type: string
-                  example: johndoe@example.com
                 code:
                   type: string
                   example: cnffAF07MxuPkchQHlsOL
@@ -145,11 +151,11 @@ paths:
                   example: SU}{hF70c,)^6w@DKR^7
       responses:
         '200':
-          description: The password was reset successfully
+          description: Password reset successful
         '400':
           description: The provided password is too weak
         '404':
-          description: The email address or the reset code is invalid
+          description: The reset code is invalid or expired
 components:
   schemas:
     User:
@@ -171,8 +177,3 @@ components:
           type: number
         updatedAt:
           type: number
-#  securitySchemes:
-#    api_key:
-#      type: apiKey
-#      name: api_key
-#      in: header
