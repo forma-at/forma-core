@@ -4,19 +4,21 @@ import { userControllers } from '../controllers';
 
 const router = Router();
 
-router.get(
-  '/',
-  authorization,
-  userControllers.getUserInfo,
-);
-
 router.post(
-  '/login',
+  '/auth',
   validate([
     body('email').isString(),
     body('password').isString(),
   ]),
-  userControllers.login,
+  userControllers.authenticate,
+);
+
+router.post(
+  '/forgotPassword',
+  validate([
+    body('email').isString(),
+  ]),
+  userControllers.forgotPassword,
 );
 
 router.put(
@@ -30,31 +32,56 @@ router.put(
   userControllers.createAccount,
 );
 
+router.get(
+  '/:userId',
+  authorization,
+  validate([]),
+  userControllers.getAccountInfo,
+);
+
+router.delete(
+  '/:userId',
+  authorization,
+  validate([]),
+  userControllers.deleteAccount,
+);
+
 router.post(
-  '/verify',
+  '/:userId/verify',
   validate([
-    body('email').isString(),
     body('code').isString(),
   ]),
   userControllers.verifyAccount,
 );
 
 router.post(
-  '/forgotPassword',
-  validate([
-    body('email').isString(),
-  ]),
-  userControllers.forgotPassword,
+  '/:userId/password',
+  authorization,
+  validate([]),
+  userControllers.updatePassword,
 );
 
 router.post(
-  '/resetPassword',
+  '/:userId/password/reset',
   validate([
-    body('email').isString(),
     body('code').isString(),
     body('password').isString(),
   ]),
   userControllers.resetPassword,
+);
+
+router.post(
+  '/:userId/profile',
+  authorization,
+  validate([]),
+  userControllers.updateProfile,
+);
+
+router.post(
+  '/:userId/language',
+  authorization,
+  validate([]),
+  userControllers.updateLanguage,
 );
 
 export default router;

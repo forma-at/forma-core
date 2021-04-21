@@ -1,9 +1,13 @@
-export interface Signin {
+export interface Authenticate {
   email: string;
   password: string;
 }
 
-export interface Signup {
+export interface ForgotPassword {
+  email: string;
+}
+
+export interface CreateAccount {
   email: string;
   firstName: string;
   lastName: string;
@@ -11,16 +15,10 @@ export interface Signup {
 }
 
 export interface VerifyAccount {
-  email: string;
   code: string;
 }
 
-export interface ForgotPassword {
-  email: string;
-}
-
 export interface ResetPassword {
-  email: string;
   code: string;
   password: string;
 }

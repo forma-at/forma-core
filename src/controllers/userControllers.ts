@@ -3,17 +3,22 @@ import HttpStatusCodes from 'http-status-codes';
 import { userService, expiringCodeService, emailService } from '../services';
 import { ValidationException, NotFoundException } from '../exceptions';
 
-export const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
+export const getAccountInfo = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req.params;
   try {
     const user = req.user;
-    return res.status(HttpStatusCodes.OK).json({ user });
+    if (user.id !== userId) {
+      return next(new NotFoundException('The user was not found.'));
+    } else {
+      return res.status(HttpStatusCodes.OK).json({ user });
+    }
   } catch (err) {
     return next(err);
   }
 };
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, password }: Body.Signin = req.body;
+export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, password }: Body.Authenticate = req.body;
   try {
     const user = await userService.getUserByEmail(email);
     if (!user) {
@@ -24,37 +29,8 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         return next(new ValidationException('Invalid email address or password.'));
       } else {
         const token = await userService.createJWT(user);
-        return res.status(HttpStatusCodes.OK).json({ token });
+        return res.status(HttpStatusCodes.OK).json({ ok: true, token });
       }
-    }
-  } catch (err) {
-    return next(err);
-  }
-};
-
-export const createAccount = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, firstName, lastName, password }: Body.Signup = req.body;
-  try {
-    const user = await userService.createAccount(email, firstName, lastName, password);
-    const { code } = await expiringCodeService.addEmailVerificationCode(user.email);
-    await emailService.sendEmail(user, 'accountCreated', { code });
-    return res.status(HttpStatusCodes.CREATED).json({ user });
-  } catch (err) {
-    return next(err);
-  }
-};
-
-export const verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, code }: Body.VerifyAccount = req.body;
-  try {
-    const user = await userService.getUserByEmail(email);
-    const isCodeValid = await expiringCodeService.checkEmailVerificationCode(email, code);
-    if (!user || !isCodeValid) {
-      return next(new NotFoundException('The code is invalid or expired.'));
-    } else {
-      await userService.verifyAccount(user);
-      await emailService.sendEmail(user, 'accountVerified');
-      return res.status(HttpStatusCodes.OK).json({ ok: true });
     }
   } catch (err) {
     return next(err);
@@ -68,7 +44,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
     if (!user) {
       return res.status(HttpStatusCodes.OK).json({ ok: true });
     } else {
-      const { code } = await expiringCodeService.addForgotPasswordCode(user.email);
+      const { code } = await expiringCodeService.addForgotPasswordCode(user.id);
       await emailService.sendEmail(user, 'passwordForgot', { code });
       return res.status(HttpStatusCodes.OK).json({ ok: true });
     }
@@ -77,11 +53,50 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
   }
 };
 
-export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, code, password }: Body.ResetPassword = req.body;
+export const createAccount = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, firstName, lastName, password }: Body.CreateAccount = req.body;
   try {
-    const user = await userService.getUserByEmail(email);
-    const isCodeValid = await expiringCodeService.checkForgotPasswordCode(email, code);
+    const user = await userService.createAccount(email, firstName, lastName, password);
+    const { code } = await expiringCodeService.addEmailVerificationCode(user.id);
+    await emailService.sendEmail(user, 'accountCreated', { code });
+    const token = await userService.createJWT(user);
+    return res.status(HttpStatusCodes.CREATED).json({ ok: true, token });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const deleteAccount = async (req: Request, res: Response, _next: NextFunction) => {
+  console.log('Delete account', req.user.id, req.params.userId);
+  res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+    message: 'This feature is not yet implemented.',
+  });
+};
+
+export const verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req.params;
+  const { code }: Body.VerifyAccount = req.body;
+  try {
+    const user = await userService.getUserById(userId);
+    const isCodeValid = await expiringCodeService.checkEmailVerificationCode(userId, code);
+    if (!user || !isCodeValid) {
+      return next(new NotFoundException('The code is invalid or expired.'));
+    } else {
+      await userService.verifyAccount(user);
+      await emailService.sendEmail(user, 'accountVerified');
+      return res.status(HttpStatusCodes.OK).json({ ok: true });
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req.params;
+  const { code, password }: Body.ResetPassword = req.body;
+  try {
+    const user = await userService.getUserById(userId);
+    const isCodeValid = await expiringCodeService.checkForgotPasswordCode(userId, code);
     if (!user || !isCodeValid) {
       return next(new NotFoundException('The code is invalid or expired.'));
     } else {
@@ -92,4 +107,22 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
   } catch (err) {
     return next(err);
   }
+};
+
+export const updatePassword = async (req: Request, res: Response, _next: NextFunction) => {
+  res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+    message: 'This feature is not yet implemented.',
+  });
+};
+
+export const updateProfile = async (req: Request, res: Response, _next: NextFunction) => {
+  res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+    message: 'This feature is not yet implemented.',
+  });
+};
+
+export const updateLanguage = async (req: Request, res: Response, _next: NextFunction) => {
+  res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+    message: 'This feature is not yet implemented.',
+  });
 };
