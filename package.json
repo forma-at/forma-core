@@ -11,7 +11,9 @@
     "build": "tsc",
     "watch-deploy": "nodemon dist/server.js",
     "watch-build": "tsc -w",
-    "postinstall": "npm run build"
+    "postinstall": "npm run build",
+    "api": "npx -y redoc-cli serve api/core-api.yml",
+    "api:dev": "npx -y redoc-cli serve api/core-api.yml --watch"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
