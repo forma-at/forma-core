@@ -1,0 +1,298 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: Forma Core API documentation
+  description: |
+    Documentation for Forma Core API, containing details about authorization, endpoints, request
+    and response parameters, as well as request and response samples.
+
+    # Authentication
+
+    The Forma Core API uses a **bearer** token authorization method using the **JSON Web Token (JWT)**
+    format. This means that all requests to endpoints protected with authorization must include the
+    `Authorization` request header with a value conforming to the `JWT insert_token` format. Without
+    this token the server will respond with a `401 unauthorized` error. The JWT token can be acquired
+    by authenticating the user at the `GET /api/user/auth` endpoint with email address and password.
+    A valid JWT token is also included in the response of a successful account creation.
+
+externalDocs:
+  description: View the Forma Core API repository here
+  url: https://github.com/Forma-AT/forma-core
+tags:
+  - name: user
+    description: User authentication and management endpoints
+paths:
+  /api/user/auth:
+    post:
+      tags:
+        - user
+      summary: Authenticate user
+      description: Authenticate user with email address and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  example: tHz421%8dv3}!_bVC63M
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithToken'
+        '400':
+          description: The email address or password is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/user/forgotPassword:
+    post:
+      tags:
+        - user
+      summary: Forgot password
+      description: Request a password reset code to the email address
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+      responses:
+        '200':
+          description: A password reset code has been sent to the email address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+  /api/user:
+    put:
+      tags:
+        - user
+      summary: Create a new account
+      description: Create a new account with email address, first name, last name and passsword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - firstName
+                - lastName
+                - password
+              properties:
+                email:
+                  type: string
+                  examle: johndoe@example.com
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Doe
+                password:
+                  type: string
+                  example: tHz421%8dv3}!_bVC63M
+      responses:
+        '201':
+          description: User account creation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithToken'
+        '400':
+          description: The password is too weak, or the email is invalid or in use already
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/user/{userId}:
+    get:
+      tags:
+        - user
+      summary: Get user data
+      description: Get information about the user, such as email address or name
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          example: dba3d8db-ad67-4fd3-b0b3-9c196721c713
+      responses:
+        '200':
+          description: User data retreived
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithUser'
+        '401':
+          description: Authorization token invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: The user was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/user/{userId}/verify:
+    post:
+      tags:
+        - user
+      summary: Verify account
+      description: Verify a user account with the code received via email
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          example: dba3d8db-ad67-4fd3-b0b3-9c196721c713
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+                  example: HEsK1YBaB57Lw0NxqoM24
+      responses:
+        '200':
+          description: Account verification successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        '404':
+          description: The verification code is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/user/{userId}/resetPassword:
+    post:
+      tags:
+        - user
+      summary: Reset password
+      description: Reset the user's password using the code received via email
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          example: dba3d8db-ad67-4fd3-b0b3-9c196721c713
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+                - password
+              properties:
+                code:
+                  type: string
+                  example: cnffAF07MxuPkchQHlsOL
+                password:
+                  type: string
+                  example: SU}{hF70c,)^6w@DKR^7
+      responses:
+        '200':
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        '400':
+          description: The provided password is too weak
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: The reset code is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        password:
+          type: string
+        emailConfirmed:
+          type: boolean
+        createdAt:
+          type: number
+        updatedAt:
+          type: number
+    OkResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+    OkResponseWithToken:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        token:
+          type: string
+          example: eyJhbGciOiJ...98vI6bxl1s94xI
+    OkResponseWithUser:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        user:
+          $ref: '#/components/schemas/User'
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string

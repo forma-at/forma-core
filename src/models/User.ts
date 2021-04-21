@@ -1,19 +1,18 @@
-import { subject, language } from 'skills';
+class User {
 
-export class User {
-
-  uuid: string;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
   password: string;
-  subjects: subject[];
-  languages: language[];
-  locations: string[];
+  emailConfirmed: boolean;
+  createdAt: number;
+  updatedAt: number;
 
-  private constructor(user: { [key: string]: any }) {
+  constructor(user: User) {
     Object.assign(this, user);
   }
 
 }
+
+export default User;

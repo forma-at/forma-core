@@ -1,16 +1,82 @@
 import { Router } from 'express';
+import { validate, body, authorization } from '../middlewares';
 import { userControllers } from '../controllers';
 
 const router = Router();
 
-router.post('/signin', userControllers.signin);
+router.post(
+  '/auth',
+  validate([
+    body('email').isString(),
+    body('password').isString(),
+  ]),
+  userControllers.authenticate,
+);
 
-router.post('/signup', userControllers.signup);
+router.post(
+  '/forgotPassword',
+  validate([
+    body('email').isString(),
+  ]),
+  userControllers.forgotPassword,
+);
 
-router.post('/verify', userControllers.verify);
+router.put(
+  '/',
+  validate([
+    body('email').isString(),
+    body('firstName').isString(),
+    body('lastName').isString(),
+    body('password').isString(),
+  ]),
+  userControllers.createAccount,
+);
 
-router.post('/forgot', userControllers.forgot);
+router.get(
+  '/:userId',
+  authorization,
+  userControllers.getAccountInfo,
+);
 
-router.post('/reset', userControllers.reset);
+router.delete(
+  '/:userId',
+  authorization,
+  userControllers.deleteAccount,
+);
+
+router.post(
+  '/:userId/verify',
+  validate([
+    body('code').isString(),
+  ]),
+  userControllers.verifyAccount,
+);
+
+router.post(
+  '/:userId/password',
+  authorization,
+  userControllers.updatePassword,
+);
+
+router.post(
+  '/:userId/password/reset',
+  validate([
+    body('code').isString(),
+    body('password').isString(),
+  ]),
+  userControllers.resetPassword,
+);
+
+router.post(
+  '/:userId/profile',
+  authorization,
+  userControllers.updateProfile,
+);
+
+router.post(
+  '/:userId/language',
+  authorization,
+  userControllers.updateLanguage,
+);
 
 export default router;
