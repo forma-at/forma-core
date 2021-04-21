@@ -118,6 +118,8 @@ paths:
         - user
       summary: Get user data
       description: Get information about the user, such as email address or name
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: userId
@@ -229,6 +231,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     User:
       type: object
