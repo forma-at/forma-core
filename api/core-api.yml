@@ -101,7 +101,7 @@ paths:
               properties:
                 email:
                   type: string
-                  examle: johndoe@example.com
+                  example: johndoe@example.com
                 firstName:
                   type: string
                   example: John
@@ -195,7 +195,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /api/user/{userId}/resetPassword:
+  /api/user/{userId}/password/reset:
     post:
       tags:
         - user
@@ -283,6 +283,9 @@ components:
         token:
           type: string
           example: eyJhbGciOiJ...98vI6bxl1s94xI
+        userId:
+          type: string
+          example: dba3d8db-ad67-4fd3-b0b3-9c196721c713
     OkResponseWithUser:
       type: object
       properties:

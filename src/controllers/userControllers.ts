@@ -29,7 +29,11 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         return next(new ValidationException('Invalid email address or password.'));
       } else {
         const token = await userService.createJWT(user);
-        return res.status(HttpStatusCodes.OK).json({ ok: true, token });
+        return res.status(HttpStatusCodes.OK).json({
+          ok: true,
+          token,
+          userId: user.id,
+        });
       }
     }
   } catch (err) {
@@ -60,7 +64,11 @@ export const createAccount = async (req: Request, res: Response, next: NextFunct
     const { code } = await expiringCodeService.addEmailVerificationCode(user.id);
     await emailService.sendEmail(user, 'accountCreated', { code });
     const token = await userService.createJWT(user);
-    return res.status(HttpStatusCodes.CREATED).json({ ok: true, token });
+    return res.status(HttpStatusCodes.CREATED).json({
+      ok: true,
+      token,
+      userId: user.id,
+    });
   } catch (err) {
     return next(err);
   }
