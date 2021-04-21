@@ -35,14 +35,12 @@ router.put(
 router.get(
   '/:userId',
   authorization,
-  validate([]),
   userControllers.getAccountInfo,
 );
 
 router.delete(
   '/:userId',
   authorization,
-  validate([]),
   userControllers.deleteAccount,
 );
 
@@ -57,7 +55,6 @@ router.post(
 router.post(
   '/:userId/password',
   authorization,
-  validate([]),
   userControllers.updatePassword,
 );
 
@@ -73,14 +70,12 @@ router.post(
 router.post(
   '/:userId/profile',
   authorization,
-  validate([]),
   userControllers.updateProfile,
 );
 
 router.post(
   '/:userId/language',
   authorization,
-  validate([]),
   userControllers.updateLanguage,
 );
 
