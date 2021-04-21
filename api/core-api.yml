@@ -8,7 +8,7 @@ externalDocs:
   url: https://github.com/Forma-AT/forma-core
 tags:
   - name: user
-    description: User and authentication related endpoints
+    description: Authentication and user related endpoints
 paths:
   /api/user/auth:
     post:
@@ -35,8 +35,16 @@ paths:
       responses:
         '200':
           description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithToken'
         '400':
           description: The email address or password is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/user/forgotPassword:
     post:
       tags:
@@ -57,6 +65,10 @@ paths:
       responses:
         '200':
           description: A password reset code has been sent to the email address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
   /api/user:
     put:
       tags:
@@ -90,8 +102,48 @@ paths:
       responses:
         '201':
           description: User account creation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithToken'
         '400':
           description: The password is too weak, or the email is invalid or in use already
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/user/{userId}:
+    get:
+      tags:
+        - user
+      summary: Get user data
+      description: Get information about the user, such as email address or name
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          example: dba3d8db-ad67-4fd3-b0b3-9c196721c713
+      responses:
+        '200':
+          description: User data retreived
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithUser'
+        '401':
+          description: Authorization token invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: The user was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/user/{userId}/verify:
     post:
       tags:
@@ -119,8 +171,16 @@ paths:
       responses:
         '200':
           description: Account verification successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
         '404':
           description: The verification code is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/user/{userId}/resetPassword:
     post:
       tags:
@@ -152,10 +212,22 @@ paths:
       responses:
         '200':
           description: Password reset successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
         '400':
           description: The provided password is too weak
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: The reset code is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     User:
@@ -177,3 +249,31 @@ components:
           type: number
         updatedAt:
           type: number
+    OkResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+    OkResponseWithToken:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        token:
+          type: string
+          example: eyJhbGciOiJ...98vI6bxl1s94xI
+    OkResponseWithUser:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        user:
+          $ref: '#/components/schemas/User'
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
