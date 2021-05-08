@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
+import { schoolService } from '../services';
+import { ValidationException, NotFoundException } from '../exceptions';
 
 export const createSchool = async (req: Request, res: Response, _next: NextFunction) => {
   res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
