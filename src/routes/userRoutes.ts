@@ -28,6 +28,8 @@ router.put(
     body('firstName').isString(),
     body('lastName').isString(),
     body('password').isString(),
+    body('phone').isString().optional(),
+    body('isSchoolAdmin').isBoolean(),
   ]),
   userControllers.createAccount,
 );

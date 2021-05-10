@@ -4,8 +4,10 @@ class User {
   firstName: string;
   lastName: string;
   email: string;
+  phone?: string;
   password: string;
   emailConfirmed: boolean;
+  isSchoolAdmin: boolean;
   createdAt: number;
   updatedAt: number;
 

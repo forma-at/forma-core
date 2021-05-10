@@ -44,7 +44,7 @@ class UserService {
   }
 
   // Create a new user account
-  async createAccount(email: string, firstName: string, lastName: string, password: string) {
+  async createAccount(email: string, firstName: string, lastName: string, password: string, isSchoolAdmin: boolean, phone?: string) {
     const emailInUse = await userRepository.getUserByEmail(email);
     if (emailInUse) {
       throw new ValidationException('This email address is already in use.');
@@ -57,10 +57,12 @@ class UserService {
       return userRepository.create({
         id: uuid(),
         email: email,
+        phone: phone,
         firstName: firstName,
         lastName: lastName,
         password: passwordHashed,
         emailConfirmed: false,
+        isSchoolAdmin: isSchoolAdmin,
       });
     }
   }
