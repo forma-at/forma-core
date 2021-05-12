@@ -1,3 +1,3 @@
-export { default as User } from './User';
-export { default as School } from './School';
-export { default as ExpiringCode } from './ExpiringCode';
+export * from './User';
+export * from './School';
+export * from './ExpiringCode';

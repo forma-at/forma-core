@@ -1,16 +1,17 @@
-class School {
+export interface Address {
+  street: string;
+  city: string;
+  zip: string;
+  state: string;
+  country: string;
+}
+
+export class School {
 
   id: string;
-  adminId: string;
   name: string;
   description: string;
-  address: {
-    street: string;
-    city: string;
-    zip: string;
-    state: string;
-    country: string;
-  };
+  address: Address;
   createdAt: number;
   updatedAt: number;
 
@@ -19,5 +20,3 @@ class School {
   }
 
 }
-
-export default School;

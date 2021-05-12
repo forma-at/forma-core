@@ -1,13 +1,16 @@
-class User {
+export type UserType = 'teacher' | 'admin';
+
+export class User {
 
   id: string;
+  type: UserType;
   firstName: string;
   lastName: string;
   email: string;
   phone?: string;
   password: string;
   emailConfirmed: boolean;
-  isSchoolAdmin: boolean;
+  schoolId?: string;
   createdAt: number;
   updatedAt: number;
 
@@ -16,5 +19,3 @@ class User {
   }
 
 }
-
-export default User;
