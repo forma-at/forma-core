@@ -25,12 +25,6 @@ router.get(
   schoolControllers.getSchoolData,
 );
 
-router.delete(
-  '/:schoolId',
-  authorization,
-  schoolControllers.deleteSchool,
-);
-
 router.post(
   '/:schoolId/update',
   authorization,
