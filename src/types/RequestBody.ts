@@ -34,3 +34,14 @@ export interface CreateSchool {
   state: string;
   country: string;
 }
+
+export interface UpdateSchool {
+  name?: string;
+  description?: string;
+  street?: string;
+  city?: string;
+  zip?: string;
+  state?: string;
+  country?: string;
+  password: string;
+}
