@@ -1,3 +1,5 @@
+import { abilityService, AppAbility } from '../services';
+
 export type UserType = 'teacher' | 'admin';
 
 export class User {
@@ -14,8 +16,11 @@ export class User {
   createdAt: number;
   updatedAt: number;
 
+  readonly ability: AppAbility;
+
   constructor(user: User) {
     Object.assign(this, user);
+    this.ability = abilityService.defineFor(this);
   }
 
 }

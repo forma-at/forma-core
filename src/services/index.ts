@@ -1,4 +1,5 @@
-export { userService } from './userService';
-export { schoolService } from './schoolService';
-export { expiringCodeService } from './expiringCodeService';
-export { emailService } from './emailService';
+export * from './abilityService';
+export * from './emailService';
+export * from './expiringCodeService';
+export * from './schoolService';
+export * from './userService';
