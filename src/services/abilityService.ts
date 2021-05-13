@@ -18,7 +18,7 @@ class AbilityService {
 
     // School management
     can('read', 'School');
-    if (user.type === 'admin') {
+    if (user.type === 'school') {
       if (!user.schoolId) {
         can('create', 'School');
         cannot(['update', 'delete'], 'School')

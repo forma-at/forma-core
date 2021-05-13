@@ -24,3 +24,13 @@ export interface ResetPassword {
   code: string;
   password: string;
 }
+
+export interface CreateSchool {
+  name: string;
+  description: string;
+  street: string;
+  city: string;
+  zip: string;
+  state: string;
+  country: string;
+}

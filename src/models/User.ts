@@ -1,6 +1,6 @@
 import { abilityService, AppAbility } from '../services';
 
-export type UserType = 'teacher' | 'admin';
+export type UserType = 'teacher' | 'school';
 
 export class User {
 

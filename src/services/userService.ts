@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { JWTPayload } from 'Router';
 import { userRepository } from '../repositories';
 import { ValidationException } from '../exceptions';
-import { User } from '../models';
+import { User, School } from '../models';
 
 class UserService {
 
@@ -56,13 +56,13 @@ class UserService {
       const passwordHashed = await bcrypt.hash(password, 10);
       return userRepository.create({
         id: uuid(),
+        type: isSchoolAdmin ? 'school' : 'teacher',
         email: email,
         phone: phone,
         firstName: firstName,
         lastName: lastName,
         password: passwordHashed,
         emailConfirmed: false,
-        isSchoolAdmin: isSchoolAdmin,
       });
     }
   }
@@ -93,6 +93,12 @@ class UserService {
         password: passwordHashed,
       });
     }
+  }
+
+  async assignSchool(user: User, school: School) {
+    return userRepository.update({ id: user.id }, {
+      schoolId: school.id,
+    });
   }
 
 }
