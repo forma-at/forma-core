@@ -20,13 +20,13 @@ class UserService {
   };
 
   // Get a user by id number
-  async getUserById(id: string) {
-    return userRepository.getUserById(id);
+  async getUserById(userId: string) {
+    return userRepository.findOne({ id: userId });
   }
 
   // Get a user by email address
   async getUserByEmail(email: string) {
-    return userRepository.getUserByEmail(email);
+    return userRepository.findOne({ email });
   }
 
   // Create a JsonWebToken for a user
