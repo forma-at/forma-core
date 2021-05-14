@@ -16,6 +16,15 @@ export interface CreateAccount {
   isSchoolAdmin: boolean;
 }
 
+export interface UpdateUser {
+  email?: string;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+  password?: string;
+  currentPassword: string;
+}
+
 export interface VerifyAccount {
   code: string;
 }

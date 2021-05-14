@@ -16,6 +16,13 @@ class AbilityService {
   defineFor(user: User) {
     const { can, cannot, build } = new AbilityBuilder(AppAbility);
 
+    // User management
+    can(['read', 'update', 'delete'], 'User', { id: { $eq: user.id } });
+    cannot(['read', 'update', 'delete'], 'User', { id: { $ne: user.id } })
+      .because('You cannot view or manage another user.');
+    cannot('create', 'User')
+      .because('You cannot create new users.');
+
     // School management
     can('read', 'School');
     if (user.type === 'school') {

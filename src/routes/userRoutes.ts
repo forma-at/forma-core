@@ -55,9 +55,17 @@ router.post(
 );
 
 router.post(
-  '/:userId/password',
+  '/:userId/update',
   authorization,
-  userControllers.updatePassword,
+  validate([
+    body('email').isString().optional(),
+    body('phone').isString().optional(),
+    body('firstName').isString().optional(),
+    body('lastName').isString().optional(),
+    body('password').isString().optional(),
+    body('currentPassword').isString(),
+  ]),
+  userControllers.updateProfile,
 );
 
 router.post(
@@ -67,12 +75,6 @@ router.post(
     body('password').isString(),
   ]),
   userControllers.resetPassword,
-);
-
-router.post(
-  '/:userId/profile',
-  authorization,
-  userControllers.updateProfile,
 );
 
 router.post(

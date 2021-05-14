@@ -95,10 +95,83 @@ class UserService {
     }
   }
 
+  // Assign a school to a user
   async assignSchool(user: User, school: School) {
     return userRepository.update({ id: user.id }, {
       schoolId: school.id,
     });
+  }
+
+  // Update a user's profile data
+  async updateProfile(user: User, password: string, data: Partial<User>) {
+    const erroneousFields: Partial<User & { currentPassword: string }> = {};
+    const isPasswordCorrect = await this.comparePasswords(user, password);
+    if (!isPasswordCorrect) {
+      erroneousFields.currentPassword = 'The password is incorrect.';
+    }
+    if (typeof data.email === 'string' && data.email !== user.email) {
+      const emailError = await this.validateEmailAddress(data.email);
+      if (emailError) erroneousFields.email = emailError;
+    }
+    if (typeof data.phone === 'string' && data.phone !== '') {
+      const phoneError = this.validateMobilePhone(data.phone)
+      if (phoneError) erroneousFields.phone = phoneError;
+    }
+    if (typeof data.firstName === 'string') {
+      const firstNameError = this.validateName(data.firstName);
+      if (firstNameError) erroneousFields.firstName = firstNameError;
+    }
+    if (typeof data.lastName === 'string') {
+      const lastNameError = this.validateName(data.lastName);
+      if (lastNameError) erroneousFields.lastName = lastNameError;
+    }
+    if (typeof data.password === 'string') {
+      const passwordError = this.validatePassword(data.password);
+      if (passwordError) erroneousFields.password = passwordError;
+      if (!passwordError) data.password = await bcrypt.hash(data.password, 10);
+    }
+    if (Object.keys(erroneousFields).length) {
+      throw new ValidationException('The provided data was invalid.', erroneousFields);
+    } else {
+      return userRepository.update({ id: user.id }, {
+        email: data.email ?? user.email,
+        phone: data.phone ?? user.phone,
+        firstName: data.firstName ?? user.firstName,
+        lastName: data.lastName ?? user.lastName,
+        password: data.password ?? user.password,
+      });
+    }
+  }
+
+  // Validate an email address, including checking for usage
+  async validateEmailAddress(email: string) {
+    const emailInUse = await this.getUserByEmail(email);
+    if (emailInUse) {
+      return 'This email address is already in use.';
+    } else if (!validator.isEmail(email)) {
+      return 'The email address is invalid.';
+    }
+  }
+
+  // Validate a mobile phone number
+  validateMobilePhone(phone: string) {
+    if (!validator.isMobilePhone(phone, 'any', { strictMode: true })) {
+      return 'The mobile phone number is invalid.';
+    }
+  }
+
+  // Validate a password using the password policy
+  validatePassword(password: string) {
+    if (!validator.isStrongPassword(password, this.PASSWORD_POLICY)) {
+      return 'The password is too weak.';
+    }
+  }
+
+  // Validate a name
+  validateName(name: string) {
+    if (validator.isEmpty(name)) {
+      return 'The name cannot be empty.';
+    }
   }
 
 }

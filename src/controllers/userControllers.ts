@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
-import { userService, expiringCodeService, emailService } from '../services';
+import { userService, expiringCodeService, emailService, abilityService } from '../services';
 import { ValidationException, NotFoundException } from '../exceptions';
 
 export const getAccountInfo = async (req: Request, res: Response, next: NextFunction) => {
@@ -117,16 +117,23 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const updatePassword = async (req: Request, res: Response, _next: NextFunction) => {
-  res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-    message: 'This feature is not yet implemented.',
-  });
-};
-
-export const updateProfile = async (req: Request, res: Response, _next: NextFunction) => {
-  res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-    message: 'This feature is not yet implemented.',
-  });
+export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req.params;
+  const { email, phone, firstName, lastName, password, currentPassword }: Body.UpdateUser = req.body;
+  try {
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      return next(new NotFoundException('The user was not found.'));
+    } else {
+      abilityService.assure(req.user, 'update', user);
+      const updatedUser = await userService.updateProfile(req.user, currentPassword, {
+        email, phone, firstName, lastName, password
+      });
+      return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
+    }
+  } catch (err) {
+    return next(err);
+  }
 };
 
 export const updateLanguage = async (req: Request, res: Response, _next: NextFunction) => {
