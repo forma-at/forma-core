@@ -45,13 +45,19 @@ class UserService {
 
   // Create a new user account
   async createAccount(email: string, firstName: string, lastName: string, password: string, isSchoolAdmin: boolean, phone?: string) {
-    const emailInUse = await userRepository.getUserByEmail(email);
-    if (emailInUse) {
-      throw new ValidationException('This email address is already in use.');
-    } else if (!validator.isEmail(email)) {
-      throw new ValidationException('The email address is invalid.')
-    } else if (!validator.isStrongPassword(password, this.PASSWORD_POLICY)) {
-      throw new ValidationException('The password is too weak.');
+    const erroneousFields: Partial<User> = {};
+    const emailError = await this.validateEmailAddress(email);
+    if (emailError) erroneousFields.email = emailError;
+    const phoneError = this.validateMobilePhone(phone);
+    if (phoneError) erroneousFields.phone = phoneError;
+    const firstNameError = this.validateName(firstName);
+    if (firstNameError) erroneousFields.firstName = firstNameError;
+    const lastNameError = this.validateName(lastName);
+    if (lastNameError) erroneousFields.lastName = lastNameError;
+    const passwordError = this.validatePassword(password);
+    if (passwordError) erroneousFields.password = passwordError;
+    if (Object.keys(erroneousFields).length) {
+      throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
       const passwordHashed = await bcrypt.hash(password, 10);
       return userRepository.create({
@@ -131,7 +137,7 @@ class UserService {
       if (!passwordError) data.password = await bcrypt.hash(data.password, 10);
     }
     if (Object.keys(erroneousFields).length) {
-      throw new ValidationException('The provided data was invalid.', erroneousFields);
+      throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
       return userRepository.update({ id: user.id }, {
         email: data.email ?? user.email,
