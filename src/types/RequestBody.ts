@@ -14,6 +14,7 @@ export interface CreateAccount {
   password: string;
   phone?: string;
   isSchoolAdmin: boolean;
+  language: string;
 }
 
 export interface UpdateUser {
@@ -23,6 +24,10 @@ export interface UpdateUser {
   lastName?: string;
   password?: string;
   currentPassword: string;
+}
+
+export interface UpdateLanguage {
+  language: string;
 }
 
 export interface VerifyAccount {

@@ -58,9 +58,9 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 };
 
 export const createAccount = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, firstName, lastName, password, phone, isSchoolAdmin }: Body.CreateAccount = req.body;
+  const { email, firstName, lastName, password, phone, isSchoolAdmin, language }: Body.CreateAccount = req.body;
   try {
-    const user = await userService.createAccount(email, firstName, lastName, password, isSchoolAdmin, phone);
+    const user = await userService.createAccount(email, firstName, lastName, password, isSchoolAdmin, language, phone);
     const { code } = await expiringCodeService.addEmailVerificationCode(user.id);
     await emailService.sendEmail(user, 'accountCreated', { code });
     const token = await userService.createJWT(user);
@@ -126,7 +126,7 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
       return next(new NotFoundException('The user was not found.'));
     } else {
       abilityService.assure(req.user, 'update', user);
-      const updatedUser = await userService.updateProfile(req.user, currentPassword, {
+      const updatedUser = await userService.updateProfile(user, currentPassword, {
         email, phone, firstName, lastName, password
       });
       return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
@@ -136,8 +136,19 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const updateLanguage = async (req: Request, res: Response, _next: NextFunction) => {
-  res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-    message: 'This feature is not yet implemented.',
-  });
+export const updateLanguage = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req.params;
+  const { language }: Body.UpdateLanguage = req.body;
+  try {
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      return next(new NotFoundException('The user was not found.'));
+    } else {
+      abilityService.assure(req.user, 'update', user);
+      const updatedUser = await userService.updateLanguage(user, language);
+      return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
+    }
+  } catch (err) {
+    return next(err);
+  }
 };

@@ -30,6 +30,7 @@ router.put(
     body('password').isString(),
     body('phone').isString().optional(),
     body('isSchoolAdmin').isBoolean(),
+    body('language').isString(),
   ]),
   userControllers.createAccount,
 );
@@ -80,6 +81,9 @@ router.post(
 router.post(
   '/:userId/language',
   authorization,
+  validate([
+    body('language').isString(),
+  ]),
   userControllers.updateLanguage,
 );
 

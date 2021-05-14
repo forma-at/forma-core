@@ -13,6 +13,7 @@ export class User {
   password: string;
   emailConfirmed: boolean;
   schoolId?: string;
+  language: string;
   createdAt: number;
   updatedAt: number;
 

@@ -44,7 +44,7 @@ class UserService {
   }
 
   // Create a new user account
-  async createAccount(email: string, firstName: string, lastName: string, password: string, isSchoolAdmin: boolean, phone?: string) {
+  async createAccount(email: string, firstName: string, lastName: string, password: string, isSchoolAdmin: boolean, language: string, phone?: string) {
     const erroneousFields: Partial<User> = {};
     const emailError = await this.validateEmailAddress(email);
     if (emailError) erroneousFields.email = emailError;
@@ -56,6 +56,8 @@ class UserService {
     if (lastNameError) erroneousFields.lastName = lastNameError;
     const passwordError = this.validatePassword(password);
     if (passwordError) erroneousFields.password = passwordError;
+    const languageError = this.validateLanguageCode(language);
+    if (languageError) erroneousFields.language = languageError;
     if (Object.keys(erroneousFields).length) {
       throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
@@ -69,6 +71,7 @@ class UserService {
         lastName: lastName,
         password: passwordHashed,
         emailConfirmed: false,
+        language: language,
       });
     }
   }
@@ -150,6 +153,18 @@ class UserService {
     }
   }
 
+  // Update the user's preferred language
+  async updateLanguage(user: User, language: string) {
+    const languageError = this.validateLanguageCode(language);
+    if (languageError) {
+      throw new ValidationException(languageError);
+    } else {
+      return userRepository.update({ id: user.id }, {
+        language: language.trim().toLowerCase(),
+      });
+    }
+  }
+
   // Validate an email address, including checking for usage
   async validateEmailAddress(email: string) {
     const emailInUse = await this.getUserByEmail(email);
@@ -178,6 +193,13 @@ class UserService {
   validateName(name: string) {
     if (validator.isEmpty(name)) {
       return 'The name cannot be empty.';
+    }
+  }
+
+  // Validate a language code
+  validateLanguageCode(language: string) {
+    if (!validator.isLocale(language)) {
+      return 'The language code is invalid.';
     }
   }
 
