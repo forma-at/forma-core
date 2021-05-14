@@ -91,8 +91,9 @@ class UserService {
 
   // Change the password of a user
   async changePassword(user: User, password: string) {
-    if (!validator.isStrongPassword(password, this.PASSWORD_POLICY)) {
-      throw new ValidationException('The password is too weak.');
+    const passwordError = this.validatePassword(password);
+    if (passwordError) {
+      throw new ValidationException(passwordError);
     } else {
       const passwordHashed = await bcrypt.hash(password, 10);
       return userRepository.update({ id: user.id }, {
