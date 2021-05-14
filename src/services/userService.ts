@@ -45,7 +45,7 @@ class UserService {
   }
 
   // Create a new user account
-  async createAccount(email: string, firstName: string, lastName: string, password: string, isSchoolAdmin: boolean, language: string, phone?: string) {
+  async createUser(email: string, firstName: string, lastName: string, password: string, isSchoolAdmin: boolean, language: string, phone?: string) {
     const erroneousFields: Partial<User> = {};
     const emailError = await this.validateEmailAddress(email);
     if (emailError) erroneousFields.email = emailError;
@@ -78,7 +78,7 @@ class UserService {
   }
 
   // Verify a user account with email address
-  async verifyAccount(user: User) {
+  async verifyUser(user: User) {
     if (!user.emailConfirmed) {
       return userRepository.update({ id: user.id }, {
         emailConfirmed: true,
@@ -93,8 +93,8 @@ class UserService {
     return await bcrypt.compare(password, user.password);
   }
 
-  // Change the password of a user
-  async changePassword(user: User, password: string) {
+  // Reset the password of a user
+  async resetPassword(user: User, password: string) {
     const passwordError = this.validatePassword(password);
     if (passwordError) {
       throw new ValidationException(passwordError);

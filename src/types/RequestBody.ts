@@ -7,14 +7,28 @@ export interface ForgotPassword {
   email: string;
 }
 
-export interface CreateAccount {
+export interface ResetPassword {
+  userId: string;
+  code: string;
+  password: string;
+}
+
+export interface CreateUser {
   email: string;
+  phone?: string;
   firstName: string;
   lastName: string;
   password: string;
-  phone?: string;
   isSchoolAdmin: boolean;
   language: string;
+}
+
+export interface DeleteUser {
+  currentPassword: string;
+}
+
+export interface VerifyUser {
+  code: string;
 }
 
 export interface UpdateProfile {
@@ -28,19 +42,6 @@ export interface UpdateProfile {
 
 export interface UpdateLanguage {
   language: string;
-}
-
-export interface DeleteAccount {
-  currentPassword: string;
-}
-
-export interface VerifyAccount {
-  code: string;
-}
-
-export interface ResetPassword {
-  code: string;
-  password: string;
 }
 
 export interface CreateSchool {

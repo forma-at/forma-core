@@ -14,11 +14,21 @@ router.post(
 );
 
 router.post(
-  '/forgotPassword',
+  '/password/forgot',
   validate([
     body('email').isString(),
   ]),
   userControllers.forgotPassword,
+);
+
+router.post(
+  '/password/reset',
+  validate([
+    body('userId').isString(),
+    body('code').isString(),
+    body('password').isString(),
+  ]),
+  userControllers.resetPassword,
 );
 
 router.put(
@@ -32,30 +42,13 @@ router.put(
     body('isSchoolAdmin').isBoolean(),
     body('language').isString(),
   ]),
-  userControllers.createAccount,
-);
-
-router.post(
-  '/:userId/verify',
-  validate([
-    body('code').isString(),
-  ]),
-  userControllers.verifyAccount,
-);
-
-router.post(
-  '/:userId/password/reset',
-  validate([
-    body('code').isString(),
-    body('password').isString(),
-  ]),
-  userControllers.resetPassword,
+  userControllers.createUser,
 );
 
 router.get(
   '/:userId',
   authorization,
-  userControllers.getAccountInfo,
+  userControllers.getUserData,
 );
 
 router.delete(
@@ -64,7 +57,16 @@ router.delete(
   validate([
     body('currentPassword').isString(),
   ]),
-  userControllers.deleteAccount,
+  userControllers.deleteUser,
+);
+
+router.post(
+  '/:userId/verify',
+  authorization,
+  validate([
+    body('code').isString(),
+  ]),
+  userControllers.verifyUser,
 );
 
 router.post(

@@ -3,20 +3,6 @@ import HttpStatusCodes from 'http-status-codes';
 import { userService, expiringCodeService, emailService, abilityService } from '../services';
 import { ValidationException, NotFoundException } from '../exceptions';
 
-export const getAccountInfo = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId } = req.params;
-  try {
-    const user = req.user;
-    if (user.id !== userId) {
-      return next(new NotFoundException('The user was not found.'));
-    } else {
-      return res.status(HttpStatusCodes.OK).json({ user });
-    }
-  } catch (err) {
-    return next(err);
-  }
-};
-
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password }: Body.Authenticate = req.body;
   try {
@@ -57,10 +43,31 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
   }
 };
 
-export const createAccount = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, firstName, lastName, password, phone, isSchoolAdmin, language }: Body.CreateAccount = req.body;
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId, code, password }: Body.ResetPassword = req.body;
   try {
-    const user = await userService.createAccount(email, firstName, lastName, password, isSchoolAdmin, language, phone);
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      return next(new NotFoundException('The user was not found.'));
+    } else {
+      const isCodeValid = await expiringCodeService.checkForgotPasswordCode(userId, code);
+      if (!isCodeValid) {
+        return next(new NotFoundException('The code is invalid or expired.'));
+      } else {
+        await userService.resetPassword(user, password);
+        await emailService.sendEmail(user, 'passwordReset');
+        return res.status(HttpStatusCodes.OK).json({ ok: true });
+      }
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const createUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, firstName, lastName, password, phone, isSchoolAdmin, language }: Body.CreateUser = req.body;
+  try {
+    const user = await userService.createUser(email, firstName, lastName, password, isSchoolAdmin, language, phone);
     const { code } = await expiringCodeService.addEmailVerificationCode(user.id);
     await emailService.sendEmail(user, 'accountCreated', { code });
     const token = await userService.createJWT(user);
@@ -74,17 +81,31 @@ export const createAccount = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
+export const getUserData = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req.params;
-  const { code }: Body.VerifyAccount = req.body;
   try {
     const user = await userService.getUserById(userId);
-    const isCodeValid = await expiringCodeService.checkEmailVerificationCode(userId, code);
-    if (!user || !isCodeValid) {
-      return next(new NotFoundException('The code is invalid or expired.'));
+    if (!user) {
+      return next(new NotFoundException('The user was not found.'));
     } else {
-      await userService.verifyAccount(user);
-      await emailService.sendEmail(user, 'accountVerified');
+      abilityService.assureCan(req.user, 'read', user);
+      return res.status(HttpStatusCodes.OK).json({ ok: true, user });
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req.params;
+  const { currentPassword }: Body.DeleteUser = req.body;
+  try {
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      return next(new NotFoundException('The user was not found.'));
+    } else {
+      abilityService.assureCan(req.user, 'delete', user);
+      await userService.deleteUser(user, currentPassword);
       return res.status(HttpStatusCodes.OK).json({ ok: true });
     }
   } catch (err) {
@@ -92,18 +113,23 @@ export const verifyAccount = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+export const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req.params;
-  const { code, password }: Body.ResetPassword = req.body;
+  const { code }: Body.VerifyUser = req.body;
   try {
     const user = await userService.getUserById(userId);
-    const isCodeValid = await expiringCodeService.checkForgotPasswordCode(userId, code);
-    if (!user || !isCodeValid) {
-      return next(new NotFoundException('The code is invalid or expired.'));
+    if (!user) {
+      return next(new NotFoundException('The user was not found'));
     } else {
-      await userService.changePassword(user, password);
-      await emailService.sendEmail(user, 'passwordReset');
-      return res.status(HttpStatusCodes.OK).json({ ok: true });
+      const isCodeValid = await expiringCodeService.checkEmailVerificationCode(userId, code);
+      if (!isCodeValid) {
+        return next(new NotFoundException('The code is invalid or expired.'));
+      } else {
+        abilityService.assureCan(req.user, 'update', user);
+        const updatedUser = await userService.verifyUser(user);
+        await emailService.sendEmail(user, 'accountVerified');
+        return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
+      }
     }
   } catch (err) {
     return next(err);
@@ -140,23 +166,6 @@ export const updateLanguage = async (req: Request, res: Response, next: NextFunc
       abilityService.assureCan(req.user, 'update', user);
       const updatedUser = await userService.updateLanguage(user, language);
       return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
-    }
-  } catch (err) {
-    return next(err);
-  }
-};
-
-export const deleteAccount = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId } = req.params;
-  const { currentPassword }: Body.DeleteAccount = req.body;
-  try {
-    const user = await userService.getUserById(userId);
-    if (!user) {
-      return next(new NotFoundException('The user was not found.'));
-    } else {
-      abilityService.assureCan(req.user, 'delete', user);
-      await userService.deleteUser(user, currentPassword);
-      return res.status(HttpStatusCodes.OK).json({ ok: true });
     }
   } catch (err) {
     return next(err);
