@@ -57,10 +57,10 @@ class AbilityService {
   }
 
   // Throws ForbiddenException if ability is missing
-  assure(user: User, can: Actions, subject: Subjects) {
-    if (user.ability.cannot(can, subject)) {
-      const defaultReason = `Action '${can}' on subject '${subject}' is forbidden.`;
-      const reason = user.ability.relevantRuleFor(can, subject)?.reason;
+  assureCan(user: User, action: Actions, subject: Subjects) {
+    if (user.ability.cannot(action, subject)) {
+      const defaultReason = `Action '${action}' on subject '${subject}' is forbidden.`;
+      const reason = user.ability.relevantRuleFor(action, subject)?.reason;
       throw new ForbiddenException(reason || defaultReason);
     }
   }

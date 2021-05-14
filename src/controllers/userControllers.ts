@@ -118,7 +118,7 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     if (!user) {
       return next(new NotFoundException('The user was not found.'));
     } else {
-      abilityService.assure(req.user, 'update', user);
+      abilityService.assureCan(req.user, 'update', user);
       const updatedUser = await userService.updateProfile(user, currentPassword, {
         email, phone, firstName, lastName, password
       });
@@ -137,7 +137,7 @@ export const updateLanguage = async (req: Request, res: Response, next: NextFunc
     if (!user) {
       return next(new NotFoundException('The user was not found.'));
     } else {
-      abilityService.assure(req.user, 'update', user);
+      abilityService.assureCan(req.user, 'update', user);
       const updatedUser = await userService.updateLanguage(user, language);
       return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
     }
@@ -154,7 +154,7 @@ export const deleteAccount = async (req: Request, res: Response, next: NextFunct
     if (!user) {
       return next(new NotFoundException('The user was not found.'));
     } else {
-      abilityService.assure(req.user, 'delete', user);
+      abilityService.assureCan(req.user, 'delete', user);
       await userService.deleteUser(user, currentPassword);
       return res.status(HttpStatusCodes.OK).json({ ok: true });
     }

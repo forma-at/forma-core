@@ -6,7 +6,7 @@ import { NotFoundException, ValidationException } from '../exceptions';
 export const createSchool = async (req: Request, res: Response, next: NextFunction) => {
   const { name, description, street, city, zip, state, country }: Body.CreateSchool = req.body;
   try {
-    abilityService.assure(req.user, 'create', 'School');
+    abilityService.assureCan(req.user, 'create', 'School');
     const school = await schoolService.createSchool(name, description, {
       street, city, zip, state, country
     });
@@ -24,7 +24,7 @@ export const getSchoolData = async (req: Request, res: Response, next: NextFunct
     if (!school) {
       return next(new NotFoundException('The school was not found.'));
     } else {
-      abilityService.assure(req.user, 'read', school);
+      abilityService.assureCan(req.user, 'read', school);
       return res.status(HttpStatusCodes.OK).json({ ok: true, school });
     }
   } catch (err) {
@@ -40,7 +40,7 @@ export const updateSchool = async (req: Request, res: Response, next: NextFuncti
     if (!school) {
       return next(new NotFoundException('The school was not found.'));
     } else {
-      abilityService.assure(req.user, 'update', school);
+      abilityService.assureCan(req.user, 'update', school);
       const result = await userService.comparePasswords(req.user, password);
       if (!result) {
         return next(new ValidationException('The password is invalid.'));
