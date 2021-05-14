@@ -74,13 +74,6 @@ export const createAccount = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const deleteAccount = async (req: Request, res: Response, _next: NextFunction) => {
-  console.log('Delete account', req.user.id, req.params.userId);
-  res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-    message: 'This feature is not yet implemented.',
-  });
-};
-
 export const verifyAccount = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req.params;
   const { code }: Body.VerifyAccount = req.body;
@@ -119,7 +112,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
 
 export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req.params;
-  const { email, phone, firstName, lastName, password, currentPassword }: Body.UpdateUser = req.body;
+  const { email, phone, firstName, lastName, password, currentPassword }: Body.UpdateProfile = req.body;
   try {
     const user = await userService.getUserById(userId);
     if (!user) {
@@ -147,6 +140,23 @@ export const updateLanguage = async (req: Request, res: Response, next: NextFunc
       abilityService.assure(req.user, 'update', user);
       const updatedUser = await userService.updateLanguage(user, language);
       return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const deleteAccount = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req.params;
+  const { currentPassword }: Body.DeleteAccount = req.body;
+  try {
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      return next(new NotFoundException('The user was not found.'));
+    } else {
+      abilityService.assure(req.user, 'delete', user);
+      await userService.deleteUser(user, currentPassword);
+      return res.status(HttpStatusCodes.OK).json({ ok: true });
     }
   } catch (err) {
     return next(err);

@@ -4,8 +4,9 @@ import validator from 'validator';
 import { v4 as uuid } from 'uuid';
 import { JWTPayload } from 'Router';
 import { userRepository } from '../repositories';
-import { ValidationException } from '../exceptions';
+import { schoolService } from '../services';
 import { User, School } from '../models';
+import { ValidationException } from '../exceptions';
 
 class UserService {
 
@@ -162,6 +163,19 @@ class UserService {
       return userRepository.update({ id: user.id }, {
         language: language.trim().toLowerCase(),
       });
+    }
+  }
+
+  // Delete a user's account and all their data
+  async deleteUser(user: User, password: string) {
+    const isPasswordCorrect = await this.comparePasswords(user, password);
+    if (!isPasswordCorrect) {
+      throw new ValidationException('The password is incorrect.');
+    } else {
+      if (user.type === 'school') {
+        await schoolService.deleteSchoolById(user.schoolId);
+      }
+      await userRepository.delete({ id: user.id });
     }
   }
 

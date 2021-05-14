@@ -43,6 +43,11 @@ class SchoolService {
     }
   }
 
+  // Delete an existing school by id number
+  async deleteSchoolById(schoolId: string) {
+    await schoolRepository.delete({ id: schoolId });
+  }
+
 }
 
 export const schoolService = new SchoolService();

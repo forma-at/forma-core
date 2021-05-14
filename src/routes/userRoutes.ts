@@ -35,18 +35,6 @@ router.put(
   userControllers.createAccount,
 );
 
-router.get(
-  '/:userId',
-  authorization,
-  userControllers.getAccountInfo,
-);
-
-router.delete(
-  '/:userId',
-  authorization,
-  userControllers.deleteAccount,
-);
-
 router.post(
   '/:userId/verify',
   validate([
@@ -56,7 +44,31 @@ router.post(
 );
 
 router.post(
-  '/:userId/update',
+  '/:userId/password/reset',
+  validate([
+    body('code').isString(),
+    body('password').isString(),
+  ]),
+  userControllers.resetPassword,
+);
+
+router.get(
+  '/:userId',
+  authorization,
+  userControllers.getAccountInfo,
+);
+
+router.delete(
+  '/:userId',
+  authorization,
+  validate([
+    body('currentPassword').isString(),
+  ]),
+  userControllers.deleteAccount,
+);
+
+router.post(
+  '/:userId/profile',
   authorization,
   validate([
     body('email').isString().optional(),
@@ -67,15 +79,6 @@ router.post(
     body('currentPassword').isString(),
   ]),
   userControllers.updateProfile,
-);
-
-router.post(
-  '/:userId/password/reset',
-  validate([
-    body('code').isString(),
-    body('password').isString(),
-  ]),
-  userControllers.resetPassword,
 );
 
 router.post(

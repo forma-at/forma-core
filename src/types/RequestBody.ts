@@ -17,7 +17,7 @@ export interface CreateAccount {
   language: string;
 }
 
-export interface UpdateUser {
+export interface UpdateProfile {
   email?: string;
   phone?: string;
   firstName?: string;
@@ -28,6 +28,10 @@ export interface UpdateUser {
 
 export interface UpdateLanguage {
   language: string;
+}
+
+export interface DeleteAccount {
+  currentPassword: string;
 }
 
 export interface VerifyAccount {
