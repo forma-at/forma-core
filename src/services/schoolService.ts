@@ -26,7 +26,7 @@ class SchoolService {
 
   // Update an existing school
   async updateSchool(school: School, name?: string, description?: string, address?: Address) {
-    if (name.length < 1) {
+    if (typeof name === 'string' && name.length < 1) {
       throw new ValidationException('The school name cannot be left empty.');
     } else {
       return schoolRepository.update({ id: school.id }, {
