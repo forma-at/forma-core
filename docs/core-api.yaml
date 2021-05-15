@@ -50,7 +50,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OkResponseWithToken'
+                $ref: '#/components/schemas/OkResponseWithAuthorization'
         400:
           description: The email address or password is incorrect
           content:
@@ -163,7 +163,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OkResponseWithToken'
+                $ref: '#/components/schemas/OkResponseWithAuthorization'
         400:
           description: Invalid data provided # TODO fix error response
   '/api/user/{userId}':
@@ -367,14 +367,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ok:
-                    $ref: '#/components/schemas/Misc/properties/ok'
-                  school:
-                    $ref: '#/components/schemas/School'
-                  user:
-                    $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/OkResponseWithSchool'
         400:
           description: Invalid data provided # TODO fix error response
   '/api/school/{schoolId}':
@@ -393,12 +386,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ok:
-                    $ref: '#/components/schemas/Misc/properties/ok'
-                  school:
-                    $ref: '#/components/schemas/School'
+                $ref: '#/components/schemas/OkResponseWithSchool'
     post:
       tags:
        - school
@@ -439,12 +427,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ok:
-                    $ref: '#/components/schemas/Misc/properties/ok'
-                  school:
-                    $ref: '#/components/schemas/School'
+                $ref: '#/components/schemas/OkResponseWithSchool'
         400:
           description: Invalid password or invalid data provided # TODO fix error response
 components:
@@ -454,10 +437,6 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    Ok:
-      type: boolean
-      example: true
-      description: Indicates that the action was successful, it is always set to true when present
     User:
       type: object
       properties:
@@ -568,7 +547,7 @@ components:
         ok:
           type: boolean
           example: true
-          description: "Indicates that the action was successful, it is always set to true when present"
+          description: "Always `true` to indicate that the action was successful"
         currentPassword:
           type: string
           example: r0BVP4OOp3838Y6zP6C4
@@ -581,38 +560,36 @@ components:
           type: string
           example: u0680m0a31O5390P31X2
           description: "A code received via email"
+        token:
+          type: string
+          example: eyJhbGciOiJ...98vI6bxl1s94xI
+          description: "Bearer authorization token"
     OkResponse:
       type: object
       properties:
         ok:
-          type: boolean
-          example: true
-    OkResponseWithToken:
+          $ref: '#/components/schemas/Misc/properties/ok'
+    OkResponseWithAuthorization:
       type: object
       properties:
         ok:
-          type: boolean
-          example: true
+          $ref: '#/components/schemas/Misc/properties/ok'
         token:
-          type: string
-          example: eyJhbGciOiJ...98vI6bxl1s94xI
+          $ref: '#/components/schemas/Misc/properties/token'
         userId:
-          type: string
-          example: dba3d8db-ad67-4fd3-b0b3-9c196721c713
+          $ref: '#/components/schemas/User/properties/id'
     OkResponseWithUser:
       type: object
       properties:
         ok:
-          type: boolean
-          example: true
+          $ref: '#/components/schemas/Misc/properties/ok'
         user:
           $ref: '#/components/schemas/User'
     OkResponseWithSchool:
       type: object
       properties:
         ok:
-          type: boolean
-          example: true
+          $ref: '#/components/schemas/Misc/properties/ok'
         school:
           $ref: '#/components/schemas/School'
     ErrorResponse:
