@@ -1,33 +1,40 @@
 openapi: 3.0.1
 info:
-  version: 1.0.0
+  version: 1.1.0
   title: Forma Core API documentation
   description: |
     Documentation for Forma Core API, containing details about authorization, endpoints, request
     and response parameters, as well as request and response samples.
 
     # Authentication
-
     The Forma Core API uses a **bearer** token authorization method using the **JSON Web Token (JWT)**
     format. This means that all requests to endpoints protected with authorization must include
     the `Authorization` request header with a value conforming to the `JWT insert_token` format. Without
-    this token the server will respond with a `401 unauthorized` error. The JWT token can be acquired
+    this token the server will respond with a `401 Unauthorized` error. The JWT token can be acquired
     by authenticating the user at the `GET /api/user/auth` endpoint with email address and password.
     A valid JWT token is also included in the response of a successful account creation.
+
+    ### Authorization
+    The Forma Core API uses [attribute-based access control](https://en.wikipedia.org/wiki/Attribute-based_access_control)
+    through the usage of [CASL](https://casl.js.org/v5/en/guide/intro). When users attempt to access a resource or
+    perform an action that they do not have permission for, the server will automatically respond with a `403 Forbidden`
+    error. With proper front-end implementation of the Forma Core API this error should never be sent to the client.
 
 externalDocs:
   description: View the Forma Core API repository here
   url: https://github.com/Forma-AT/forma-core
 tags:
-  - name: user
-    description: User authentication and management endpoints
-  - name: school
-    description: Create and manage schools
+  - name: Auth
+    description: Authentication and account reset endpoints
+  - name: User
+    description: User management endpoints
+  - name: School
+    description: School management endpoints
 paths:
   '/api/user/auth':
     post:
       tags:
-        - user
+        - Auth
       summary: Authenticate user
       description: Authenticate user with email address and password
       requestBody:
@@ -60,7 +67,7 @@ paths:
   '/api/user/password/forgot':
     post:
       tags:
-        - user
+        - Auth
       summary: Forgot password
       description: Request a password reset code to the email address
       requestBody:
@@ -84,7 +91,7 @@ paths:
   '/api/user/password/reset':
     post:
       tags:
-        - user
+        - Auth
       summary: Reset password
       description: Reset a user's password using the code received via email
       requestBody:
@@ -126,7 +133,7 @@ paths:
   '/api/user':
     put:
       tags:
-        - user
+        - User
       summary: Create user
       description: Create a new user account
       requestBody:
@@ -173,7 +180,7 @@ paths:
   '/api/user/{userId}':
     get:
       tags:
-        - user
+        - User
       summary: Get user
       description: Get a user's detailed information
       security:
@@ -189,7 +196,7 @@ paths:
                 $ref: '#/components/schemas/OkResponseWithUser'
     delete:
       tags:
-        - user
+        - User
       summary: Delete user
       description: Delete a user's account and all associated data
       security:
@@ -223,7 +230,7 @@ paths:
   '/api/user/{userId}/verify':
     post:
       tags:
-        - user
+        - User
       summary: Verify user
       description: Verify a user account with the code received via email
       security:
@@ -247,7 +254,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OkResponse'
+                $ref: '#/components/schemas/OkResponseWithUser'
         404:
           description: The verification code is invalid or expired
           content:
@@ -257,7 +264,7 @@ paths:
   '/api/user/{userId}/profile':
     post:
       tags:
-        - user
+        - User
       summary: Update user profile
       description: Update the user's profile information with the provided fields
       security:
@@ -301,7 +308,7 @@ paths:
   '/api/user/{userId}/language':
     post:
       tags:
-        - user
+        - User
       summary: Update user language
       description: Update the user's preferred language
       security:
@@ -335,7 +342,7 @@ paths:
   '/api/school/':
     put:
       tags:
-        - school
+        - School
       summary: Create school
       description: Create a new school and assign it to a school administrator's account
       security:
@@ -384,7 +391,7 @@ paths:
   '/api/school/{schoolId}':
     get:
       tags:
-        - school
+        - School
       summary: Get school
       description: Get a school's detailed information
       security:
@@ -400,7 +407,7 @@ paths:
                 $ref: '#/components/schemas/OkResponseWithSchool'
     post:
       tags:
-       - school
+       - School
       summary: Update school
       description: Update a school's information with the provided fields
       security:
@@ -571,7 +578,7 @@ components:
         emailCode:
           type: string
           example: u0680m0a31O5390P31X2
-          description: "A code received via email"
+          description: "The code received via email"
         token:
           type: string
           example: eyJhbGciOiJ...98vI6bxl1s94xI
