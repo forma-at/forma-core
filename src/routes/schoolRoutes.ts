@@ -9,12 +9,12 @@ router.put(
   authorization,
   validate([
     body('name').isString(),
-    body('description').isString(),
     body('street').isString(),
     body('city').isString(),
     body('zip').isString(),
     body('state').isString(),
     body('country').isString(),
+    body('description').isString().optional(),
   ]),
   schoolControllers.createSchool,
 );
@@ -30,12 +30,12 @@ router.post(
   authorization,
   validate([
     body('name').isString().optional(),
-    body('description').isString().optional(),
     body('street').isString().optional(),
     body('city').isString().optional(),
     body('zip').isString().optional(),
     body('state').isString().optional(),
     body('country').isString().optional(),
+    body('description').isString().optional(),
   ]),
   schoolControllers.updateSchool,
 );

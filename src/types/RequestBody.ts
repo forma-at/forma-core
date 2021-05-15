@@ -46,20 +46,20 @@ export interface UpdateLanguage {
 
 export interface CreateSchool {
   name: string;
-  description: string;
   street: string;
   city: string;
   zip: string;
   state: string;
   country: string;
+  description?: string;
 }
 
 export interface UpdateSchool {
   name?: string;
-  description?: string;
   street?: string;
   city?: string;
   zip?: string;
   state?: string;
   country?: string;
+  description?: string;
 }

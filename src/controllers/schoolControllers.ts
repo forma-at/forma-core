@@ -4,12 +4,11 @@ import { userService, schoolService, abilityService } from '../services';
 import { NotFoundException } from '../exceptions';
 
 export const createSchool = async (req: Request, res: Response, next: NextFunction) => {
-  const { name, description, street, city, zip, state, country }: Body.CreateSchool = req.body;
+  const { name, street, city, zip, state, country, description }: Body.CreateSchool = req.body;
   try {
     abilityService.assureCan(req.user, 'create', 'School');
-    const school = await schoolService.createSchool(name, description, {
-      street, city, zip, state, country
-    });
+    const address = { street, city, zip, state, country };
+    const school = await schoolService.createSchool(name, address, description);
     await userService.assignSchool(req.user, school);
     return res.status(HttpStatusCodes.CREATED).json({ ok: true, school });
   } catch (err) {
@@ -34,16 +33,15 @@ export const getSchoolData = async (req: Request, res: Response, next: NextFunct
 
 export const updateSchool = async (req: Request, res: Response, next: NextFunction) => {
   const { schoolId } = req.params;
-  const { name, description, street, city, zip, state, country }: Body.UpdateSchool = req.body;
+  const { name, street, city, zip, state, country, description }: Body.UpdateSchool = req.body;
   try {
     const school = await schoolService.getSchoolById(schoolId);
     if (!school) {
       return next(new NotFoundException('The school was not found.'));
     } else {
       abilityService.assureCan(req.user, 'update', school);
-      const updatedSchool = await schoolService.updateSchool(school, name, description, {
-        street, city, zip, state, country
-      });
+      const address = { street, city, zip, state, country };
+      const updatedSchool = await schoolService.updateSchool(school, name, address, description);
       return res.status(HttpStatusCodes.OK).json({ ok: true, school: updatedSchool });
     }
   } catch (err) {

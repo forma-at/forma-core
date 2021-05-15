@@ -10,8 +10,8 @@ export class School {
 
   id: string;
   name: string;
-  description: string;
   address: Address;
+  description?: string;
   createdAt: number;
   updatedAt: number;
 

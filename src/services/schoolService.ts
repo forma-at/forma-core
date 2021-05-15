@@ -12,12 +12,10 @@ class SchoolService {
   }
 
   // Create a new school
-  async createSchool(name: string, description: string, address: Address) {
+  async createSchool(name: string, address: Address, description?: string) {
     const erroneousFields: Partial<School & Address> = {};
     const nameError = this.validateField(name);
     if (nameError) erroneousFields.name = nameError;
-    const descriptionError = this.validateField(description);
-    if (descriptionError) erroneousFields.description = descriptionError;
     const streetError = this.validateField(address.street);
     if (streetError) erroneousFields.street = streetError;
     const cityError = this.validateField(address.city);
@@ -28,28 +26,28 @@ class SchoolService {
     if (stateError) erroneousFields.state = stateError;
     const countryError = this.validateField(address.country);
     if (countryError) erroneousFields.country = countryError;
+    if (typeof description === 'string' && description !== '') {
+      const descriptionError = this.validateField(description);
+      if (descriptionError) erroneousFields.description = descriptionError;
+    }
     if (Object.keys(erroneousFields).length) {
       throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
       return schoolRepository.create({
         id: uuid(),
         name,
-        description,
         address,
+        description: description || null,
       });
     }
   }
 
   // Update an existing school
-  async updateSchool(school: School, name?: string, description?: string, address?: Address) {
+  async updateSchool(school: School, name?: string, address?: Address, description?: string) {
     const erroneousFields: Partial<School & Address> = {};
     if (typeof name === 'string') {
       const nameError = this.validateField(name);
       if (nameError) erroneousFields.name = nameError;
-    }
-    if (typeof description === 'string') {
-      const descriptionError = this.validateField(description);
-      if (descriptionError) erroneousFields.description = descriptionError;
     }
     if (typeof address.street === 'string') {
       const streetError = this.validateField(address.street);
@@ -71,19 +69,23 @@ class SchoolService {
       const countryError = this.validateField(address.country);
       if (countryError) erroneousFields.country = countryError;
     }
+    if (typeof description === 'string' && description !== '') {
+      const descriptionError = this.validateField(description);
+      if (descriptionError) erroneousFields.description = descriptionError;
+    }
     if (Object.keys(erroneousFields).length) {
       throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
       return schoolRepository.update({ id: school.id }, {
         name: name ?? school.name,
-        description: description ?? school.description,
         address: {
           street: address.street ?? school.address.street,
           city: address.city ?? school.address.city,
           zip: address.zip ?? school.address.zip,
           state: address.state ?? school.address.state,
-          country: address.street ?? school.address.country,
+          country: address.country ?? school.address.country,
         },
+        description: description === '' ? null : description ?? school.description,
       });
     }
   }

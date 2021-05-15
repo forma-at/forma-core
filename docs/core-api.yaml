@@ -348,7 +348,6 @@ paths:
               type: object
               required:
                 - name
-                - description
                 - street
                 - city
                 - zip
@@ -515,6 +514,7 @@ components:
           description: "The name of the school"
         description:
           type: string
+          nullable: true
           example: |
             Metropolia's new Developer Campus for Smart Solutions in Karamalmi, Espoo was opened
             in August 2019. On the ICT Campus people are number one, not zero. The Campus has good
