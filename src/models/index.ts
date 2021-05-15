@@ -1,3 +1,3 @@
-export * from './User';
-export * from './School';
 export * from './ExpiringCode';
+export * from './School';
+export * from './User';
