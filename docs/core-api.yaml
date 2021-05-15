@@ -1,0 +1,553 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: Forma Core API documentation
+  description: |
+    Documentation for Forma Core API, containing details about authorization, endpoints, request
+    and response parameters, as well as request and response samples.
+
+    # Authentication
+
+    The Forma Core API uses a **bearer** token authorization method using the **JSON Web Token (JWT)**
+    format. This means that all requests to endpoints protected with authorization must include
+    the `Authorization` request header with a value conforming to the `JWT insert_token` format. Without
+    this token the server will respond with a `401 unauthorized` error. The JWT token can be acquired
+    by authenticating the user at the `GET /api/user/auth` endpoint with email address and password.
+    A valid JWT token is also included in the response of a successful account creation.
+
+externalDocs:
+  description: View the Forma Core API repository here
+  url: https://github.com/Forma-AT/forma-core
+tags:
+  - name: user
+    description: User authentication and management endpoints
+  - name: school
+    description: Create and manage schools
+paths:
+  '/api/user/auth':
+    post:
+      tags:
+        - user
+      summary: Authenticate user
+      description: Authenticate user with email address and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  example: tHz421%8dv3}!_bVC63M
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithToken'
+        '400':
+          description: The email address or password is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/api/user/forgotPassword':
+    post:
+      tags:
+        - user
+      summary: Forgot password
+      description: Request a password reset code to the email address
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+      responses:
+        '200':
+          description: A password reset code has been sent to the email address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+  '/api/user':
+    put:
+      tags:
+        - user
+      summary: Create a new account
+      description: Create a new account with email address, first name, last name and passsword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - firstName
+                - lastName
+                - password
+              properties:
+                email:
+                  type: string
+                  example: johndoe@example.com
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Doe
+                password:
+                  type: string
+                  example: tHz421%8dv3}!_bVC63M
+      responses:
+        '201':
+          description: User account creation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithToken'
+        '400':
+          description: The password is too weak, or the email is invalid or in use already
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/api/user/{userId}':
+    get:
+      tags:
+        - user
+      summary: Get user data
+      description: Get information about the user, such as email address or name
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: User data retreived
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithUser'
+        '401':
+          description: Authorization token invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: The user was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/api/user/{userId}/verify':
+    post:
+      tags:
+        - user
+      summary: Verify account
+      description: Verify a user account with the code received via email
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+                  example: HEsK1YBaB57Lw0NxqoM24
+      responses:
+        '200':
+          description: Account verification successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        '404':
+          description: The verification code is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/api/user/{userId}/password/reset':
+    post:
+      tags:
+        - user
+      summary: Reset password
+      description: Reset the user's password using the code received via email
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+                - password
+              properties:
+                code:
+                  type: string
+                  example: 'cnffAF07MxuPkchQHlsOL'
+                password:
+                  type: string
+                  example: 'SU}{hF70c,)^6w@DKR^7'
+      responses:
+        '200':
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        '400':
+          description: The provided password is too weak
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: The reset code is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/api/school/':
+    put:
+      tags:
+        - school
+      summary: Create school
+      description: Create a new school and assign it to a school administrator's account
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - description
+                - street
+                - city
+                - zip
+                - state
+                - country
+              properties:
+                name:
+                  $ref: '#/components/schemas/School/properties/name'
+                description:
+                  $ref: '#/components/schemas/School/properties/description'
+                street:
+                  $ref: '#/components/schemas/School/properties/address/properties/street'
+                city:
+                  $ref: '#/components/schemas/School/properties/address/properties/city'
+                zip:
+                  $ref: '#/components/schemas/School/properties/address/properties/zip'
+                state:
+                  $ref: '#/components/schemas/School/properties/address/properties/state'
+                country:
+                  $ref: '#/components/schemas/School/properties/address/properties/country'
+      responses:
+        201:
+          description: School created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    $ref: '#/components/schemas/Ok'
+                  school:
+                    $ref: '#/components/schemas/School'
+                  user:
+                    $ref: '#/components/schemas/User'
+        400:
+          description: Invalid data provided
+  '/api/school/{schoolId}':
+    get:
+      tags:
+        - school
+      summary: Get school
+      description: Get a school's detailed information
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+      responses:
+        200:
+          description: School data retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    $ref: '#/components/schemas/Ok'
+                  school:
+                    $ref: '#/components/schemas/School'
+    post:
+      tags:
+       - school
+      summary: Update school
+      description: Update a school's information with the provided fields
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentPassword
+              properties:
+                currentPassword:
+                  type: string
+                  example: 8D594nut453SP5npD3Dp
+                  description: The password of the school's administrator
+                name:
+                  $ref: '#/components/schemas/School/properties/name'
+                description:
+                  $ref: '#/components/schemas/School/properties/description'
+                street:
+                  $ref: '#/components/schemas/School/properties/address/properties/street'
+                city:
+                  $ref: '#/components/schemas/School/properties/address/properties/city'
+                zip:
+                  $ref: '#/components/schemas/School/properties/address/properties/zip'
+                state:
+                  $ref: '#/components/schemas/School/properties/address/properties/state'
+                country:
+                  $ref: '#/components/schemas/School/properties/address/properties/country'
+      responses:
+        200:
+          description: School updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    $ref: '#/components/schemas/Ok'
+                  school:
+                    $ref: '#/components/schemas/School'
+        400:
+          description: Invalid password or invalid data provided
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Ok:
+      type: boolean
+      example: true
+      description: Indicates that the action was successful, it is always set to true when present
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1f3a85df-3f1a-4dff-bfa9-d43868e4a54c
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the user"
+        type:
+          type: string
+          example: school
+          description: "The type of the user's account, can be `school` or `teacher`"
+        email:
+          type: string
+          example: john.doe@example.com
+          description: "The user's email address in [E.123](https://en.wikipedia.org/wiki/E.123) format"
+        phone:
+          type: string
+          nullable: true
+          example: "+32460131530"
+          description: "**Optional**. The user's phone number in [E.123](https://en.wikipedia.org/wiki/E.123) **international notation** and **without spaces**"
+        firstName:
+          type: string
+          example: John
+          description: "The first name of the user"
+        lastName:
+          type: string
+          example: Doe
+          description: "The last name of the user"
+        password:
+          type: string
+          example: $2b$10$/CsmuB3L8HZ/TxffTe5shOrHyw.7Po4FN/1cxc9Hhmwq4JjGpI2Iy
+          description: "The hashed password of the user"
+        emailConfirmed:
+          type: boolean
+          example: true
+          description: "The status of the user's email address confirmation"
+        schoolId:
+          type: string
+          nullable: true
+          example: bea1828d-0832-4588-a449-cd84b8c6bb60
+          description: "**Optional**. The id of the school the user owns, if they are of the user type `school`"
+        language:
+          type: string
+          example: en
+          description: "The user's preferred language, **must** be in [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format"
+        createdAt:
+          type: number
+          example: 1621065270077
+          description: "The date of the user's creation in milliseconds"
+        updatedAt:
+          type: number
+          example: 1621065390465
+          description: "The date of the user's last update in milliseconds"
+    School:
+      type: object
+      properties:
+        id:
+          type: string
+          example: bea1828d-0832-4588-a449-cd84b8c6bb60
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the school"
+        name:
+          type: string
+          example: Helsinki Metropolia University of Applied Sciences
+          description: "The name of the school"
+        description:
+          type: string
+          example: |
+            Metropolia's new Developer Campus for Smart Solutions in Karamalmi, Espoo was opened
+            in August 2019. On the ICT Campus people are number one, not zero. The Campus has good
+            connections to companies and abroad. The mission is to create solutions for tomorrow with
+            the help of smart technologies and process leadership.
+          description: "The description of the school, such as the substitution policy"
+        address:
+          type: object
+          description: "The address of the school"
+          properties:
+            street:
+              type: string
+              example: Karaportti 2
+              description: "The `street` part of the school's address"
+            city:
+              type: string
+              example: Espoo
+              description: "The `city` part of the school's address"
+            zip:
+              type: string
+              example: '02610'
+              description: "The `zip` part of the school's address"
+            state:
+              type: string
+              example: Uusimaa
+              description: "The `state` part of the school's address"
+            country:
+              type: string
+              example: Finland
+              description: "The `country` part of the school's address"
+        createdAt:
+          type: number
+          example: 1621065270077
+          description: "The date of the school's creation in milliseconds"
+        updatedAt:
+          type: number
+          example: 1621065390465
+          description: "The date of the school's last update in milliseconds"
+    OkResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+    OkResponseWithToken:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        token:
+          type: string
+          example: eyJhbGciOiJ...98vI6bxl1s94xI
+        userId:
+          type: string
+          example: dba3d8db-ad67-4fd3-b0b3-9c196721c713
+    OkResponseWithUser:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        user:
+          $ref: '#/components/schemas/User'
+    OkResponseWithSchool:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        school:
+          $ref: '#/components/schemas/School'
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    ErrorResponseWithDetails:
+      type: object
+      properties:
+        message:
+          type: string
+        details:
+          type: object
+  parameters:
+    userId:
+      in: path
+      name: userId
+      required: true
+      schema:
+        $ref: '#/components/schemas/User/properties/id'
+    schoolId:
+      in: path
+      name: schoolId
+      required: true
+      schema:
+        $ref: '#/components/schemas/School/properties/id'
+  responses:
+    UnauthorizedResponse:
+      description: Unauthorized - the user must be logged in to perform this action
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ForbiddenResponse:
+      description: Forbidden - the user is not allowed to perform this action
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFoundResponse:
+      description: Not found - the requested resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerErrorResponse:
+      description: Internal server error - something unexpected has gone wrong
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
