@@ -6,8 +6,8 @@ import { ValidationException } from '../exceptions';
 class SchoolService {
 
   // Get a school by id number
-  async getSchoolById(id: string) {
-    return schoolRepository.findOne({ id });
+  async getSchoolById(schoolId: string) {
+    return schoolRepository.findOne({ id: schoolId });
   }
 
   // Create a new school

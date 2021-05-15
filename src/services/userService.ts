@@ -74,7 +74,7 @@ class UserService {
         lastName: lastName,
         password: passwordHashed,
         emailConfirmed: false,
-        language: language,
+        language: language.toLowerCase(),
       });
     }
   }
@@ -110,9 +110,13 @@ class UserService {
 
   // Assign a school to a user
   async assignSchool(user: User, school: School) {
-    return userRepository.update({ id: user.id }, {
-      schoolId: school.id,
-    });
+    if (user.type === 'school') {
+      return userRepository.update({ id: user.id }, {
+        schoolId: school.id,
+      });
+    } else {
+      return user;
+    }
   }
 
   // Update a user's profile data
@@ -163,7 +167,7 @@ class UserService {
       throw new ValidationException(languageError);
     } else {
       return userRepository.update({ id: user.id }, {
-        language: language.trim().toLowerCase(),
+        language: language.toLowerCase(),
       });
     }
   }

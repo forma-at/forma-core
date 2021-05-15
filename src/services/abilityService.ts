@@ -29,17 +29,17 @@ class AbilityService {
       if (!user.schoolId) {
         can('create', 'School');
         cannot(['update', 'delete'], 'School')
-          .because('Managing a non-existent school is not allowed.');
+          .because('You cannot manage your school before you create it.');
       } else {
         can(['update', 'delete'], 'School', { id: { $eq: user.schoolId } });
         cannot('create', 'School')
-          .because('Creating more than one school is not allowed.');
+          .because('You cannot create more than one school.');
       }
       cannot(['create', 'update', 'delete'], 'School', { id: { $ne: user.schoolId } })
-        .because('Managing another school is not allowed.');
+        .because('You cannot manage a school you do not own.');
     } else {
       cannot(['create', 'update', 'delete'], 'School')
-        .because('Managing schools with a teacher account is not allowed.');
+        .because('You cannot manage schools with a teacher account.');
     }
 
     return build();
@@ -59,7 +59,8 @@ class AbilityService {
   // Throws ForbiddenException if ability is missing
   assureCan(user: User, action: Actions, subject: Subjects) {
     if (user.ability.cannot(action, subject)) {
-      const defaultReason = `Action '${action}' on subject '${subject}' is forbidden.`;
+      const subjectName = typeof subject === 'object' ? subject.constructor.name : String(subject);
+      const defaultReason = `You cannot perform action '${action}' on subject '${subjectName}'.`;
       const reason = user.ability.relevantRuleFor(action, subject)?.reason;
       throw new ForbiddenException(reason || defaultReason);
     }
