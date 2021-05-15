@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid';
+import validator from 'validator';
 import { schoolRepository } from '../repositories';
 import { School, Address } from '../models';
 import { ValidationException } from '../exceptions';
@@ -12,8 +13,23 @@ class SchoolService {
 
   // Create a new school
   async createSchool(name: string, description: string, address: Address) {
-    if (name.length < 1) {
-      throw new ValidationException('The school name cannot be left empty.');
+    const erroneousFields: Partial<School & Address> = {};
+    const nameError = this.validateField(name);
+    if (nameError) erroneousFields.name = nameError;
+    const descriptionError = this.validateField(description);
+    if (descriptionError) erroneousFields.description = descriptionError;
+    const streetError = this.validateField(address.street);
+    if (streetError) erroneousFields.street = streetError;
+    const cityError = this.validateField(address.city);
+    if (cityError) erroneousFields.city = cityError;
+    const zipError = this.validateField(address.zip);
+    if (zipError) erroneousFields.zip = zipError;
+    const stateError = this.validateField(address.state);
+    if (stateError) erroneousFields.state = stateError;
+    const countryError = this.validateField(address.country);
+    if (countryError) erroneousFields.country = countryError;
+    if (Object.keys(erroneousFields).length) {
+      throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
       return schoolRepository.create({
         id: uuid(),
@@ -26,8 +42,37 @@ class SchoolService {
 
   // Update an existing school
   async updateSchool(school: School, name?: string, description?: string, address?: Address) {
-    if (typeof name === 'string' && name.length < 1) {
-      throw new ValidationException('The school name cannot be left empty.');
+    const erroneousFields: Partial<School & Address> = {};
+    if (typeof name === 'string') {
+      const nameError = this.validateField(name);
+      if (nameError) erroneousFields.name = nameError;
+    }
+    if (typeof description === 'string') {
+      const descriptionError = this.validateField(description);
+      if (descriptionError) erroneousFields.description = descriptionError;
+    }
+    if (typeof address.street === 'string') {
+      const streetError = this.validateField(address.street);
+      if (streetError) erroneousFields.street = streetError;
+    }
+    if (typeof address.city === 'string') {
+      const cityError = this.validateField(address.city);
+      if (cityError) erroneousFields.city = cityError;
+    }
+    if (typeof address.zip === 'string') {
+      const zipError = this.validateField(address.zip);
+      if (zipError) erroneousFields.zip = zipError;
+    }
+    if (typeof address.state === 'string') {
+      const stateError = this.validateField(address.state);
+      if (stateError) erroneousFields.state = stateError;
+    }
+    if (typeof address.country === 'string') {
+      const countryError = this.validateField(address.country);
+      if (countryError) erroneousFields.country = countryError;
+    }
+    if (Object.keys(erroneousFields).length) {
+      throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
       return schoolRepository.update({ id: school.id }, {
         name: name ?? school.name,
@@ -46,6 +91,13 @@ class SchoolService {
   // Delete an existing school by id number
   async deleteSchoolById(schoolId: string) {
     await schoolRepository.delete({ id: schoolId });
+  }
+
+  // Validate a field
+  validateField(field: string) {
+    if (validator.isEmpty(field)) {
+      return 'The field cannot be left empty.';
+    }
   }
 
 }
