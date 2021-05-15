@@ -11,7 +11,7 @@ export const createSchool = async (req: Request, res: Response, next: NextFuncti
       street, city, zip, state, country
     });
     await userService.assignSchool(req.user, school);
-    return res.status(HttpStatusCodes.OK).json({ ok: true, school });
+    return res.status(HttpStatusCodes.CREATED).json({ ok: true, school });
   } catch (err) {
     return next(err);
   }

@@ -26,7 +26,7 @@ router.get(
 );
 
 router.post(
-  '/:schoolId/update',
+  '/:schoolId',
   authorization,
   validate([
     body('name').isString().optional(),
