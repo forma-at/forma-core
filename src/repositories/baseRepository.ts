@@ -46,6 +46,11 @@ export abstract class BaseRepository<T> {
     return new this.entity(result.value);
   }
 
+  // Delete entity
+  async delete(filter: FilterQuery<T>): Promise<void> {
+    await this.db().deleteOne(filter);
+  }
+
   // Find one entry in the collection
   async findOne(filter: FilterQuery<T>): Promise<T | void> {
     const result = await this.db().findOne(filter);

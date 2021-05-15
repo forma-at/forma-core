@@ -1,2 +1,3 @@
-export { expiringCodeRepository } from './expiringCodeRepository';
-export { userRepository } from './userRepository';
+export * from './expiringCodeRepository';
+export * from './schoolRepository';
+export * from './userRepository';

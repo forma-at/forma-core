@@ -4,7 +4,7 @@ import { HttpException } from './HttpException';
 
 export class ValidationException extends HttpException {
 
-  constructor(message: string, details?: ValidationError[]) {
+  constructor(message: string, details?: ValidationError[] | Object) {
     super(HttpStatusCodes.BAD_REQUEST, message || 'Request validation has failed.', details);
   }
 

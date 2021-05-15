@@ -14,11 +14,21 @@ router.post(
 );
 
 router.post(
-  '/forgotPassword',
+  '/password/forgot',
   validate([
     body('email').isString(),
   ]),
   userControllers.forgotPassword,
+);
+
+router.post(
+  '/password/reset',
+  validate([
+    body('userId').isString(),
+    body('code').isString(),
+    body('password').isString(),
+  ]),
+  userControllers.resetPassword,
 );
 
 router.put(
@@ -28,54 +38,57 @@ router.put(
     body('firstName').isString(),
     body('lastName').isString(),
     body('password').isString(),
+    body('phone').isString().optional(),
+    body('isSchoolAdmin').isBoolean(),
+    body('language').isString(),
   ]),
-  userControllers.createAccount,
+  userControllers.createUser,
 );
 
 router.get(
   '/:userId',
   authorization,
-  userControllers.getAccountInfo,
+  userControllers.getUserData,
 );
 
 router.delete(
   '/:userId',
   authorization,
-  userControllers.deleteAccount,
+  validate([
+    body('currentPassword').isString(),
+  ]),
+  userControllers.deleteUser,
 );
 
 router.post(
   '/:userId/verify',
-  validate([
-    body('code').isString(),
-  ]),
-  userControllers.verifyAccount,
-);
-
-router.post(
-  '/:userId/password',
   authorization,
-  userControllers.updatePassword,
-);
-
-router.post(
-  '/:userId/password/reset',
   validate([
     body('code').isString(),
-    body('password').isString(),
   ]),
-  userControllers.resetPassword,
+  userControllers.verifyUser,
 );
 
 router.post(
   '/:userId/profile',
   authorization,
+  validate([
+    body('email').isString().optional(),
+    body('phone').isString().optional(),
+    body('firstName').isString().optional(),
+    body('lastName').isString().optional(),
+    body('password').isString().optional(),
+    body('currentPassword').isString(),
+  ]),
   userControllers.updateProfile,
 );
 
 router.post(
   '/:userId/language',
   authorization,
+  validate([
+    body('language').isString(),
+  ]),
   userControllers.updateLanguage,
 );
 

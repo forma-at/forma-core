@@ -4,8 +4,9 @@ import validator from 'validator';
 import { v4 as uuid } from 'uuid';
 import { JWTPayload } from 'Router';
 import { userRepository } from '../repositories';
+import { schoolService } from '../services';
+import { User, School } from '../models';
 import { ValidationException } from '../exceptions';
-import { User } from '../models';
 
 class UserService {
 
@@ -19,13 +20,13 @@ class UserService {
   };
 
   // Get a user by id number
-  async getUserById(id: string) {
-    return userRepository.getUserById(id);
+  async getUserById(userId: string) {
+    return userRepository.findOne({ id: userId });
   }
 
   // Get a user by email address
   async getUserByEmail(email: string) {
-    return userRepository.getUserByEmail(email);
+    return userRepository.findOne({ email });
   }
 
   // Create a JsonWebToken for a user
@@ -44,29 +45,42 @@ class UserService {
   }
 
   // Create a new user account
-  async createAccount(email: string, firstName: string, lastName: string, password: string) {
-    const emailInUse = await userRepository.getUserByEmail(email);
-    if (emailInUse) {
-      throw new ValidationException('This email address is already in use.');
-    } else if (!validator.isEmail(email)) {
-      throw new ValidationException('The email address is invalid.')
-    } else if (!validator.isStrongPassword(password, this.PASSWORD_POLICY)) {
-      throw new ValidationException('The password is too weak.');
+  async createUser(email: string, firstName: string, lastName: string, password: string, isSchoolAdmin: boolean, language: string, phone?: string) {
+    const erroneousFields: Partial<User> = {};
+    const emailError = await this.validateEmailAddress(email);
+    if (emailError) erroneousFields.email = emailError;
+    const firstNameError = this.validateName(firstName);
+    if (firstNameError) erroneousFields.firstName = firstNameError;
+    const lastNameError = this.validateName(lastName);
+    if (lastNameError) erroneousFields.lastName = lastNameError;
+    const passwordError = this.validatePassword(password);
+    if (passwordError) erroneousFields.password = passwordError;
+    const languageError = this.validateLanguageCode(language);
+    if (languageError) erroneousFields.language = languageError;
+    if (typeof phone === 'string' && phone !== '') {
+      const phoneError = this.validateMobilePhone(phone);
+      if (phoneError) erroneousFields.phone = phoneError;
+    }
+    if (Object.keys(erroneousFields).length) {
+      throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
       const passwordHashed = await bcrypt.hash(password, 10);
       return userRepository.create({
         id: uuid(),
+        type: isSchoolAdmin ? 'school' : 'teacher',
         email: email,
+        phone: phone || null,
         firstName: firstName,
         lastName: lastName,
         password: passwordHashed,
         emailConfirmed: false,
+        language: language.toLowerCase(),
       });
     }
   }
 
   // Verify a user account with email address
-  async verifyAccount(user: User) {
+  async verifyUser(user: User) {
     if (!user.emailConfirmed) {
       return userRepository.update({ id: user.id }, {
         emailConfirmed: true,
@@ -81,15 +95,131 @@ class UserService {
     return await bcrypt.compare(password, user.password);
   }
 
-  // Change the password of a user
-  async changePassword(user: User, password: string) {
-    if (!validator.isStrongPassword(password, this.PASSWORD_POLICY)) {
-      throw new ValidationException('The password is too weak.');
+  // Reset the password of a user
+  async resetPassword(user: User, password: string) {
+    const passwordError = this.validatePassword(password);
+    if (passwordError) {
+      throw new ValidationException(passwordError);
     } else {
       const passwordHashed = await bcrypt.hash(password, 10);
       return userRepository.update({ id: user.id }, {
         password: passwordHashed,
       });
+    }
+  }
+
+  // Assign a school to a user
+  async assignSchool(user: User, school: School) {
+    if (user.type === 'school') {
+      return userRepository.update({ id: user.id }, {
+        schoolId: school.id,
+      });
+    } else {
+      return user;
+    }
+  }
+
+  // Update a user's profile data
+  async updateProfile(user: User, password: string, data: Partial<User>) {
+    const erroneousFields: Partial<User & { currentPassword: string }> = {};
+    const isPasswordCorrect = await this.comparePasswords(user, password);
+    if (!isPasswordCorrect) {
+      erroneousFields.currentPassword = 'The password is incorrect.';
+    }
+    if (typeof data.email === 'string' && data.email !== user.email) {
+      const emailError = await this.validateEmailAddress(data.email);
+      if (emailError) erroneousFields.email = emailError;
+    }
+    if (typeof data.firstName === 'string') {
+      const firstNameError = this.validateName(data.firstName);
+      if (firstNameError) erroneousFields.firstName = firstNameError;
+    }
+    if (typeof data.lastName === 'string') {
+      const lastNameError = this.validateName(data.lastName);
+      if (lastNameError) erroneousFields.lastName = lastNameError;
+    }
+    if (typeof data.password === 'string') {
+      const passwordError = this.validatePassword(data.password);
+      if (passwordError) erroneousFields.password = passwordError;
+      if (!passwordError) data.password = await bcrypt.hash(data.password, 10);
+    }
+    if (typeof data.phone === 'string' && data.phone !== '') {
+      const phoneError = this.validateMobilePhone(data.phone)
+      if (phoneError) erroneousFields.phone = phoneError;
+    }
+    if (Object.keys(erroneousFields).length) {
+      throw new ValidationException('The provided data is invalid.', erroneousFields);
+    } else {
+      return userRepository.update({ id: user.id }, {
+        email: data.email ?? user.email,
+        firstName: data.firstName ?? user.firstName,
+        lastName: data.lastName ?? user.lastName,
+        password: data.password ?? user.password,
+        phone: data.phone === '' ? null : data.phone ?? user.phone,
+      });
+    }
+  }
+
+  // Update the user's preferred language
+  async updateLanguage(user: User, language: string) {
+    const languageError = this.validateLanguageCode(language);
+    if (languageError) {
+      throw new ValidationException(languageError);
+    } else {
+      return userRepository.update({ id: user.id }, {
+        language: language.toLowerCase(),
+      });
+    }
+  }
+
+  // Delete a user's account and all their data
+  async deleteUser(user: User, password: string) {
+    const isPasswordCorrect = await this.comparePasswords(user, password);
+    if (!isPasswordCorrect) {
+      throw new ValidationException('The password is incorrect.');
+    } else {
+      if (user.type === 'school') {
+        await schoolService.deleteSchoolById(user.schoolId);
+      }
+      await userRepository.delete({ id: user.id });
+    }
+  }
+
+  // Validate an email address, including checking for usage
+  async validateEmailAddress(email: string) {
+    const emailInUse = await this.getUserByEmail(email);
+    if (emailInUse) {
+      return 'This email address is already in use.';
+    } else if (!validator.isEmail(email)) {
+      return 'The email address is invalid.';
+    }
+  }
+
+  // Validate a mobile phone number
+  validateMobilePhone(phone: string) {
+    if (!validator.isMobilePhone(phone, 'any', { strictMode: true })) {
+      return 'The mobile phone number is invalid.';
+    }
+  }
+
+  // Validate a password using the password policy
+  validatePassword(password: string) {
+    if (!validator.isStrongPassword(password, this.PASSWORD_POLICY)) {
+      return 'The password is too weak.';
+    }
+  }
+
+  // Validate a name
+  validateName(name: string) {
+    if (validator.isEmpty(name)) {
+      return 'The name cannot be empty.';
+    }
+  }
+
+  // Validate a language code
+  validateLanguageCode(language: string) {
+    if (!validator.isLocale(language)) {
+      return 'The language code is invalid.';
     }
   }
 

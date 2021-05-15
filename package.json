@@ -1,6 +1,6 @@
 {
   "name": "forma-core",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Forma RESTful API service",
   "private": true,
   "license": "UNLICENSED",
@@ -12,10 +12,11 @@
     "watch-deploy": "nodemon dist/server.js",
     "watch-build": "tsc -w",
     "postinstall": "npm run build",
-    "api": "npx -y redoc-cli serve api/core-api.yml",
-    "api:dev": "npx -y redoc-cli serve api/core-api.yml --watch"
+    "api": "npx -y redoc-cli serve docs/core-api.yaml",
+    "api:dev": "npx -y redoc-cli serve docs/core-api.yaml --watch"
   },
   "dependencies": {
+    "@casl/ability": "^5.3.1",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",

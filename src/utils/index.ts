@@ -1,1 +1,1 @@
-export { databaseClient } from './databaseClient';
+export * from './databaseClient';
