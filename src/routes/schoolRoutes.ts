@@ -36,7 +36,7 @@ router.post(
     body('zip').isString().optional(),
     body('state').isString().optional(),
     body('country').isString().optional(),
-    body('password').isString(),
+    body('currentPassword').isString(),
   ]),
   schoolControllers.updateSchool,
 );

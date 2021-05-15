@@ -62,5 +62,5 @@ export interface UpdateSchool {
   zip?: string;
   state?: string;
   country?: string;
-  password: string;
+  currentPassword: string;
 }

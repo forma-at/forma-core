@@ -34,14 +34,14 @@ export const getSchoolData = async (req: Request, res: Response, next: NextFunct
 
 export const updateSchool = async (req: Request, res: Response, next: NextFunction) => {
   const { schoolId } = req.params;
-  const { password, name, description, street, city, zip, state, country }: Body.UpdateSchool = req.body;
+  const { name, description, street, city, zip, state, country, currentPassword }: Body.UpdateSchool = req.body;
   try {
     const school = await schoolService.getSchoolById(schoolId);
     if (!school) {
       return next(new NotFoundException('The school was not found.'));
     } else {
       abilityService.assureCan(req.user, 'update', school);
-      const result = await userService.comparePasswords(req.user, password);
+      const result = await userService.comparePasswords(req.user, currentPassword);
       if (!result) {
         return next(new ValidationException('The password is invalid.'));
       } else {
