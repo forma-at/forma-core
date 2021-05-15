@@ -49,8 +49,6 @@ class UserService {
     const erroneousFields: Partial<User> = {};
     const emailError = await this.validateEmailAddress(email);
     if (emailError) erroneousFields.email = emailError;
-    const phoneError = this.validateMobilePhone(phone);
-    if (phoneError) erroneousFields.phone = phoneError;
     const firstNameError = this.validateName(firstName);
     if (firstNameError) erroneousFields.firstName = firstNameError;
     const lastNameError = this.validateName(lastName);
@@ -59,6 +57,10 @@ class UserService {
     if (passwordError) erroneousFields.password = passwordError;
     const languageError = this.validateLanguageCode(language);
     if (languageError) erroneousFields.language = languageError;
+    if (typeof phone === 'string' && phone !== '') {
+      const phoneError = this.validateMobilePhone(phone);
+      if (phoneError) erroneousFields.phone = phoneError;
+    }
     if (Object.keys(erroneousFields).length) {
       throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
@@ -67,7 +69,7 @@ class UserService {
         id: uuid(),
         type: isSchoolAdmin ? 'school' : 'teacher',
         email: email,
-        phone: phone,
+        phone: phone || null,
         firstName: firstName,
         lastName: lastName,
         password: passwordHashed,
@@ -124,10 +126,6 @@ class UserService {
       const emailError = await this.validateEmailAddress(data.email);
       if (emailError) erroneousFields.email = emailError;
     }
-    if (typeof data.phone === 'string' && data.phone !== '') {
-      const phoneError = this.validateMobilePhone(data.phone)
-      if (phoneError) erroneousFields.phone = phoneError;
-    }
     if (typeof data.firstName === 'string') {
       const firstNameError = this.validateName(data.firstName);
       if (firstNameError) erroneousFields.firstName = firstNameError;
@@ -141,15 +139,19 @@ class UserService {
       if (passwordError) erroneousFields.password = passwordError;
       if (!passwordError) data.password = await bcrypt.hash(data.password, 10);
     }
+    if (typeof data.phone === 'string' && data.phone !== '') {
+      const phoneError = this.validateMobilePhone(data.phone)
+      if (phoneError) erroneousFields.phone = phoneError;
+    }
     if (Object.keys(erroneousFields).length) {
       throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
       return userRepository.update({ id: user.id }, {
         email: data.email ?? user.email,
-        phone: data.phone ?? user.phone,
         firstName: data.firstName ?? user.firstName,
         lastName: data.lastName ?? user.lastName,
         password: data.password ?? user.password,
+        phone: data.phone === '' ? null : data.phone ?? user.phone,
       });
     }
   }
