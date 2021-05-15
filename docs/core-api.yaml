@@ -41,54 +41,28 @@ paths:
                 - password
               properties:
                 email:
-                  type: string
-                  example: johndoe@example.com
+                  $ref: '#/components/schemas/User/properties/email'
                 password:
-                  type: string
-                  example: tHz421%8dv3}!_bVC63M
+                  $ref: '#/components/schemas/Misc/properties/currentPassword'
       responses:
-        '200':
+        200:
           description: Authentication successful
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OkResponseWithToken'
-        '400':
+        400:
           description: The email address or password is incorrect
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  '/api/user/forgotPassword':
+  '/api/user/password/forgot':
     post:
       tags:
         - user
       summary: Forgot password
       description: Request a password reset code to the email address
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-              properties:
-                email:
-                  type: string
-                  example: johndoe@example.com
-      responses:
-        '200':
-          description: A password reset code has been sent to the email address
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OkResponse'
-  '/api/user':
-    put:
-      tags:
-        - user
-      summary: Create a new account
-      description: Create a new account with email address, first name, last name and passsword
       requestBody:
         required: true
         content:
@@ -97,134 +71,148 @@ paths:
               type: object
               required:
                 - email
-                - firstName
-                - lastName
-                - password
               properties:
                 email:
-                  type: string
-                  example: johndoe@example.com
-                firstName:
-                  type: string
-                  example: John
-                lastName:
-                  type: string
-                  example: Doe
-                password:
-                  type: string
-                  example: tHz421%8dv3}!_bVC63M
+                  $ref: '#/components/schemas/User/properties/email'
       responses:
-        '201':
-          description: User account creation successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OkResponseWithToken'
-        '400':
-          description: The password is too weak, or the email is invalid or in use already
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  '/api/user/{userId}':
-    get:
-      tags:
-        - user
-      summary: Get user data
-      description: Get information about the user, such as email address or name
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: '#/components/parameters/userId'
-      responses:
-        '200':
-          description: User data retreived
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OkResponseWithUser'
-        '401':
-          description: Authorization token invalid
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: The user was not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  '/api/user/{userId}/verify':
-    post:
-      tags:
-        - user
-      summary: Verify account
-      description: Verify a user account with the code received via email
-      parameters:
-        - $ref: '#/components/parameters/userId'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - code
-              properties:
-                code:
-                  type: string
-                  example: HEsK1YBaB57Lw0NxqoM24
-      responses:
-        '200':
-          description: Account verification successful
+        200:
+          description: A password reset code has been sent to the email address
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OkResponse'
-        '404':
-          description: The verification code is invalid or expired
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  '/api/user/{userId}/password/reset':
+  '/api/user/password/reset':
     post:
       tags:
         - user
       summary: Reset password
-      description: Reset the user's password using the code received via email
-      parameters:
-        - $ref: '#/components/parameters/userId'
+      description: Reset a user's password using the code received via email
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
               required:
+                - userId
                 - code
                 - password
               properties:
+                userId:
+                  $ref: '#/components/schemas/User/properties/id'
                 code:
-                  type: string
-                  example: 'cnffAF07MxuPkchQHlsOL'
+                  $ref: '#/components/schemas/Misc/properties/emailCode'
                 password:
-                  type: string
-                  example: 'SU}{hF70c,)^6w@DKR^7'
+                  $ref: '#/components/schemas/Misc/properties/currentPassword'
       responses:
-        '200':
+        200:
           description: Password reset successful
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OkResponse'
-        '400':
+        400:
           description: The provided password is too weak
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '404':
+        404:
           description: The reset code is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/api/user':
+    put:
+      tags:
+        - user
+      summary: Create user
+      description: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - email
+                - firstName
+                - lastName
+                - password
+                - language
+              properties:
+                type:
+                  $ref: '#/components/schemas/User/properties/type'
+                email:
+                  $ref: '#/components/schemas/User/properties/email'
+                phone:
+                  $ref: '#/components/schemas/User/properties/phone'
+                firstName:
+                  $ref: '#/components/schemas/User/properties/firstName'
+                lastName:
+                  $ref: '#/components/schemas/User/properties/lastName'
+                password:
+                  $ref: '#/components/schemas/Misc/properties/currentPassword'
+                language:
+                  $ref: '#/components/schemas/User/properties/email'
+      responses:
+        201:
+          description: User account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithToken'
+        400:
+          description: Invalid data provided
+  '/api/user/{userId}':
+    get:
+      tags:
+        - user
+      summary: Get user
+      description: Get a user's detailed information
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        200:
+          description: User data retreived
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithUser'
+  '/api/user/{userId}/verify':
+    post:
+      tags:
+        - user
+      summary: Verify user
+      description: Verify a user account with the code received via email
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  $ref: '#/components/schemas/Misc/properties/emailCode'
+      responses:
+        200:
+          description: Account verification successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        404:
+          description: The verification code is invalid or expired
           content:
             application/json:
               schema:
@@ -238,6 +226,7 @@ paths:
       security:
         - bearerAuth: []
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -274,7 +263,7 @@ paths:
                 type: object
                 properties:
                   ok:
-                    $ref: '#/components/schemas/Ok'
+                    $ref: '#/components/schemas/Misc/properties/ok'
                   school:
                     $ref: '#/components/schemas/School'
                   user:
@@ -300,7 +289,7 @@ paths:
                 type: object
                 properties:
                   ok:
-                    $ref: '#/components/schemas/Ok'
+                    $ref: '#/components/schemas/Misc/properties/ok'
                   school:
                     $ref: '#/components/schemas/School'
     post:
@@ -313,6 +302,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/schoolId'
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -321,9 +311,7 @@ paths:
                 - currentPassword
               properties:
                 currentPassword:
-                  type: string
-                  example: 8D594nut453SP5npD3Dp
-                  description: The password of the school's administrator
+                  $ref: '#/components/schemas/Misc/properties/currentPassword'
                 name:
                   $ref: '#/components/schemas/School/properties/name'
                 description:
@@ -347,7 +335,7 @@ paths:
                 type: object
                 properties:
                   ok:
-                    $ref: '#/components/schemas/Ok'
+                    $ref: '#/components/schemas/Misc/properties/ok'
                   school:
                     $ref: '#/components/schemas/School'
         400:
@@ -467,6 +455,21 @@ components:
           type: number
           example: 1621065390465
           description: "The date of the school's last update in milliseconds"
+    Misc:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+          description: "Indicates that the action was successful, it is always set to true when present"
+        currentPassword:
+          type: string
+          example: r0BVP4OOp3838Y6zP6C4
+          description: "The user's unhashed password"
+        emailCode:
+          type: string
+          example: u0680m0a31O5390P31X2
+          description: "A code received via email"
     OkResponse:
       type: object
       properties:
