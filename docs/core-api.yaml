@@ -163,7 +163,7 @@ paths:
                 password:
                   $ref: '#/components/schemas/Misc/properties/newPassword'
                 language:
-                  $ref: '#/components/schemas/User/properties/email'
+                  $ref: '#/components/schemas/User/properties/language'
       responses:
         201:
           description: User account created successfully
