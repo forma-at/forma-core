@@ -165,7 +165,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/OkResponseWithAuthorization'
         400:
-          description: Invalid data provided # TODO fix error response
+          description: One or more fields were invalid, erroneous fields are in `details`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseWithDetails'
   '/api/user/{userId}':
     get:
       tags:
@@ -289,7 +293,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/OkResponseWithUser'
         400:
-          description: Invalid data provided # TODO fix error response
+          description: One or more fields were invalid, erroneous fields are in `details`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseWithDetails'
   '/api/user/{userId}/language':
     post:
       tags:
@@ -369,7 +377,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/OkResponseWithSchool'
         400:
-          description: Invalid data provided # TODO fix error response
+          description: One or more fields were invalid, erroneous fields are in `details`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseWithDetails'
   '/api/school/{schoolId}':
     get:
       tags:
@@ -402,11 +414,7 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - currentPassword
               properties:
-                currentPassword:
-                  $ref: '#/components/schemas/Misc/properties/currentPassword'
                 name:
                   $ref: '#/components/schemas/School/properties/name'
                 description:
@@ -429,7 +437,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/OkResponseWithSchool'
         400:
-          description: Invalid password or invalid data provided # TODO fix error response
+          description: One or more fields were invalid, erroneous fields are in `details`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseWithDetails'
 components:
   securitySchemes:
     bearerAuth:
@@ -456,7 +468,7 @@ components:
           type: string
           nullable: true
           example: "+32460131530"
-          description: "**Optional**. The user's phone number in [E.123](https://en.wikipedia.org/wiki/E.123) **international notation** and **without spaces**"
+          description: "The user's phone number in [E.123](https://en.wikipedia.org/wiki/E.123) **international notation** and **without spaces**"
         firstName:
           type: string
           example: John
@@ -477,7 +489,7 @@ components:
           type: string
           nullable: true
           example: bea1828d-0832-4588-a449-cd84b8c6bb60
-          description: "**Optional**. The id of the school the user owns, if they are of the user type `school`"
+          description: "The id of the school the user owns, if they are of the user type `school`"
         language:
           type: string
           example: en
@@ -597,13 +609,16 @@ components:
       properties:
         message:
           type: string
+          description: A message explaining what went wrong, **for developers only (do not display)**
     ErrorResponseWithDetails:
       type: object
       properties:
         message:
           type: string
+          description: A message explaining what went wrong, **for developers only (do not display)**
         details:
           type: object
+          description: An object of error messages, where keys match fields from the request body, **for developers only (do not display)**
   parameters:
     userId:
       in: path
