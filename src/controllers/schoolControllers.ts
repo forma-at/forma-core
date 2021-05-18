@@ -48,3 +48,33 @@ export const updateSchool = async (req: Request, res: Response, next: NextFuncti
     return next(err);
   }
 };
+
+export const getAllTeachers = async (req: Request, res: Response, next: NextFunction) => {
+  return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+    message: 'This feature is not yet implemented.',
+  });
+};
+
+export const createTeacher = async (req: Request, res: Response, next: NextFunction) => {
+  return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+    message: 'This feature is not yet implemented.',
+  });
+};
+
+export const getTeacher = async (req: Request, res: Response, next: NextFunction) => {
+  return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+    message: 'This feature is not yet implemented.',
+  });
+};
+
+export const updateTeacher = async (req: Request, res: Response, next: NextFunction) => {
+  return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+    message: 'This feature is not yet implemented.',
+  });
+};
+
+export const deleteTeacher = async (req: Request, res: Response, next: NextFunction) => {
+  return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+    message: 'This feature is not yet implemented.',
+  });
+};
