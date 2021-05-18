@@ -1,7 +1,7 @@
 import {
   Request as ExpressRequest,
   Response as ExpressResponse,
-  NextFunction as ExpressNextFunction
+  NextFunction as ExpressNextFunction,
 } from 'express';
 import * as RequestBody from './RequestBody';
 import { User } from '../models';

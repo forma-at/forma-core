@@ -26,7 +26,7 @@ class DatabaseClient {
   // Open database connection, crash on failure
   async connect() {
     try {
-      await this.client.connect()
+      await this.client.connect();
     } catch (err) {
       console.error(err);
       process.exit(1);

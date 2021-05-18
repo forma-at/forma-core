@@ -1,19 +1,19 @@
 import { FilterQuery, Collection } from 'mongodb';
 import { databaseClient } from '../utils';
 
-type EntityConstructor<T> = new (raw: any) => T;
+type EntityConstructor<T> = new (raw: unknown) => T;
 
 export abstract class BaseRepository<T> {
 
   // Entity class
-  private readonly entity: EntityConstructor<T>;
+  private readonly Entity: EntityConstructor<T>;
 
   // MongoDB collection name
   private readonly collection: string;
 
   // BaseRepository constructor
   protected constructor(entity: EntityConstructor<T>, collection: string) {
-    this.entity = entity;
+    this.Entity = entity;
     this.collection = collection;
   }
 
@@ -30,7 +30,7 @@ export abstract class BaseRepository<T> {
       createdAt: now,
       updatedAt: now,
     });
-    return new this.entity(result.ops[0]);
+    return new this.Entity(result.ops[0]);
   }
 
   // Update entity
@@ -43,7 +43,7 @@ export abstract class BaseRepository<T> {
         updatedAt: now,
       },
     }, options);
-    return new this.entity(result.value);
+    return new this.Entity(result.value);
   }
 
   // Delete entity
@@ -55,7 +55,7 @@ export abstract class BaseRepository<T> {
   async findOne(filter: FilterQuery<T>): Promise<T | void> {
     const result = await this.db().findOne(filter);
     if (result) {
-      return new this.entity(result);
+      return new this.Entity(result);
     }
   }
 
@@ -63,7 +63,7 @@ export abstract class BaseRepository<T> {
   async findMany(filter: FilterQuery<T>): Promise<T[]> {
     const results = await this.db().find(filter);
     const arrayResults = await results.toArray();
-    return arrayResults.map(item => new this.entity(item));
+    return arrayResults.map((item) => new this.Entity(item));
   }
 
 }

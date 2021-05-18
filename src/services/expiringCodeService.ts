@@ -16,8 +16,8 @@ class ExpiringCodeService {
     const currentCode = await expiringCodeRepository.findOne({ userId, type });
     if (!currentCode) {
       return expiringCodeRepository.create({
-        userId: userId,
-        type: type,
+        userId,
+        type,
         code: nanoid(),
         expiredAt: moment().add(1, 'day').endOf('hours').toDate(),
       });
@@ -51,7 +51,7 @@ class ExpiringCodeService {
 
   // Add a new 'forgot password' code
   addForgotPasswordCode(userId: string) {
-    return this.addCode(userId, this.FORGOT_PASSWORD)
+    return this.addCode(userId, this.FORGOT_PASSWORD);
   }
 
   // Check if 'email verification' code is valid
