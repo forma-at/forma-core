@@ -1,0 +1,49 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "airbnb-base",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "import"],
+  "rules": {
+    "indent": ["error", 2],
+    "quotes": ["error", "single"],
+    "semi": "error",
+    "no-var": "error",
+    "max-len": ["error", 120],
+    "comma-dangle": "warn",
+    "prefer-const": "warn",
+    "padded-blocks": "off",
+    "arrow-parens": "warn",
+    "brace-style": ["error", "1tbs"],
+    "class-methods-use-this": "off",
+    "object-curly-newline": "off",
+    "no-else-return": "off",
+    "consistent-return": "off",
+    "lines-between-class-members": "off",
+    "no-unused-vars": ["warn", { "args": "none" }],
+    "import/extensions": ["error", "ignorePackages", { "ts": "never" }],
+    "import/no-extraneous-dependencies": "off",
+    "import/prefer-default-export": "off",
+    "import/no-useless-path-segments": "off",
+    "import/no-unresolved": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { "args": "none" }]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".ts", ".js"]
+      }
+    }
+  }
+}

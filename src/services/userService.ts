@@ -45,7 +45,15 @@ class UserService {
   }
 
   // Create a new user account
-  async createUser(email: string, firstName: string, lastName: string, password: string, isSchoolAdmin: boolean, language: string, phone?: string) {
+  async createUser(
+    email: string,
+    firstName: string,
+    lastName: string,
+    password: string,
+    isSchoolAdmin: boolean,
+    language: string,
+    phone?: string,
+  ) {
     const erroneousFields: Partial<User> = {};
     const emailError = await this.validateEmailAddress(email);
     if (emailError) erroneousFields.email = emailError;
@@ -68,10 +76,10 @@ class UserService {
       return userRepository.create({
         id: uuid(),
         type: isSchoolAdmin ? 'school' : 'teacher',
-        email: email,
+        email,
         phone: phone || null,
-        firstName: firstName,
-        lastName: lastName,
+        firstName,
+        lastName,
         password: passwordHashed,
         emailConfirmed: false,
         language: language.toLowerCase(),
@@ -82,9 +90,7 @@ class UserService {
   // Verify a user account with email address
   async verifyUser(user: User) {
     if (!user.emailConfirmed) {
-      return userRepository.update({ id: user.id }, {
-        emailConfirmed: true,
-      });
+      return userRepository.update({ id: user.id }, { emailConfirmed: true });
     } else {
       return user;
     }
@@ -92,7 +98,7 @@ class UserService {
 
   // Compare the password of a user to the input
   async comparePasswords(user: User, password: string) {
-    return await bcrypt.compare(password, user.password);
+    return bcrypt.compare(password, user.password);
   }
 
   // Reset the password of a user
@@ -102,18 +108,14 @@ class UserService {
       throw new ValidationException(passwordError);
     } else {
       const passwordHashed = await bcrypt.hash(password, 10);
-      return userRepository.update({ id: user.id }, {
-        password: passwordHashed,
-      });
+      return userRepository.update({ id: user.id }, { password: passwordHashed });
     }
   }
 
   // Assign a school to a user
   async assignSchool(user: User, school: School) {
     if (user.type === 'school') {
-      return userRepository.update({ id: user.id }, {
-        schoolId: school.id,
-      });
+      return userRepository.update({ id: user.id }, { schoolId: school.id });
     } else {
       return user;
     }
@@ -141,22 +143,25 @@ class UserService {
     if (typeof data.password === 'string') {
       const passwordError = this.validatePassword(data.password);
       if (passwordError) erroneousFields.password = passwordError;
-      if (!passwordError) data.password = await bcrypt.hash(data.password, 10);
     }
     if (typeof data.phone === 'string' && data.phone !== '') {
-      const phoneError = this.validateMobilePhone(data.phone)
+      const phoneError = this.validateMobilePhone(data.phone);
       if (phoneError) erroneousFields.phone = phoneError;
     }
     if (Object.keys(erroneousFields).length) {
       throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
-      return userRepository.update({ id: user.id }, {
-        email: data.email ?? user.email,
-        firstName: data.firstName ?? user.firstName,
-        lastName: data.lastName ?? user.lastName,
-        password: data.password ?? user.password,
-        phone: data.phone === '' ? null : data.phone ?? user.phone,
-      });
+      const hashedPassword = data.password && await bcrypt.hash(data.password, 10);
+      return userRepository.update(
+        { id: user.id },
+        {
+          email: data.email ?? user.email,
+          firstName: data.firstName ?? user.firstName,
+          lastName: data.lastName ?? user.lastName,
+          password: data.password ? hashedPassword : user.password,
+          phone: data.phone === '' ? null : data.phone ?? user.phone,
+        },
+      );
     }
   }
 
@@ -166,9 +171,7 @@ class UserService {
     if (languageError) {
       throw new ValidationException(languageError);
     } else {
-      return userRepository.update({ id: user.id }, {
-        language: language.toLowerCase(),
-      });
+      return userRepository.update({ id: user.id }, { language: language.toLowerCase() });
     }
   }
 

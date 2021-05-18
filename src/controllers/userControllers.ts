@@ -146,7 +146,7 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     } else {
       abilityService.assureCan(req.user, 'update', user);
       const updatedUser = await userService.updateProfile(user, currentPassword, {
-        email, phone, firstName, lastName, password
+        email, phone, firstName, lastName, password,
       });
       return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
     }

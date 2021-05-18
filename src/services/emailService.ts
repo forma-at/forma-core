@@ -5,7 +5,7 @@ type TemplateParamsType = { [key: string]: string; };
 
 class EmailService {
 
-  async sendEmail(user: User, template: TemplateNameType, params?: TemplateParamsType): Promise<void> {
+  async sendEmail(user: User, template: TemplateNameType, _params?: TemplateParamsType): Promise<void> {
     return console.log(`Sending '${template}' email to '${user.email}'.`);
   }
 
