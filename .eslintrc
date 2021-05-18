@@ -30,6 +30,7 @@
     "consistent-return": "off",
     "lines-between-class-members": "off",
     "no-unused-vars": ["warn", { "args": "none" }],
+    "arrow-body-style": "off",
     "import/extensions": ["error", "ignorePackages", { "ts": "never" }],
     "import/no-extraneous-dependencies": "off",
     "import/prefer-default-export": "off",
