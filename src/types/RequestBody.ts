@@ -63,3 +63,7 @@ export interface UpdateSchool {
   country?: string;
   description?: string;
 }
+
+export interface UpdateTeacher {
+  status: string;
+}

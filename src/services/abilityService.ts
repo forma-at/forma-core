@@ -1,10 +1,10 @@
 import { Ability, AbilityBuilder, AbilityClass } from '@casl/ability';
 import { ForbiddenException } from '../exceptions';
-import { User, School } from '../models';
+import { User, School, Teacher } from '../models';
 
 // Define allowed actions and valid subjects
-type Actions = 'create' | 'read' | 'update' | 'delete';
-type Subjects = 'User' | User | 'School' | School;
+type Actions = 'create' | 'read' | 'update' | 'delete' | 'detail' | 'preview';
+type Subjects = 'User' | User | 'School' | School | 'Teacher' | Teacher;
 
 // Define type for Ability class
 export type AppAbility = Ability<[Actions, Subjects]>;
@@ -28,18 +28,34 @@ class AbilityService {
     if (user.type === 'school') {
       if (!user.schoolId) {
         can('create', 'School');
-        cannot(['update', 'delete'], 'School')
+        cannot(['detail', 'update', 'delete'], 'School')
           .because('You cannot manage your school before you create it.');
       } else {
-        can(['update', 'delete'], 'School', { id: { $eq: user.schoolId } });
+        can(['detail', 'update', 'delete'], 'School', { id: { $eq: user.schoolId } });
         cannot('create', 'School')
           .because('You cannot create more than one school.');
       }
-      cannot(['create', 'update', 'delete'], 'School', { id: { $ne: user.schoolId } })
+      cannot(['detail', 'update', 'delete'], 'School', { id: { $ne: user.schoolId } })
         .because('You cannot manage a school you do not own.');
-    } else {
-      cannot(['create', 'update', 'delete'], 'School')
+    } else if (user.type === 'teacher') {
+      cannot(['detail', 'create', 'update', 'delete'], 'School')
         .because('You cannot manage schools with a teacher account.');
+    }
+
+    // Teacher management
+    if (user.type === 'school') {
+      can(['read', 'update', 'delete'], 'Teacher', { schoolId: { $eq: user.schoolId } });
+      cannot(['read', 'update', 'delete'], 'Teacher', { schoolId: { $ne: user.schoolId } })
+        .because('You cannot manage teachers from another school.');
+      cannot('create', 'Teacher')
+        .because('You cannot create teachers with a school account.');
+    } else if (user.type === 'teacher') {
+      can('create', 'Teacher');
+      can(['read', 'delete'], 'Teacher', { userId: { $eq: user.id } });
+      cannot(['read', 'delete'], 'Teacher', { userId: { $ne: user.id } })
+        .because('You cannot manage another teacher.');
+      cannot('update', 'Teacher')
+        .because('You cannot update the status of teachers with a teacher account.');
     }
 
     return build();

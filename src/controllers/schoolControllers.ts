@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
-import { userService, schoolService, abilityService } from '../services';
+import { userService, schoolService, abilityService, teacherService } from '../services';
 import { NotFoundException } from '../exceptions';
 
 export const createSchool = async (req: Request, res: Response, next: NextFunction) => {
@@ -50,31 +50,99 @@ export const updateSchool = async (req: Request, res: Response, next: NextFuncti
 };
 
 export const getAllTeachers = async (req: Request, res: Response, next: NextFunction) => {
-  return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-    message: 'This feature is not yet implemented.',
-  });
+  const { schoolId } = req.params;
+  try {
+    const school = await schoolService.getSchoolById(schoolId);
+    if (!school) {
+      return next(new NotFoundException('The school was not found.'));
+    } else {
+      abilityService.assureCan(req.user, 'detail', school);
+      const teachers = await teacherService.getTeachersBySchoolId(school.id);
+      return res.status(HttpStatusCodes.OK).json({ ok: true, teachers });
+    }
+  } catch (err) {
+    return next(err);
+  }
 };
 
 export const createTeacher = async (req: Request, res: Response, next: NextFunction) => {
-  return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-    message: 'This feature is not yet implemented.',
-  });
+  const { schoolId } = req.params;
+  try {
+    const school = await schoolService.getSchoolById(schoolId);
+    if (!school) {
+      return next(new NotFoundException('The school was not found.'));
+    } else {
+      abilityService.assureCan(req.user, 'create', 'Teacher');
+      const teacher = await teacherService.createTeacher(req.user.id, school.id);
+      return res.status(HttpStatusCodes.CREATED).json({ ok: true, teacher });
+    }
+  } catch (err) {
+    return next(err);
+  }
 };
 
 export const getTeacher = async (req: Request, res: Response, next: NextFunction) => {
-  return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-    message: 'This feature is not yet implemented.',
-  });
+  const { schoolId, teacherId } = req.params;
+  try {
+    const school = await schoolService.getSchoolById(schoolId);
+    if (!school) {
+      return next(new NotFoundException('The school was not found.'));
+    } else {
+      abilityService.assureCan(req.user, 'read', school);
+      const teacher = await teacherService.getTeacherByUserId(teacherId);
+      if (!teacher) {
+        return next(new NotFoundException('The teacher was not found.'));
+      } else {
+        abilityService.assureCan(req.user, 'read', teacher);
+        return res.status(HttpStatusCodes.OK).json({ ok: true, teacher });
+      }
+    }
+  } catch (err) {
+    return next(err);
+  }
 };
 
 export const updateTeacher = async (req: Request, res: Response, next: NextFunction) => {
-  return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-    message: 'This feature is not yet implemented.',
-  });
+  const { schoolId, teacherId } = req.params;
+  const { status }: Body.UpdateTeacher = req.body;
+  try {
+    const school = await schoolService.getSchoolById(schoolId);
+    if (!school) {
+      return next(new NotFoundException('The school was not found.'));
+    } else {
+      abilityService.assureCan(req.user, 'read', school);
+      const teacher = await teacherService.getTeacherByUserId(teacherId);
+      if (!teacher) {
+        return next(new NotFoundException('The teacher was not found.'));
+      } else {
+        abilityService.assureCan(req.user, 'update', teacher);
+        const updatedTeacher = await teacherService.updateTeacherStatus(teacher.userId, status);
+        return res.status(HttpStatusCodes.OK).json({ ok: true, teacher: updatedTeacher });
+      }
+    }
+  } catch (err) {
+    return next(err);
+  }
 };
 
 export const deleteTeacher = async (req: Request, res: Response, next: NextFunction) => {
-  return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-    message: 'This feature is not yet implemented.',
-  });
+  const { schoolId, teacherId } = req.params;
+  try {
+    const school = await schoolService.getSchoolById(schoolId);
+    if (!school) {
+      return next(new NotFoundException('The school was not found.'));
+    } else {
+      abilityService.assureCan(req.user, 'read', school);
+      const teacher = await teacherService.getTeacherByUserId(teacherId);
+      if (!teacher) {
+        return next(new NotFoundException('The teacher was not found.'));
+      } else {
+        abilityService.assureCan(req.user, 'delete', teacher);
+        await teacherService.deleteTeacher(teacher.userId);
+        return res.status(HttpStatusCodes.OK).json({ ok: true });
+      }
+    }
+  } catch (err) {
+    return next(err);
+  }
 };
