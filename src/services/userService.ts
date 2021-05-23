@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { JWTPayload } from 'Router';
 import { userRepository } from '../repositories';
 import { schoolService } from '../services';
-import { User, School } from '../models';
+import { User, School, SanitizedUser } from '../models';
 import { ValidationException } from '../exceptions';
 
 class UserService {
@@ -19,14 +19,32 @@ class UserService {
     minSymbols: 0,
   };
 
-  // Get a user by id number
+  // Get a single user by id number
   async getUserById(userId: string) {
     return userRepository.findOne({ id: userId });
+  }
+
+  // Get many users by id numbers
+  async getUsersByIds(userIds: string[]) {
+    return userRepository.findMany({ id: { $in: userIds } });
   }
 
   // Get a user by email address
   async getUserByEmail(email: string) {
     return userRepository.findOne({ email });
+  }
+
+  // Return sanitized user data by removing private fields
+  sanitizeUser(user: User) {
+    const sanitizedUserData: SanitizedUser = {
+      id: user.id,
+      email: user.email,
+      phone: user.phone,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      emailConfirmed: user.emailConfirmed,
+    };
+    return sanitizedUserData;
   }
 
   // Create a JsonWebToken for a user

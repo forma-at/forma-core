@@ -25,3 +25,5 @@ export class User {
   }
 
 }
+
+export type SanitizedUser = Pick<User, 'id' | 'firstName' | 'lastName' | 'email' | 'phone' | 'emailConfirmed'>;
