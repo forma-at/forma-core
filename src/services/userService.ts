@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { JWTPayload } from 'Router';
 import { userRepository } from '../repositories';
 import { schoolService } from '../services';
-import { User, School } from '../models';
+import { User, School, USER_TYPE, UserType } from '../models';
 import { ValidationException } from '../exceptions';
 
 class UserService {
@@ -46,15 +46,17 @@ class UserService {
 
   // Create a new user account
   async createUser(
+    type: string,
     email: string,
     firstName: string,
     lastName: string,
     password: string,
-    isSchoolAdmin: boolean,
     language: string,
     phone?: string,
   ) {
-    const erroneousFields: Partial<User> = {};
+    const erroneousFields: Partial<Record<keyof User, string>> = {};
+    const typeError = this.validateType(type);
+    if (typeError) erroneousFields.type = typeError;
     const emailError = await this.validateEmailAddress(email);
     if (emailError) erroneousFields.email = emailError;
     const firstNameError = this.validateName(firstName);
@@ -75,7 +77,7 @@ class UserService {
       const passwordHashed = await bcrypt.hash(password, 10);
       return userRepository.create({
         id: uuid(),
-        type: isSchoolAdmin ? 'school' : 'teacher',
+        type: type as UserType,
         email,
         phone: phone || null,
         firstName,
@@ -185,6 +187,13 @@ class UserService {
         await schoolService.deleteSchoolById(user.schoolId);
       }
       await userRepository.delete({ id: user.id });
+    }
+  }
+
+  // Validate user account type
+  validateType(type: string) {
+    if (!(type in USER_TYPE)) {
+      return 'The account type is invalid.';
     }
   }
 
