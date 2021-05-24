@@ -77,7 +77,7 @@ class UserService {
       const passwordHashed = await bcrypt.hash(password, 10);
       return userRepository.create({
         id: uuid(),
-        type: type as UserType,
+        type: type.toUpperCase() as UserType,
         email,
         phone: phone || null,
         firstName,
@@ -192,7 +192,7 @@ class UserService {
 
   // Validate user account type
   validateType(type: string) {
-    if (!(type in USER_TYPE)) {
+    if (!(type.toUpperCase() in USER_TYPE)) {
       return 'The account type is invalid.';
     }
   }

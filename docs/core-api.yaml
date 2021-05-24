@@ -465,7 +465,7 @@ components:
         type:
           type: string
           example: school
-          description: "The type of the user's account, can be `school` or `teacher`"
+          description: "The type of the user's account, can be `SCHOOL` or `TEACHER`"
         email:
           type: string
           example: john.doe@example.com
@@ -495,7 +495,7 @@ components:
           type: string
           nullable: true
           example: bea1828d-0832-4588-a449-cd84b8c6bb60
-          description: "The id of the school the user owns, if they are of the user type `school`"
+          description: "The id of the school the user owns, if they are of the user type `SCHOOL`"
         language:
           type: string
           example: en
