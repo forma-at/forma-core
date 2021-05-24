@@ -116,7 +116,7 @@ class UserService {
 
   // Assign a school to a user
   async assignSchool(user: User, school: School) {
-    if (user.type === 'school') {
+    if (user.type === USER_TYPE.SCHOOL) {
       return userRepository.update({ id: user.id }, { schoolId: school.id });
     } else {
       return user;
@@ -183,7 +183,7 @@ class UserService {
     if (!isPasswordCorrect) {
       throw new ValidationException('The password is incorrect.');
     } else {
-      if (user.type === 'school') {
+      if (user.type === USER_TYPE.SCHOOL) {
         await schoolService.deleteSchoolById(user.schoolId);
       }
       await userRepository.delete({ id: user.id });

@@ -1,6 +1,6 @@
 import { Ability, AbilityBuilder, AbilityClass } from '@casl/ability';
 import { ForbiddenException } from '../exceptions';
-import { User, School } from '../models';
+import { User, School, USER_TYPE } from '../models';
 
 // Define allowed actions and valid subjects
 type Actions = 'create' | 'read' | 'update' | 'delete';
@@ -25,7 +25,7 @@ class AbilityService {
 
     // School management
     can('read', 'School');
-    if (user.type === 'school') {
+    if (user.type === USER_TYPE.SCHOOL) {
       if (!user.schoolId) {
         can('create', 'School');
         cannot(['update', 'delete'], 'School')
