@@ -65,9 +65,9 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
 };
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, firstName, lastName, password, phone, isSchoolAdmin, language }: Body.CreateUser = req.body;
+  const { type, email, firstName, lastName, password, phone, language }: Body.CreateUser = req.body;
   try {
-    const user = await userService.createUser(email, firstName, lastName, password, isSchoolAdmin, language, phone);
+    const user = await userService.createUser(type, email, firstName, lastName, password, language, phone);
     const { code } = await expiringCodeService.addEmailVerificationCode(user.id);
     await emailService.sendEmail(user, 'accountCreated', { code });
     const token = await userService.createJWT(user);
