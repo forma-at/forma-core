@@ -495,7 +495,7 @@ components:
           type: string
           nullable: true
           example: bea1828d-0832-4588-a449-cd84b8c6bb60
-          description: "The id of the school the user owns, if they are of the user type `SCHOOl`"
+          description: "The id of the school the user owns, if they are of the user type `SCHOOL`"
         language:
           type: string
           example: en
