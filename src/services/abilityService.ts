@@ -37,19 +37,19 @@ class AbilityService {
       }
       cannot(['detail', 'update', 'delete'], 'School', { id: { $ne: user.schoolId } })
         .because('You cannot manage a school you do not own.');
-    } else if (user.type === 'teacher') {
+    } else if (user.type === USER_TYPE.TEACHER) {
       cannot(['detail', 'create', 'update', 'delete'], 'School')
         .because('You cannot manage schools with a teacher account.');
     }
 
     // Teacher management
-    if (user.type === 'school') {
+    if (user.type === USER_TYPE.SCHOOL) {
       can(['read', 'update', 'delete'], 'Teacher', { schoolId: { $eq: user.schoolId } });
       cannot(['read', 'update', 'delete'], 'Teacher', { schoolId: { $ne: user.schoolId } })
         .because('You cannot manage teachers from another school.');
       cannot('create', 'Teacher')
         .because('You cannot create teachers with a school account.');
-    } else if (user.type === 'teacher') {
+    } else if (user.type === USER_TYPE.TEACHER) {
       can('create', 'Teacher');
       can(['read', 'delete'], 'Teacher', { userId: { $eq: user.id } });
       cannot(['read', 'delete'], 'Teacher', { userId: { $ne: user.id } })
