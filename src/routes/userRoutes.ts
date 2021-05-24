@@ -34,12 +34,12 @@ router.post(
 router.put(
   '/',
   validate([
+    body('type').isString(),
     body('email').isString(),
     body('firstName').isString(),
     body('lastName').isString(),
     body('password').isString(),
     body('phone').isString().optional(),
-    body('isSchoolAdmin').isBoolean(),
     body('language').isString(),
   ]),
   userControllers.createUser,

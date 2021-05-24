@@ -1,5 +1,10 @@
 import { abilityService, AppAbility } from '../services';
 
+export const USER_TYPE = {
+  TEACHER: 'teacher' as const,
+  SCHOOL: 'school' as const,
+};
+
 export type UserType = 'teacher' | 'school';
 
 export class User {

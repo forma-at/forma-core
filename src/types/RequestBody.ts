@@ -14,12 +14,12 @@ export interface ResetPassword {
 }
 
 export interface CreateUser {
+  type: string;
   email: string;
   phone?: string;
   firstName: string;
   lastName: string;
   password: string;
-  isSchoolAdmin: boolean;
   language: string;
 }
 
