@@ -2,7 +2,7 @@
 
 name: Deploy to EvenNode
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
@@ -33,4 +33,4 @@ jobs:
           git remote add evennode ${{ secrets.EVENNODE_REPO_URL }}
           git config --global user.email "${{ secrets.GIT_EMAIL }}"
           git config --global user.name "${{ secrets.GIT_NAME }}"
-          git push evennode +main
+          git push evennode +master
