@@ -16,6 +16,9 @@ jobs:
           name: id_rsa
           known_hosts: " "
           if_key_exists: replace
+        run: |
+          ls /home/runner/.ssh
+          cat /home/runner/.ssh/id_rsa
       - name: Add git.evennode.com to known_hosts
         run: |
           ssh-keyscan -H git.evennode.com > ~/.ssh/known_hosts
