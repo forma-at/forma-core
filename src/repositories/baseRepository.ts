@@ -52,7 +52,7 @@ export abstract class BaseRepository<T> {
   }
 
   // Find one entry in the collection
-  async findOne(filter: FilterQuery<T>): Promise<T | void> {
+  async findOne(filter: FilterQuery<T>): Promise<T> {
     const result = await this.db().findOne(filter);
     if (result) {
       return new this.Entity(result);

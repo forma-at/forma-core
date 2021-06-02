@@ -64,6 +64,10 @@ export interface UpdateSchool {
   description?: string;
 }
 
+export interface CreateTeacher {
+  skills: unknown[];
+}
+
 export interface UpdateTeacher {
-  status: string;
+  skills?: unknown[];
 }

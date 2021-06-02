@@ -32,11 +32,13 @@
     "no-unused-vars": ["warn", { "args": "none" }],
     "no-prototype-builtins": "off",
     "arrow-body-style": "off",
+    "no-shadow": "off",
     "import/extensions": ["error", "ignorePackages", { "ts": "never" }],
     "import/no-extraneous-dependencies": "off",
     "import/prefer-default-export": "off",
     "import/no-useless-path-segments": "off",
     "import/no-unresolved": "off",
+    "@typescript-eslint/no-shadow": "error",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { "args": "none" }]

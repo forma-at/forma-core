@@ -18,6 +18,7 @@ export class User {
   password: string;
   emailConfirmed: boolean;
   schoolId?: string;
+  teacherId?: string;
   language: string;
   createdAt: number;
   updatedAt: number;

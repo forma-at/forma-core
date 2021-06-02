@@ -4,8 +4,8 @@ import validator from 'validator';
 import { v4 as uuid } from 'uuid';
 import { JWTPayload } from 'Router';
 import { userRepository } from '../repositories';
-import { schoolService } from '../services';
-import { User, School, USER_TYPE, UserType, SanitizedUser } from '../models';
+import { schoolService, teacherService } from '../services';
+import { User, School, Teacher, USER_TYPE, UserType, SanitizedUser } from '../models';
 import { ValidationException } from '../exceptions';
 
 class UserService {
@@ -141,6 +141,15 @@ class UserService {
     }
   }
 
+  // Assign a teacher to a user
+  async assignTeacher(user: User, teacher: Teacher) {
+    if (user.type === USER_TYPE.TEACHER) {
+      return userRepository.update({ id: user.id }, { teacherId: teacher.id });
+    } else {
+      return user;
+    }
+  }
+
   // Update a user's profile data
   async updateProfile(user: User, password: string, data: Partial<User>) {
     const erroneousFields: Partial<User & { currentPassword: string }> = {};
@@ -203,6 +212,8 @@ class UserService {
     } else {
       if (user.type === USER_TYPE.SCHOOL) {
         await schoolService.deleteSchoolById(user.schoolId);
+      } else if (user.type === USER_TYPE.TEACHER) {
+        await teacherService.deleteTeacherById(user.teacherId);
       }
       await userRepository.delete({ id: user.id });
     }

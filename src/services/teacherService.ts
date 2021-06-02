@@ -1,59 +1,67 @@
+import { v4 as uuid } from 'uuid';
+import validator from 'validator';
 import { teacherRepository } from '../repositories';
-import { userService } from './userService';
-import { Teacher, TeacherStatus, TEACHER_STATUS } from '../models';
-import { ValidationException } from '../exceptions';
+import { Teacher, Skill } from '../models';
+import { NotFoundException, ValidationException } from '../exceptions';
 
 class TeacherService {
 
-  // Get all teachers by school id
-  async getTeachersBySchoolId(schoolId: string): Promise<Teacher[]> {
-    const teachers = await teacherRepository.findMany({ schoolId });
-    const users = await userService.getUsersByIds(teachers.map((teacher) => teacher.userId));
-    return teachers.map((teacher) => {
-      const userDetails = users.find((user) => user.id === teacher.userId);
-      return {
-        ...teacher,
-        details: userDetails ? userService.sanitizeUser(userDetails) : null,
-      };
-    });
-  }
-
-  // Get one teacher by user id
-  async getTeacherByUserId(userId: string): Promise<Teacher | void> {
-    const teacher = await teacherRepository.findOne({ userId });
-    if (teacher) {
-      const user = await userService.getUserById(teacher.userId);
-      return {
-        ...teacher,
-        details: user ? userService.sanitizeUser(user) : null,
-      };
+  // Get a teacher by id number
+  async getTeacherById(teacherId: string) {
+    const teacher = teacherRepository.findOne({ id: teacherId });
+    if (!teacher) {
+      throw new NotFoundException('The teacher was not found.');
+    } else {
+      return teacher;
     }
   }
 
-  // Create a school teacher
-  async createTeacher(userId: string, schoolId: string) {
-    return teacherRepository.create({
-      userId,
-      schoolId,
-      status: TEACHER_STATUS.PENDING,
-    });
+  // Create a new teacher
+  async createTeacher(skills: unknown[]) {
+    const erroneousFields: Partial<Record<keyof Teacher, string>> = {};
+    const skillsError = this.validateSkills(skills);
+    if (skillsError) erroneousFields.skills = skillsError;
+    if (Object.keys(erroneousFields).length) {
+      throw new ValidationException('The provided data is invalid.', erroneousFields);
+    } else {
+      return teacherRepository.create({
+        id: uuid(),
+        skills: skills as Skill[],
+      });
+    }
   }
 
-  // Update the status of a school teacher
-  async updateTeacherStatus(userId: string, status: string) {
-    if (!(status in TEACHER_STATUS)) {
-      throw new ValidationException('The provided status was invalid.');
+  // Update a teacher
+  async updateTeacher(teacher: Teacher, skills?: unknown[]) {
+    const erroneousFields: Partial<Record<keyof Teacher, string>> = {};
+    if (skills) {
+      const skillsError = this.validateSkills(skills);
+      if (skillsError) erroneousFields.skills = skillsError;
+    }
+    if (Object.keys(erroneousFields).length) {
+      throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
       return teacherRepository.update(
-        { userId },
-        { status: status as TeacherStatus },
+        { id: teacher.id },
+        { skills: skills ? skills as Skill[] : teacher.skills },
       );
     }
   }
 
-  // Delete a school teacher
-  async deleteTeacher(userId: string) {
-    return teacherRepository.delete({ userId });
+  // Delete a teacher by id
+  async deleteTeacherById(teacherId: string) {
+    return teacherRepository.delete({ id: teacherId });
+  }
+
+  // Validate a list of skills
+  validateSkills(skills: unknown[]) {
+    let isValid = true;
+    skills.forEach((skill) => {
+      if (typeof skill !== 'string' || validator.isAlphanumeric(skill)) {
+        isValid = false;
+      }
+    });
+    if (!isValid) return 'One or more skills are invalid.';
   }
 
 }
