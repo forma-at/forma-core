@@ -1,7 +1,9 @@
-export type ExpiringCodeType = 'EMAIL_VERIFICATION' | 'FORGOT_PASSWORD';
+export enum ExpiringCodeType {
+  emailVerification = 'email_verification',
+  forgotPassword = 'forgot_password',
+}
 
 export class ExpiringCode {
-
   userId: string;
   code: string;
   type: ExpiringCodeType;
@@ -12,5 +14,4 @@ export class ExpiringCode {
   constructor(user: ExpiringCode) {
     Object.assign(this, user);
   }
-
 }
