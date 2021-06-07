@@ -47,17 +47,13 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
   const { userId, code, password }: Body.ResetPassword = req.body;
   try {
     const user = await userService.getUserById(userId);
-    if (!user) {
-      return next(new NotFoundException('The user was not found.'));
+    const isCodeValid = await expiringCodeService.checkForgotPasswordCode(userId, code);
+    if (!isCodeValid) {
+      return next(new NotFoundException('The code is invalid or expired.'));
     } else {
-      const isCodeValid = await expiringCodeService.checkForgotPasswordCode(userId, code);
-      if (!isCodeValid) {
-        return next(new NotFoundException('The code is invalid or expired.'));
-      } else {
-        await userService.resetPassword(user, password);
-        await emailService.sendEmail(user, 'passwordReset');
-        return res.status(HttpStatusCodes.OK).json({ ok: true });
-      }
+      await userService.resetPassword(user, password);
+      await emailService.sendEmail(user, 'passwordReset');
+      return res.status(HttpStatusCodes.OK).json({ ok: true });
     }
   } catch (err) {
     return next(err);
@@ -81,16 +77,12 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export const getUserData = async (req: Request, res: Response, next: NextFunction) => {
+export const getUser = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req.params;
   try {
     const user = await userService.getUserById(userId);
-    if (!user) {
-      return next(new NotFoundException('The user was not found.'));
-    } else {
-      abilityService.assureCan(req.user, 'read', user);
-      return res.status(HttpStatusCodes.OK).json({ ok: true, user });
-    }
+    abilityService.assureCan(req.user, 'read', user);
+    return res.status(HttpStatusCodes.OK).json({ ok: true, user });
   } catch (err) {
     return next(err);
   }
@@ -101,13 +93,9 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
   const { currentPassword }: Body.DeleteUser = req.body;
   try {
     const user = await userService.getUserById(userId);
-    if (!user) {
-      return next(new NotFoundException('The user was not found.'));
-    } else {
-      abilityService.assureCan(req.user, 'delete', user);
-      await userService.deleteUser(user, currentPassword);
-      return res.status(HttpStatusCodes.OK).json({ ok: true });
-    }
+    abilityService.assureCan(req.user, 'delete', user);
+    await userService.deleteUser(user, currentPassword);
+    return res.status(HttpStatusCodes.OK).json({ ok: true });
   } catch (err) {
     return next(err);
   }
@@ -118,18 +106,14 @@ export const verifyUser = async (req: Request, res: Response, next: NextFunction
   const { code }: Body.VerifyUser = req.body;
   try {
     const user = await userService.getUserById(userId);
-    if (!user) {
-      return next(new NotFoundException('The user was not found'));
+    const isCodeValid = await expiringCodeService.checkEmailVerificationCode(userId, code);
+    if (!isCodeValid) {
+      return next(new NotFoundException('The code is invalid or expired.'));
     } else {
-      const isCodeValid = await expiringCodeService.checkEmailVerificationCode(userId, code);
-      if (!isCodeValid) {
-        return next(new NotFoundException('The code is invalid or expired.'));
-      } else {
-        abilityService.assureCan(req.user, 'update', user);
-        const updatedUser = await userService.verifyUser(user);
-        await emailService.sendEmail(user, 'accountVerified');
-        return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
-      }
+      abilityService.assureCan(req.user, 'update', user);
+      const updatedUser = await userService.verifyUser(user);
+      await emailService.sendEmail(user, 'accountVerified');
+      return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
     }
   } catch (err) {
     return next(err);
@@ -141,15 +125,11 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
   const { email, phone, firstName, lastName, password, currentPassword }: Body.UpdateProfile = req.body;
   try {
     const user = await userService.getUserById(userId);
-    if (!user) {
-      return next(new NotFoundException('The user was not found.'));
-    } else {
-      abilityService.assureCan(req.user, 'update', user);
-      const updatedUser = await userService.updateProfile(user, currentPassword, {
-        email, phone, firstName, lastName, password,
-      });
-      return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
-    }
+    abilityService.assureCan(req.user, 'update', user);
+    const updatedUser = await userService.updateProfile(user, currentPassword, {
+      email, phone, firstName, lastName, password,
+    });
+    return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
   } catch (err) {
     return next(err);
   }
@@ -160,13 +140,9 @@ export const updateLanguage = async (req: Request, res: Response, next: NextFunc
   const { language }: Body.UpdateLanguage = req.body;
   try {
     const user = await userService.getUserById(userId);
-    if (!user) {
-      return next(new NotFoundException('The user was not found.'));
-    } else {
-      abilityService.assureCan(req.user, 'update', user);
-      const updatedUser = await userService.updateLanguage(user, language);
-      return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
-    }
+    abilityService.assureCan(req.user, 'update', user);
+    const updatedUser = await userService.updateLanguage(user, language);
+    return res.status(HttpStatusCodes.OK).json({ ok: true, user: updatedUser });
   } catch (err) {
     return next(err);
   }

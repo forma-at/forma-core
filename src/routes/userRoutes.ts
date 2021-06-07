@@ -48,7 +48,7 @@ router.put(
 router.get(
   '/:userId',
   authorization,
-  userControllers.getUserData,
+  userControllers.getUser,
 );
 
 router.delete(

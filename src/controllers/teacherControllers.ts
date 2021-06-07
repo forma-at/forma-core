@@ -1,13 +1,12 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
-import { userService, abilityService, teacherService } from '../services';
+import { teacherService, abilityService } from '../services';
 
 export const createTeacher = async (req: Request, res: Response, next: NextFunction) => {
   const { skills }: Body.CreateTeacher = req.body;
   try {
     abilityService.assureCan(req.user, 'create', 'Teacher');
-    const teacher = await teacherService.createTeacher(skills);
-    await userService.assignTeacher(req.user, teacher);
+    const teacher = await teacherService.createTeacher(req.user, skills);
     return res.status(HttpStatusCodes.CREATED).json({ ok: true, teacher });
   } catch (err) {
     return next(err);

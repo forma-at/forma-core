@@ -6,7 +6,7 @@ import { JWTPayload } from 'Router';
 import { userRepository } from '../repositories';
 import { schoolService, teacherService } from '../services';
 import { User, UserType } from '../models';
-import { ValidationException } from '../exceptions';
+import { NotFoundException, ValidationException } from '../exceptions';
 
 class UserService {
 
@@ -19,14 +19,14 @@ class UserService {
     minSymbols: 0,
   };
 
-  // Get a single user by id number
+  // Get a user by id
   async getUserById(userId: string) {
-    return userRepository.findOne({ id: userId });
-  }
-
-  // Get many users by id numbers
-  async getUsersByIds(userIds: string[]) {
-    return userRepository.findMany({ id: { $in: userIds } });
+    const user = await userRepository.findOne({ id: userId });
+    if (!user) {
+      throw new NotFoundException('The user was not found.');
+    } else {
+      return user;
+    }
   }
 
   // Get a user by email address
