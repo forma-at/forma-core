@@ -1,14 +1,14 @@
 import { v4 as uuid } from 'uuid';
 import validator from 'validator';
 import { teacherRepository } from '../repositories';
-import { Teacher, Skill } from '../models';
+import { Teacher, Skill, User } from '../models';
 import { NotFoundException, ValidationException } from '../exceptions';
 
 class TeacherService {
 
-  // Get a teacher by id number
+  // Get a teacher by id
   async getTeacherById(teacherId: string) {
-    const teacher = teacherRepository.findOne({ id: teacherId });
+    const teacher = await teacherRepository.findOne({ id: teacherId });
     if (!teacher) {
       throw new NotFoundException('The teacher was not found.');
     } else {
@@ -16,8 +16,18 @@ class TeacherService {
     }
   }
 
+  // Get a teacher by user id
+  async getTeacherByUserId(userId: string) {
+    const teacher = await teacherRepository.findOne({ userId });
+    if (!teacher) {
+      throw new NotFoundException('The teacher was not found');
+    } else {
+      return teacher;
+    }
+  }
+
   // Create a new teacher
-  async createTeacher(skills: unknown[]) {
+  async createTeacher(user: User, skills: unknown[]) {
     const erroneousFields: Partial<Record<keyof Teacher, string>> = {};
     const skillsError = this.validateSkills(skills);
     if (skillsError) erroneousFields.skills = skillsError;
@@ -26,6 +36,7 @@ class TeacherService {
     } else {
       return teacherRepository.create({
         id: uuid(),
+        userId: user.id,
         skills: skills as Skill[],
       });
     }
@@ -48,9 +59,9 @@ class TeacherService {
     }
   }
 
-  // Delete a teacher by id
-  async deleteTeacherById(teacherId: string) {
-    return teacherRepository.delete({ id: teacherId });
+  // Delete a teacher
+  async deleteTeacher(teacher: Teacher) {
+    return teacherRepository.delete({ id: teacher.id });
   }
 
   // Validate a list of skills
