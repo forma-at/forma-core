@@ -1,4 +1,4 @@
-import { abilityService, AppAbility } from '../services';
+import { AppAbility } from '../services';
 
 export enum UserType {
   school = 'school',
@@ -18,10 +18,9 @@ export class User {
   createdAt: number;
   updatedAt: number;
 
-  readonly ability: AppAbility;
+  ability: AppAbility;
 
   constructor(user: User) {
     Object.assign(this, user);
-    this.ability = abilityService.defineFor(this);
   }
 }
