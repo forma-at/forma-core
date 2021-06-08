@@ -45,7 +45,6 @@ export const authorization = async (req: Request, res: Response, next: NextFunct
                 req.user.ability = abilityService.defineFor(user, {});
               }
             }
-            console.log(req.user);
             return next();
           }
         }
