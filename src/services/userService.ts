@@ -4,9 +4,9 @@ import validator from 'validator';
 import { v4 as uuid } from 'uuid';
 import { JWTPayload } from 'Router';
 import { userRepository } from '../repositories';
-import { schoolService } from '../services';
-import { User, School, USER_TYPE, UserType } from '../models';
-import { ValidationException } from '../exceptions';
+import { schoolService, teacherService } from '../services';
+import { User, UserType } from '../models';
+import { NotFoundException, ValidationException } from '../exceptions';
 
 class UserService {
 
@@ -19,9 +19,14 @@ class UserService {
     minSymbols: 0,
   };
 
-  // Get a user by id number
+  // Get a user by id
   async getUserById(userId: string) {
-    return userRepository.findOne({ id: userId });
+    const user = await userRepository.findOne({ id: userId });
+    if (!user) {
+      throw new NotFoundException('The user was not found.');
+    } else {
+      return user;
+    }
   }
 
   // Get a user by email address
@@ -77,7 +82,7 @@ class UserService {
       const passwordHashed = await bcrypt.hash(password, 10);
       return userRepository.create({
         id: uuid(),
-        type: type.toUpperCase() as UserType,
+        type: type as UserType,
         email,
         phone: phone || null,
         firstName,
@@ -111,15 +116,6 @@ class UserService {
     } else {
       const passwordHashed = await bcrypt.hash(password, 10);
       return userRepository.update({ id: user.id }, { password: passwordHashed });
-    }
-  }
-
-  // Assign a school to a user
-  async assignSchool(user: User, school: School) {
-    if (user.type === USER_TYPE.SCHOOL) {
-      return userRepository.update({ id: user.id }, { schoolId: school.id });
-    } else {
-      return user;
     }
   }
 
@@ -183,8 +179,12 @@ class UserService {
     if (!isPasswordCorrect) {
       throw new ValidationException('The password is incorrect.');
     } else {
-      if (user.type === USER_TYPE.SCHOOL) {
-        await schoolService.deleteSchoolById(user.schoolId);
+      if (user.type === UserType.school) {
+        const school = await schoolService.getSchoolByUserId(user.id);
+        await schoolService.deleteSchool(school);
+      } else if (user.type === UserType.teacher) {
+        const teacher = await teacherService.getTeacherByUserId(user.id);
+        await teacherService.deleteTeacher(teacher);
       }
       await userRepository.delete({ id: user.id });
     }
@@ -192,7 +192,7 @@ class UserService {
 
   // Validate user account type
   validateType(type: string) {
-    if (!(type.toUpperCase() in USER_TYPE)) {
+    if (!(type in UserType)) {
       return 'The account type is invalid.';
     }
   }

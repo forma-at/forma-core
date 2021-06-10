@@ -22,7 +22,7 @@ router.put(
 router.get(
   '/:schoolId',
   authorization,
-  schoolControllers.getSchoolData,
+  schoolControllers.getSchool,
 );
 
 router.post(

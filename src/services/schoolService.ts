@@ -1,18 +1,33 @@
 import { v4 as uuid } from 'uuid';
 import validator from 'validator';
 import { schoolRepository } from '../repositories';
-import { School, Address } from '../models';
-import { ValidationException } from '../exceptions';
+import { School, Address, User } from '../models';
+import { NotFoundException, ValidationException } from '../exceptions';
 
 class SchoolService {
 
-  // Get a school by id number
+  // Get a school by id
   async getSchoolById(schoolId: string) {
-    return schoolRepository.findOne({ id: schoolId });
+    const school = await schoolRepository.findOne({ id: schoolId });
+    if (!school) {
+      throw new NotFoundException('The school was not found.');
+    } else {
+      return school;
+    }
+  }
+
+  // Get a school by user id
+  async getSchoolByUserId(userId: string) {
+    const school = await schoolRepository.findOne({ userId });
+    if (!school) {
+      throw new NotFoundException('The school was not found.');
+    } else {
+      return school;
+    }
   }
 
   // Create a new school
-  async createSchool(name: string, address: Address, description?: string) {
+  async createSchool(user: User, name: string, address: Address, description?: string) {
     const erroneousFields: Partial<School & Address> = {};
     const nameError = this.validateField(name);
     if (nameError) erroneousFields.name = nameError;
@@ -35,6 +50,7 @@ class SchoolService {
     } else {
       return schoolRepository.create({
         id: uuid(),
+        userId: user.id,
         name,
         address,
         description: description || null,
@@ -42,7 +58,7 @@ class SchoolService {
     }
   }
 
-  // Update an existing school
+  // Update a school
   async updateSchool(school: School, name?: string, address?: Address, description?: string) {
     const erroneousFields: Partial<School & Address> = {};
     if (typeof name === 'string') {
@@ -90,9 +106,9 @@ class SchoolService {
     }
   }
 
-  // Delete an existing school by id number
-  async deleteSchoolById(schoolId: string) {
-    await schoolRepository.delete({ id: schoolId });
+  // Delete a school
+  async deleteSchool(school: School) {
+    await schoolRepository.delete({ id: school.id });
   }
 
   // Validate a field

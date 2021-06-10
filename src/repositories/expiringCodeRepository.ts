@@ -1,4 +1,4 @@
-import { BaseRepository } from './baseRepository';
+import { BaseRepository } from '../utils';
 import { ExpiringCode } from '../models';
 
 class ExpiringCodeRepository extends BaseRepository<ExpiringCode> {

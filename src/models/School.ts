@@ -7,8 +7,8 @@ export interface Address {
 }
 
 export class School {
-
   id: string;
+  userId: string;
   name: string;
   address: Address;
   description?: string;
@@ -18,5 +18,4 @@ export class School {
   constructor(school: School) {
     Object.assign(this, school);
   }
-
 }

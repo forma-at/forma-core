@@ -63,3 +63,11 @@ export interface UpdateSchool {
   country?: string;
   description?: string;
 }
+
+export interface CreateTeacher {
+  skills: unknown[];
+}
+
+export interface UpdateTeacher {
+  skills?: unknown[];
+}

@@ -1,4 +1,4 @@
-import { BaseRepository } from './baseRepository';
+import { BaseRepository } from '../utils';
 import { User } from '../models';
 
 class UserRepository extends BaseRepository<User> {
