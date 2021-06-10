@@ -68,7 +68,7 @@ class TeacherService {
   validateSkills(skills: unknown[]) {
     let isValid = true;
     skills.forEach((skill) => {
-      if (typeof skill !== 'string' || validator.isAlphanumeric(skill)) {
+      if (typeof skill !== 'string' || !validator.isAlphanumeric(skill)) {
         isValid = false;
       }
     });
