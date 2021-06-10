@@ -1,5 +1,5 @@
 import { FilterQuery, Collection } from 'mongodb';
-import { databaseClient } from '../utils';
+import { databaseClient } from './databaseClient';
 
 type EntityConstructor<T> = new (raw: unknown) => T;
 
