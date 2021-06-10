@@ -4,14 +4,14 @@ import {
   NextFunction as ExpressNextFunction,
 } from 'express';
 import * as RequestBody from './RequestBody';
-import { User } from '../models';
+import { UserWithAbility } from '../models';
 
 export interface JWTPayload {
   userId: string;
 }
 
 export interface RequestUser {
-  user: User;
+  user: UserWithAbility;
 }
 
 export type Request = ExpressRequest & RequestUser;

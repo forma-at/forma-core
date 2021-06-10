@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, JWTPayload } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
 import jsonwebtoken, { VerifyErrors } from 'jsonwebtoken';
 import { abilityService, schoolService, teacherService, userService } from '../services';
-import { UserType } from '../models';
+import { UserWithAbility, UserType } from '../models';
 
 export const authorization = async (req: Request, res: Response, next: NextFunction) => {
   const token = req?.headers?.authorization;
@@ -29,22 +29,23 @@ export const authorization = async (req: Request, res: Response, next: NextFunct
               message: 'Authorization token invalid.',
             });
           } else {
-            req.user = user;
+            let ability;
             if (user.type === UserType.school) {
               try {
                 const school = await schoolService.getSchoolByUserId(user.id);
-                req.user.ability = abilityService.defineFor(user, { school });
+                ability = abilityService.defineFor(user, { school });
               } catch (error) {
-                req.user.ability = abilityService.defineFor(user, {});
+                ability = abilityService.defineFor(user, {});
               }
             } else if (user.type === UserType.teacher) {
               try {
                 const teacher = await teacherService.getTeacherByUserId(user.id);
-                req.user.ability = abilityService.defineFor(user, { teacher });
+                ability = abilityService.defineFor(user, { teacher });
               } catch (error) {
-                req.user.ability = abilityService.defineFor(user, {});
+                ability = abilityService.defineFor(user, {});
               }
             }
+            req.user = new UserWithAbility(user, ability);
             return next();
           }
         }

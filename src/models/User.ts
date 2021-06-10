@@ -18,9 +18,16 @@ export class User {
   createdAt: number;
   updatedAt: number;
 
-  ability: AppAbility;
-
   constructor(user: User) {
     Object.assign(this, user);
+  }
+}
+
+export class UserWithAbility extends User {
+  readonly ability: AppAbility;
+
+  constructor(user: User, ability: AppAbility) {
+    super(user);
+    this.ability = ability;
   }
 }

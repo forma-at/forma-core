@@ -1,6 +1,6 @@
 import { Ability, AbilityBuilder, AbilityClass } from '@casl/ability';
 import { ForbiddenException } from '../exceptions';
-import { User, UserType, School, Teacher } from '../models';
+import { UserWithAbility, UserType, User, School, Teacher } from '../models';
 
 // Define allowed actions and valid subjects
 type Actions = 'create' | 'read' | 'update' | 'delete';
@@ -79,7 +79,7 @@ class AbilityService {
   }
 
   // Throws ForbiddenException if ability is missing
-  assureCan(user: User, action: Actions, subject: Subjects) {
+  assureCan(user: UserWithAbility, action: Actions, subject: Subjects) {
     if (user.ability.cannot(action, subject)) {
       const subjectName = typeof subject === 'object' ? subject.constructor.name : String(subject);
       const defaultReason = `You cannot perform action '${action}' on subject '${subjectName}'.`;
