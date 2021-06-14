@@ -40,4 +40,40 @@ router.post(
   schoolControllers.updateSchool,
 );
 
+router.get(
+  '/:schoolId/member',
+  authorization,
+  schoolControllers.getSchoolMembers,
+);
+
+router.put(
+  '/:schoolId/member',
+  authorization,
+  validate([
+    body('teacherId').isString(),
+  ]),
+  schoolControllers.createSchoolMember,
+);
+
+router.get(
+  '/:schoolId/member/:teacherId',
+  authorization,
+  schoolControllers.getSchoolMember,
+);
+
+router.post(
+  '/:schoolId/member/:teacherId',
+  authorization,
+  validate([
+    body('status').isString(),
+  ]),
+  schoolControllers.updateSchoolMember,
+);
+
+router.delete(
+  '/:schoolId/member/:teacherId',
+  authorization,
+  schoolControllers.deleteSchoolMember,
+);
+
 export default router;

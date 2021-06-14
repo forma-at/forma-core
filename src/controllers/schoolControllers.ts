@@ -38,3 +38,53 @@ export const updateSchool = async (req: Request, res: Response, next: NextFuncti
     return next(err);
   }
 };
+
+export const getSchoolMembers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+      message: 'This feature is not yet implemented.',
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const createSchoolMember = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+      message: 'This feature is not yet implemented.',
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getSchoolMember = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+      message: 'This feature is not yet implemented.',
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const updateSchoolMember = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+      message: 'This feature is not yet implemented.',
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const deleteSchoolMember = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
+      message: 'This feature is not yet implemented.',
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
