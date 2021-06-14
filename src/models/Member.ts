@@ -15,3 +15,5 @@ export class Member {
     Object.assign(this, member);
   }
 }
+
+export class Membership extends Member {}
