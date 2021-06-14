@@ -39,7 +39,7 @@ export const updateSchool = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
-export const getSchoolMembers = async (req: Request, res: Response, next: NextFunction) => {
+export const getMemberships = async (req: Request, res: Response, next: NextFunction) => {
   try {
     return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
       message: 'This feature is not yet implemented.',
@@ -49,7 +49,7 @@ export const getSchoolMembers = async (req: Request, res: Response, next: NextFu
   }
 };
 
-export const createSchoolMember = async (req: Request, res: Response, next: NextFunction) => {
+export const createMembership = async (req: Request, res: Response, next: NextFunction) => {
   try {
     return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
       message: 'This feature is not yet implemented.',
@@ -59,7 +59,7 @@ export const createSchoolMember = async (req: Request, res: Response, next: Next
   }
 };
 
-export const getSchoolMember = async (req: Request, res: Response, next: NextFunction) => {
+export const getMembership = async (req: Request, res: Response, next: NextFunction) => {
   try {
     return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
       message: 'This feature is not yet implemented.',
@@ -69,7 +69,7 @@ export const getSchoolMember = async (req: Request, res: Response, next: NextFun
   }
 };
 
-export const updateSchoolMember = async (req: Request, res: Response, next: NextFunction) => {
+export const updateMembership = async (req: Request, res: Response, next: NextFunction) => {
   try {
     return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
       message: 'This feature is not yet implemented.',
@@ -79,7 +79,7 @@ export const updateSchoolMember = async (req: Request, res: Response, next: Next
   }
 };
 
-export const deleteSchoolMember = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteMembership = async (req: Request, res: Response, next: NextFunction) => {
   try {
     return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
       message: 'This feature is not yet implemented.',

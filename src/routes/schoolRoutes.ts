@@ -41,39 +41,39 @@ router.post(
 );
 
 router.get(
-  '/:schoolId/member',
+  '/:schoolId/membership',
   authorization,
-  schoolControllers.getSchoolMembers,
+  schoolControllers.getMemberships,
 );
 
 router.put(
-  '/:schoolId/member',
+  '/:schoolId/membership',
   authorization,
   validate([
     body('teacherId').isString(),
   ]),
-  schoolControllers.createSchoolMember,
+  schoolControllers.createMembership,
 );
 
 router.get(
-  '/:schoolId/member/:teacherId',
+  '/:schoolId/membership/:teacherId',
   authorization,
-  schoolControllers.getSchoolMember,
+  schoolControllers.getMembership,
 );
 
 router.post(
-  '/:schoolId/member/:teacherId',
+  '/:schoolId/membership/:teacherId',
   authorization,
   validate([
     body('status').isString(),
   ]),
-  schoolControllers.updateSchoolMember,
+  schoolControllers.updateMembership,
 );
 
 router.delete(
-  '/:schoolId/member/:teacherId',
+  '/:schoolId/membership/:teacherId',
   authorization,
-  schoolControllers.deleteSchoolMember,
+  schoolControllers.deleteMembership,
 );
 
 export default router;

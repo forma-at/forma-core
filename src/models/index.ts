@@ -1,5 +1,5 @@
 export * from './ExpiringCode';
-export * from './Member';
+export * from './Membership';
 export * from './School';
 export * from './Teacher';
 export * from './User';
