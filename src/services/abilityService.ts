@@ -54,8 +54,7 @@ class AbilityService {
         .because('You cannot create more than one school.');
 
       // Teacher management
-      can('read', 'Teacher');
-      cannot(['create', 'update', 'delete'], 'Teacher')
+      cannot(['create', 'read', 'update', 'delete'], 'Teacher')
         .because('You cannot manage teachers.');
 
       // Membership management
@@ -78,8 +77,7 @@ class AbilityService {
         .because('You cannot create more than one teacher.');
 
       // School management
-      can('read', 'School');
-      cannot(['create', 'update', 'delete'], 'School')
+      cannot(['create', 'read', 'update', 'delete'], 'School')
         .because('You cannot manage schools.');
 
       // Membership management

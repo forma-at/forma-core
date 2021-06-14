@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
-import { schoolService, abilityService } from '../services';
+import { schoolService, abilityService, teacherService } from '../services';
+import { membershipService } from '../services/membershipService';
 
 export const createSchool = async (req: Request, res: Response, next: NextFunction) => {
   const { name, street, city, zip, state, country, description }: Body.CreateSchool = req.body;
@@ -40,50 +41,67 @@ export const updateSchool = async (req: Request, res: Response, next: NextFuncti
 };
 
 export const getMemberships = async (req: Request, res: Response, next: NextFunction) => {
+  const { schoolId } = req.params;
   try {
-    return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-      message: 'This feature is not yet implemented.',
-    });
+    const school = await schoolService.getSchoolById(schoolId);
+    abilityService.assureCan(req.user, 'read', school);
+    const memberships = await membershipService.getMembershipsBySchoolId(school.id);
+    res.status(HttpStatusCodes.OK).json({ ok: true, memberships });
   } catch (err) {
     return next(err);
   }
 };
 
 export const createMembership = async (req: Request, res: Response, next: NextFunction) => {
+  const { schoolId } = req.params;
   try {
-    return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-      message: 'This feature is not yet implemented.',
-    });
+    const school = await schoolService.getSchoolById(schoolId);
+    abilityService.assureCan(req.user, 'create', 'Membership');
+    const teacher = await teacherService.getTeacherByUserId(req.user.id);
+    const membership = await membershipService.create(school.id, teacher.id);
+    return res.status(HttpStatusCodes.CREATED).json({ ok: true, membership });
   } catch (err) {
     return next(err);
   }
 };
 
 export const getMembership = async (req: Request, res: Response, next: NextFunction) => {
+  const { schoolId, teacherId } = req.params;
   try {
-    return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-      message: 'This feature is not yet implemented.',
-    });
+    const school = await schoolService.getSchoolById(schoolId);
+    const teacher = await teacherService.getTeacherById(teacherId);
+    const membership = await membershipService.getBySchooldIdAndTeacherId(school.id, teacher.id);
+    abilityService.assureCan(req.user, 'read', membership);
+    res.status(HttpStatusCodes.OK).json({ ok: true, membership });
   } catch (err) {
     return next(err);
   }
 };
 
 export const updateMembership = async (req: Request, res: Response, next: NextFunction) => {
+  const { schoolId, teacherId } = req.params;
+  const { status }: Body.UpdateMembership = req.body;
   try {
-    return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-      message: 'This feature is not yet implemented.',
-    });
+    const school = await schoolService.getSchoolById(schoolId);
+    const teacher = await teacherService.getTeacherById(teacherId);
+    const membership = await membershipService.getBySchooldIdAndTeacherId(school.id, teacher.id);
+    abilityService.assureCan(req.user, 'update', membership);
+    const updatedMembership = await membershipService.update(membership, status);
+    res.status(HttpStatusCodes.OK).json({ ok: true, membership: updatedMembership });
   } catch (err) {
     return next(err);
   }
 };
 
 export const deleteMembership = async (req: Request, res: Response, next: NextFunction) => {
+  const { schoolId, teacherId } = req.params;
   try {
-    return res.status(HttpStatusCodes.NOT_IMPLEMENTED).json({
-      message: 'This feature is not yet implemented.',
-    });
+    const school = await schoolService.getSchoolById(schoolId);
+    const teacher = await teacherService.getTeacherById(teacherId);
+    const membership = await membershipService.getBySchooldIdAndTeacherId(school.id, teacher.id);
+    abilityService.assureCan(req.user, 'delete', membership);
+    await membershipService.delete(membership);
+    res.status(HttpStatusCodes.OK).json({ ok: true });
   } catch (err) {
     return next(err);
   }

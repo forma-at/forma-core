@@ -49,9 +49,6 @@ router.get(
 router.put(
   '/:schoolId/membership',
   authorization,
-  validate([
-    body('teacherId').isString(),
-  ]),
   schoolControllers.createMembership,
 );
 
