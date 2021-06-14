@@ -186,7 +186,7 @@ class UserService {
         const teacher = await teacherService.getTeacherByUserId(user.id);
         await teacherService.deleteTeacher(teacher);
       }
-      await userRepository.delete({ id: user.id });
+      await userRepository.deleteOne({ id: user.id });
     }
   }
 

@@ -61,7 +61,7 @@ class TeacherService {
 
   // Delete a teacher
   async deleteTeacher(teacher: Teacher) {
-    return teacherRepository.delete({ id: teacher.id });
+    return teacherRepository.deleteOne({ id: teacher.id });
   }
 
   // Validate a list of skills

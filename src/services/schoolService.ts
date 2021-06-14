@@ -108,7 +108,7 @@ class SchoolService {
 
   // Delete a school
   async deleteSchool(school: School) {
-    await schoolRepository.delete({ id: school.id });
+    await schoolRepository.deleteOne({ id: school.id });
   }
 
   // Validate a field
