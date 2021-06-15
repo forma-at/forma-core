@@ -10,9 +10,11 @@ class MembershipService {
   }
 
   // Get a membrship by school id and teacher id
-  async getBySchooldIdAndTeacherId(schoolId: string, teacherId: string) {
+  async getBySchooldIdAndTeacherId(schoolId: string, teacherId: string, preserveUndefined?: false): Promise<Membership>;
+  async getBySchooldIdAndTeacherId(schoolId: string, teacherId: string, preserveUndefined?: true): Promise<Membership | void>;
+  async getBySchooldIdAndTeacherId(schoolId: string, teacherId: string, preserveUndefined = false) {
     const membership = await membershipRepository.findOne({ schoolId, teacherId });
-    if (!membership) {
+    if (!membership && !preserveUndefined) {
       throw new NotFoundException('The membership was not found.');
     } else {
       return membership;

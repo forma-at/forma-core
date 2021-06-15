@@ -7,9 +7,11 @@ import { NotFoundException, ValidationException } from '../exceptions';
 class TeacherService {
 
   // Get a teacher by id
-  async getTeacherById(teacherId: string) {
+  async getTeacherById(teacherId: string, preserveUndefined?: false): Promise<Teacher>;
+  async getTeacherById(teacherId: string, preserveUndefined?: true): Promise<Teacher | void>;
+  async getTeacherById(teacherId: string, preserveUndefined = false) {
     const teacher = await teacherRepository.findOne({ id: teacherId });
-    if (!teacher) {
+    if (!teacher && !preserveUndefined) {
       throw new NotFoundException('The teacher was not found.');
     } else {
       return teacher;
@@ -17,8 +19,15 @@ class TeacherService {
   }
 
   // Get a teacher by user id
-  async getTeacherByUserId(userId: string) {
-    return teacherRepository.findOne({ userId });
+  async getTeacherByUserId(userId: string, preserveUndefined?: false): Promise<Teacher>;
+  async getTeacherByUserId(userId: string, preserveUndefined?: true): Promise<Teacher | void>;
+  async getTeacherByUserId(userId: string, preserveUndefined = false) {
+    const teacher = await teacherRepository.findOne({ userId });
+    if (!teacher && !preserveUndefined) {
+      throw new NotFoundException('The teacher was not found.');
+    } else {
+      return teacher;
+    }
   }
 
   // Create a new teacher

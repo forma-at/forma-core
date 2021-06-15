@@ -19,9 +19,11 @@ class UserService {
   };
 
   // Get a user by id
-  async getUserById(userId: string) {
+  async getUserById(userId: string, preserveUndefined?: false): Promise<User>;
+  async getUserById(userId: string, preserveUndefined?: true): Promise<User | void>;
+  async getUserById(userId: string, preserveUndefined = false) {
     const user = await userRepository.findOne({ id: userId });
-    if (!user) {
+    if (!user && !preserveUndefined) {
       throw new NotFoundException('The user was not found.');
     } else {
       return user;
@@ -29,8 +31,15 @@ class UserService {
   }
 
   // Get a user by email address
-  async getUserByEmail(email: string) {
-    return userRepository.findOne({ email });
+  async getUserByEmail(userId: string, preserveUndefined?: false): Promise<User>;
+  async getUserByEmail(userId: string, preserveUndefined?: true): Promise<User | void>;
+  async getUserByEmail(email: string, preserveUndefined = false) {
+    const user = await userRepository.findOne({ email });
+    if (!user && !preserveUndefined) {
+      throw new NotFoundException('The user was not found.');
+    } else {
+      return user;
+    }
   }
 
   // Create a JsonWebToken for a user
@@ -191,7 +200,7 @@ class UserService {
 
   // Validate an email address, including checking for usage
   async validateEmailAddress(email: string) {
-    const emailInUse = await this.getUserByEmail(email);
+    const emailInUse = await this.getUserByEmail(email, true);
     if (emailInUse) {
       return 'This email address is already in use.';
     } else if (!validator.isEmail(email)) {

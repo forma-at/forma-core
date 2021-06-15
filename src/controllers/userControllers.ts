@@ -15,7 +15,7 @@ import { UserType } from '../models';
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password }: Body.Authenticate = req.body;
   try {
-    const user = await userService.getUserByEmail(email);
+    const user = await userService.getUserByEmail(email, true);
     if (!user) {
       return next(new ValidationException('Invalid email address or password.'));
     } else {
@@ -39,7 +39,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
   const { email }: Body.ForgotPassword = req.body;
   try {
-    const user = await userService.getUserByEmail(email);
+    const user = await userService.getUserByEmail(email, true);
     if (!user) {
       return res.status(HttpStatusCodes.OK).json({ ok: true });
     } else {
@@ -105,13 +105,13 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
     abilityService.assureCan(req.user, 'delete', user);
     await userService.deleteUser(user, currentPassword);
     if (user.type === UserType.school) {
-      const school = await schoolService.getSchoolByUserId(user.id);
+      const school = await schoolService.getSchoolByUserId(user.id, true);
       if (school) {
         await schoolService.deleteSchool(school);
         await membershipService.deleteBySchoolId(school.id);
       }
     } else if (user.type === UserType.teacher) {
-      const teacher = await teacherService.getTeacherByUserId(user.id);
+      const teacher = await teacherService.getTeacherByUserId(user.id, true);
       if (teacher) {
         await teacherService.deleteTeacher(teacher);
         await membershipService.deleteByTeacherId(teacher.id);

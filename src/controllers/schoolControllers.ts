@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
-import { schoolService, abilityService, teacherService } from '../services';
-import { membershipService } from '../services/membershipService';
+import { schoolService, abilityService, teacherService, membershipService } from '../services';
 
 export const createSchool = async (req: Request, res: Response, next: NextFunction) => {
   const { name, street, city, zip, state, country, description }: Body.CreateSchool = req.body;

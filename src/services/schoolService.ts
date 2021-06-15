@@ -7,9 +7,11 @@ import { NotFoundException, ValidationException } from '../exceptions';
 class SchoolService {
 
   // Get a school by id
-  async getSchoolById(schoolId: string) {
+  async getSchoolById(schoolId: string, preserveUndefined?: false): Promise<School>;
+  async getSchoolById(schoolId: string, preserveUndefined?: true): Promise<School | void>;
+  async getSchoolById(schoolId: string, preserveUndefined = false) {
     const school = await schoolRepository.findOne({ id: schoolId });
-    if (!school) {
+    if (!school && !preserveUndefined) {
       throw new NotFoundException('The school was not found.');
     } else {
       return school;
@@ -17,8 +19,15 @@ class SchoolService {
   }
 
   // Get a school by user id
-  async getSchoolByUserId(userId: string) {
-    return schoolRepository.findOne({ userId });
+  async getSchoolByUserId(schoolId: string, preserveUndefined?: false): Promise<School>;
+  async getSchoolByUserId(schoolId: string, preserveUndefined?: true): Promise<School | void>;
+  async getSchoolByUserId(userId: string, preserveUndefined = false) {
+    const school = await schoolRepository.findOne({ userId });
+    if (!school && !preserveUndefined) {
+      throw new NotFoundException('The school was not found.');
+    } else {
+      return school;
+    }
   }
 
   // Create a new school
