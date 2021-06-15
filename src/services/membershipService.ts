@@ -56,6 +56,16 @@ class MembershipService {
     });
   }
 
+  // Delete memberships by school id
+  async deleteBySchoolId(schoolId: string) {
+    return membershipRepository.deleteMany({ schoolId });
+  }
+
+  // Delete memberships by teacher id
+  async deleteByTeacherId(teacherId: string) {
+    return membershipRepository.deleteMany({ teacherId });
+  }
+
   // Validate membership status
   validateStatus(status: string) {
     if (!(status in MembershipStatus)) {

@@ -31,17 +31,17 @@ export const authorization = async (req: Request, res: Response, next: NextFunct
           } else {
             let ability;
             if (user.type === UserType.school) {
-              try {
-                const school = await schoolService.getSchoolByUserId(user.id);
+              const school = await schoolService.getSchoolByUserId(user.id);
+              if (school) {
                 ability = abilityService.defineFor(user, { school });
-              } catch (error) {
+              } else {
                 ability = abilityService.defineFor(user, {});
               }
             } else if (user.type === UserType.teacher) {
-              try {
-                const teacher = await teacherService.getTeacherByUserId(user.id);
+              const teacher = await teacherService.getTeacherByUserId(user.id);
+              if (teacher) {
                 ability = abilityService.defineFor(user, { teacher });
-              } catch (error) {
+              } else {
                 ability = abilityService.defineFor(user, {});
               }
             }

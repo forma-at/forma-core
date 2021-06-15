@@ -18,12 +18,7 @@ class TeacherService {
 
   // Get a teacher by user id
   async getTeacherByUserId(userId: string) {
-    const teacher = await teacherRepository.findOne({ userId });
-    if (!teacher) {
-      throw new NotFoundException('The teacher was not found');
-    } else {
-      return teacher;
-    }
+    return teacherRepository.findOne({ userId });
   }
 
   // Create a new teacher

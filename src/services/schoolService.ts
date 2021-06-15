@@ -18,12 +18,7 @@ class SchoolService {
 
   // Get a school by user id
   async getSchoolByUserId(userId: string) {
-    const school = await schoolRepository.findOne({ userId });
-    if (!school) {
-      throw new NotFoundException('The school was not found.');
-    } else {
-      return school;
-    }
+    return schoolRepository.findOne({ userId });
   }
 
   // Create a new school
