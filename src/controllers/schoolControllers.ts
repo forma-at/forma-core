@@ -44,7 +44,7 @@ export const getMemberships = async (req: Request, res: Response, next: NextFunc
   try {
     const school = await schoolService.getSchoolById(schoolId);
     abilityService.assureCan(req.user, 'read', school);
-    const memberships = await membershipService.getMembershipsBySchoolId(school.id);
+    const memberships = await membershipService.getMany(school.id);
     res.status(HttpStatusCodes.OK).json({ ok: true, memberships });
   } catch (err) {
     return next(err);
@@ -69,7 +69,7 @@ export const getMembership = async (req: Request, res: Response, next: NextFunct
   try {
     const school = await schoolService.getSchoolById(schoolId);
     const teacher = await teacherService.getTeacherById(teacherId);
-    const membership = await membershipService.getBySchooldIdAndTeacherId(school.id, teacher.id);
+    const membership = await membershipService.getOne(school.id, teacher.id);
     abilityService.assureCan(req.user, 'read', membership);
     res.status(HttpStatusCodes.OK).json({ ok: true, membership });
   } catch (err) {
@@ -83,7 +83,7 @@ export const updateMembership = async (req: Request, res: Response, next: NextFu
   try {
     const school = await schoolService.getSchoolById(schoolId);
     const teacher = await teacherService.getTeacherById(teacherId);
-    const membership = await membershipService.getBySchooldIdAndTeacherId(school.id, teacher.id);
+    const membership = await membershipService.getOne(school.id, teacher.id);
     abilityService.assureCan(req.user, 'update', membership);
     const updatedMembership = await membershipService.update(membership, status);
     res.status(HttpStatusCodes.OK).json({ ok: true, membership: updatedMembership });
@@ -97,7 +97,7 @@ export const deleteMembership = async (req: Request, res: Response, next: NextFu
   try {
     const school = await schoolService.getSchoolById(schoolId);
     const teacher = await teacherService.getTeacherById(teacherId);
-    const membership = await membershipService.getBySchooldIdAndTeacherId(school.id, teacher.id);
+    const membership = await membershipService.getOne(school.id, teacher.id);
     abilityService.assureCan(req.user, 'delete', membership);
     await membershipService.delete(membership);
     res.status(HttpStatusCodes.OK).json({ ok: true });

@@ -5,14 +5,14 @@ import { NotFoundException, ValidationException } from '../exceptions';
 class MembershipService {
 
   // Get a membership by school id
-  async getMembershipsBySchoolId(schoolId: string) {
+  async getMany(schoolId: string) {
     return membershipRepository.findMany({ schoolId });
   }
 
   // Get a membrship by school id and teacher id
-  async getBySchooldIdAndTeacherId(schoolId: string, teacherId: string, preserveUndefined?: false): Promise<Membership>;
-  async getBySchooldIdAndTeacherId(schoolId: string, teacherId: string, preserveUndefined?: true): Promise<Membership | void>;
-  async getBySchooldIdAndTeacherId(schoolId: string, teacherId: string, preserveUndefined = false) {
+  async getOne(schoolId: string, teacherId: string, preserveUndefined?: false): Promise<Membership>;
+  async getOne(schoolId: string, teacherId: string, preserveUndefined?: true): Promise<Membership | void>;
+  async getOne(schoolId: string, teacherId: string, preserveUndefined = false) {
     const membership = await membershipRepository.findOne({ schoolId, teacherId });
     if (!membership && !preserveUndefined) {
       throw new NotFoundException('The membership was not found.');
