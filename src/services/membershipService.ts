@@ -1,13 +1,18 @@
 import { membershipRepository } from '../repositories';
-import { Membership, MembershipStatus } from '../models';
+import {
+  Membership,
+  MembershipStatus,
+  School,
+  SchoolMembershipRecord,
+  Teacher,
+  TeacherMembershipRecord,
+} from '../models';
 import { NotFoundException, ValidationException } from '../exceptions';
+import { userService } from './userService';
+import { teacherService } from './teacherService';
+import { schoolService } from './schoolService';
 
 class MembershipService {
-
-  // Get a membership by school id
-  async getMany(schoolId: string) {
-    return membershipRepository.findMany({ schoolId });
-  }
 
   // Get a membrship by school id and teacher id
   async getOne(schoolId: string, teacherId: string, preserveUndefined?: false): Promise<Membership>;
@@ -66,6 +71,30 @@ class MembershipService {
   // Delete memberships by teacher id
   async deleteByTeacherId(teacherId: string) {
     return membershipRepository.deleteMany({ teacherId });
+  }
+
+  // Get teacher membership records by school
+  async getTeacherRecordsBySchool(school: School) {
+    const memberships = await membershipRepository.findMany({ schoolId: school.id });
+    const teacherIds = memberships.map((membership) => membership.teacherId);
+    const teachers = await teacherService.getTeachersByIds(teacherIds);
+    const userIds = teachers.map((teacher) => teacher.userId);
+    const users = await userService.getUsersByIds(userIds);
+    return memberships.map((membership, index) => {
+      return new TeacherMembershipRecord(membership, teachers[index], users[index]);
+    });
+  }
+
+  // Get school membership records by teacher
+  async getSchoolRecordsByTeacher(teacher: Teacher) {
+    const memberships = await membershipRepository.findMany({ teacherId: teacher.id });
+    const schoolIds = memberships.map((membership) => membership.schoolId);
+    const schools = await schoolService.getSchoolsByIds(schoolIds);
+    const userIds = schools.map((school) => school.userId);
+    const users = await userService.getUsersByIds(userIds);
+    return memberships.map((membership, index) => {
+      return new SchoolMembershipRecord(membership, schools[index], users[index]);
+    });
   }
 
   // Validate membership status

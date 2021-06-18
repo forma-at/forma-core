@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
-import { teacherService, abilityService } from '../services';
+import { teacherService, abilityService, membershipService } from '../services';
 
 export const createTeacher = async (req: Request, res: Response, next: NextFunction) => {
   const { skills }: Body.CreateTeacher = req.body;
@@ -32,6 +32,18 @@ export const updateTeacher = async (req: Request, res: Response, next: NextFunct
     abilityService.assureCan(req.user, 'update', teacher);
     const updatedTeacher = await teacherService.updateTeacher(teacher, skills);
     return res.status(HttpStatusCodes.OK).json({ ok: true, teacher: updatedTeacher });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getSchools = async (req: Request, res: Response, next: NextFunction) => {
+  const { teacherId } = req.params;
+  try {
+    const teacher = await teacherService.getTeacherById(teacherId);
+    abilityService.assureCan(req.user, 'read', teacher);
+    const schools = await membershipService.getSchoolRecordsByTeacher(teacher);
+    return res.status(HttpStatusCodes.OK).json({ ok: true, schools });
   } catch (err) {
     return next(err);
   }

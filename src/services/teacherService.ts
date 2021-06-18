@@ -30,6 +30,14 @@ class TeacherService {
     }
   }
 
+  // Get multiple teachers by ids
+  async getTeachersByIds(teacherIds: string[]) {
+    const teachers = await teacherRepository.findMany({ id: { $in: teacherIds } });
+    return teacherIds.map((teacherId) => (
+      teachers.find((teacher) => teacher.id === teacherId)
+    ));
+  }
+
   // Create a new teacher
   async createTeacher(user: User, skills: unknown[]) {
     const erroneousFields: Partial<Record<keyof Teacher, string>> = {};

@@ -41,9 +41,9 @@ router.post(
 );
 
 router.get(
-  '/:schoolId/membership',
+  '/:schoolId/teachers',
   authorization,
-  schoolControllers.getMemberships,
+  schoolControllers.getTeachers,
 );
 
 router.put(

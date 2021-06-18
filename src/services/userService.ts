@@ -42,6 +42,14 @@ class UserService {
     }
   }
 
+  // Get multiple users by ids
+  async getUsersByIds(userIds: string[]) {
+    const users = await userRepository.findMany({ id: { $in: userIds } });
+    return userIds.map((userId) => (
+      users.find((user) => user.id === userId)
+    ));
+  }
+
   // Create a JsonWebToken for a user
   async createJWT(user: User): Promise<string> {
     return new Promise((resolve, reject) => {

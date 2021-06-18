@@ -39,13 +39,13 @@ export const updateSchool = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
-export const getMemberships = async (req: Request, res: Response, next: NextFunction) => {
+export const getTeachers = async (req: Request, res: Response, next: NextFunction) => {
   const { schoolId } = req.params;
   try {
     const school = await schoolService.getSchoolById(schoolId);
     abilityService.assureCan(req.user, 'read', school);
-    const memberships = await membershipService.getMany(school.id);
-    res.status(HttpStatusCodes.OK).json({ ok: true, memberships });
+    const teachers = await membershipService.getTeacherRecordsBySchool(school);
+    return res.status(HttpStatusCodes.OK).json({ ok: true, teachers });
   } catch (err) {
     return next(err);
   }

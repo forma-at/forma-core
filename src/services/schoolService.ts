@@ -30,6 +30,14 @@ class SchoolService {
     }
   }
 
+  // Get multiple schools by ids
+  async getSchoolsByIds(schoolIds: string[]) {
+    const users = await schoolRepository.findMany({ id: { $in: schoolIds } });
+    return schoolIds.map((schoolId) => (
+      users.find((school) => school.id === schoolId)
+    ));
+  }
+
   // Create a new school
   async createSchool(user: User, name: string, address: Address, description?: string) {
     const erroneousFields: Partial<School & Address> = {};

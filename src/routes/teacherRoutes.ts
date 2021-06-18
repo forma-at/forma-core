@@ -28,4 +28,10 @@ router.post(
   teacherControllers.updateTeacher,
 );
 
+router.get(
+  '/:teacherId/schools',
+  authorization,
+  teacherControllers.getSchools,
+);
+
 export default router;
