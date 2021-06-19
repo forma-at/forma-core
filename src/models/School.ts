@@ -19,3 +19,13 @@ export class School {
     Object.assign(this, school);
   }
 }
+
+export class SchoolPublicData {
+  id: string;
+  name: string;
+
+  constructor(school: School) {
+    this.id = school.id;
+    this.name = school.name;
+  }
+}

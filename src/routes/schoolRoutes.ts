@@ -4,6 +4,12 @@ import { schoolControllers } from '../controllers';
 
 const router = Router();
 
+router.get(
+  '/public',
+  authorization,
+  schoolControllers.getPublicSchools,
+);
+
 router.put(
   '/',
   authorization,

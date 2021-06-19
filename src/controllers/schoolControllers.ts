@@ -2,6 +2,15 @@ import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
 import { schoolService, abilityService, teacherService, membershipService } from '../services';
 
+export const getPublicSchools = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const schools = await schoolService.getPublicSchools();
+    return res.status(HttpStatusCodes.OK).json({ ok: true, schools });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export const createSchool = async (req: Request, res: Response, next: NextFunction) => {
   const { name, street, city, zip, state, country, description }: Body.CreateSchool = req.body;
   try {

@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import validator from 'validator';
 import { schoolRepository } from '../repositories';
-import { School, Address, User } from '../models';
+import { School, Address, User, SchoolPublicData } from '../models';
 import { NotFoundException, ValidationException } from '../exceptions';
 
 class SchoolService {
@@ -36,6 +36,12 @@ class SchoolService {
     return schoolIds.map((schoolId) => (
       users.find((school) => school.id === schoolId)
     ));
+  }
+
+  // Get public data about schools
+  async getPublicSchools() {
+    const schools = await schoolRepository.findMany({});
+    return schools.map((school) => new SchoolPublicData(school));
   }
 
   // Create a new school

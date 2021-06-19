@@ -482,6 +482,33 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/MembershipWithTeacher'
+  '/api/school/public':
+    get:
+      tags:
+        - School
+      summary: Get public school data
+      description: Get public data of all schools, including id and name
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Public school data retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OkResponse'
+                  - type: object
+                    properties:
+                      schools:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              $ref: '#/components/schemas/School/properties/id'
+                            name:
+                              $ref: '#/components/schemas/School/properties/name'
   '/api/school/{schoolId}/membership':
     put:
       tags:
