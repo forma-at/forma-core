@@ -1,6 +1,17 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
 import { teacherService, abilityService, membershipService } from '../services';
+import { Subject, Language } from '../models';
+
+export const getTeacherSkills = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const subjects = Object.values(Subject);
+    const languages = Object.values(Language);
+    return res.status(HttpStatusCodes.OK).json({ ok: true, subjects, languages });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 export const createTeacher = async (req: Request, res: Response, next: NextFunction) => {
   const { subjects, languages }: Body.CreateTeacher = req.body;

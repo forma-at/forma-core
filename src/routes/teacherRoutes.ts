@@ -4,6 +4,12 @@ import { teacherControllers } from '../controllers';
 
 const router = Router();
 
+router.get(
+  '/skills',
+  authorization,
+  teacherControllers.getTeacherSkills,
+);
+
 router.put(
   '/',
   authorization,
