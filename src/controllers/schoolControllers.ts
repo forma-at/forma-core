@@ -66,13 +66,8 @@ export const createMembership = async (req: Request, res: Response, next: NextFu
     const school = await schoolService.getSchoolById(schoolId);
     abilityService.assureCan(req.user, 'create', 'Membership');
     const teacher = await teacherService.getTeacherByUserId(req.user.id);
-    const currentMembership = await membershipService.getOne(school.id, teacher.id, true);
-    if (currentMembership) {
-      return res.status(HttpStatusCodes.OK).json({ ok: true, membership: currentMembership });
-    } else {
-      const membership = await membershipService.create(school.id, teacher.id);
-      return res.status(HttpStatusCodes.CREATED).json({ ok: true, membership });
-    }
+    const membership = await membershipService.create(school.id, teacher.id);
+    return res.status(HttpStatusCodes.CREATED).json({ ok: true, membership });
   } catch (err) {
     return next(err);
   }
