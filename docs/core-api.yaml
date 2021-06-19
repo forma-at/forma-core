@@ -1,33 +1,43 @@
 openapi: 3.0.1
 info:
-  version: 1.3.1
+  version: 1.3.2
   title: Forma Core API documentation
   description: |
-    Documentation for Forma Core API, containing details about authorization, endpoints, request
-    and response parameters, as well as request and response samples.
+    Technical and API documentation of the Forma Core API, detailing topics such as user management, authorization, endpoints, request
+    and response parameters, descriptions, and samples.
 
     # Authentication
-    The Forma Core API uses a **bearer** token authorization method using the **JSON Web Token (JWT)**
+
+    The Forma Core API uses a **bearer** token authorization scheme using the **JSON Web Token (JWT)**
     format. This means that all requests to endpoints protected with authorization must include
     the `Authorization` request header with a value conforming to the `JWT insert_token` format. Without
     this token the server will respond with a `401 Unauthorized` error. The JWT token can be acquired
     by authenticating the user at the `GET /api/user/auth` endpoint with email address and password.
     A valid JWT token is also included in the response of a successful account creation.
 
-    ### Authorization
+    # Technical documentation
+
+    #### User management and memberships
+    Users have two types: `school` and `teacher`. Each user must have one and only one `School` or `Teacher` entity
+    associated with them (one-to-one mapping), these need to be created directly after the user is created and authenticated.
+    Schools and teachers are mapped to one another through `Membership` entities, which can be created/deleted by teachers,
+    and the `status` of the membership can be updated by the school.
+
+    #### School and teacher data
+    Users are allowed to access **only** their own user data, as well as their own school or teacher data. Accessing other entities
+    is forbidden. However, all users have access to `Membership` records that belong to their school/teacher. Schools can use
+    the `/api/school/{schoolId}/teachers` endpoint to get more details about their teachers along with their membership statuses,
+    and teachers can use the `/api/teacher/{teacherId}/schools` endpoint for more details about the schools where they have a membership.
+
+    #### Utility endpoints
+    Teachers can obtain a complete list of all available schools using the `/api/school/public` endpoint. An exhaustive list of
+    all supported subjects and languages can be obtained from the `/api/teacher/skills` route. See [Utility](#tag/Utility) for more details.
+
+    #### Authorization
     The Forma Core API uses [attribute-based access control](https://en.wikipedia.org/wiki/Attribute-based_access_control)
     through the usage of [CASL](https://casl.js.org/v5/en/guide/intro). When users attempt to access a resource or
     perform an action that they do not have permission for, the server will automatically respond with a `403 Forbidden`
     error. With proper front-end implementation of the Forma Core API this error should never be sent to the client.
-
-    # Technical flow
-    Users have two types, `school` and `teacher`. Each user must have one and only one `School` or `Teacher` entity
-    associated with them (one-to-one mapping), these need to be created directly after the user is created and authenticated.
-    Schools and teachers are mapped to one another through `Membership` entities, which can be created/deleted by teachers,
-    and the `status` of the membership can be updated by the school. Users are only allowed to access their own user and
-    school/teacher data. School and teacher accounts can access partial information of their teachers and schools, respectively,
-    through membership records (see `/api/school/{schoolId}/teachers` and `/api/teacher/{teacherId}/schools` routes).
-    Teachers can obtain a complete list of all available schools using the `/api/school/public` endpoint.
 
 externalDocs:
   description: View the Forma Core API repository here
@@ -43,6 +53,8 @@ tags:
     description: Teacher management endpoints
   - name: Membership
     description: Membership management endpoints
+  - name: Utility
+    description: Utility endpoints serving helpful data
 paths:
   '/api/user/auth':
     post:
@@ -485,33 +497,6 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/MembershipWithTeacher'
-  '/api/school/public':
-    get:
-      tags:
-        - School
-      summary: Get public school data
-      description: Get public data of all schools, including id and name
-      security:
-        - bearerAuth: []
-      responses:
-        200:
-          description: Public school data retrieved
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/OkResponse'
-                  - type: object
-                    properties:
-                      schools:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              $ref: '#/components/schemas/School/properties/id'
-                            name:
-                              $ref: '#/components/schemas/School/properties/name'
   '/api/school/{schoolId}/membership':
     put:
       tags:
@@ -564,8 +549,8 @@ paths:
             schema:
               type: object
               properties:
-                skills:
-                  $ref: '#/components/schemas/Teacher/properties/skills'
+                status:
+                  $ref: '#/components/schemas/Membership/properties/status'
       responses:
         200:
           description: Membership created successfully
@@ -611,10 +596,13 @@ paths:
             schema:
               type: object
               required:
-                - skills
+                - subjects
+                - languages
               properties:
-                skills:
-                  $ref: "#/components/schemas/Teacher/properties/skills"
+                subjects:
+                  $ref: '#/components/schemas/Teacher/properties/subjects'
+                languages:
+                  $ref: '#/components/schemas/Teacher/properties/languages'
       responses:
         200:
           description: Teacher created successfully
@@ -661,8 +649,10 @@ paths:
             schema:
               type: object
               properties:
-                skills:
-                  $ref: '#/components/schemas/Teacher/properties/skills'
+                subjects:
+                  $ref: '#/components/schemas/Teacher/properties/subjects'
+                languages:
+                  $ref: '#/components/schemas/Teacher/properties/languages'
       responses:
         200:
           description: Teacher updated successfully
@@ -700,6 +690,55 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/MembershipWithSchool'
+  '/api/school/public':
+    get:
+      tags:
+        - Utility
+      summary: Get public school data
+      description: Get public data of all schools, including id and name
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: Public school data retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OkResponse'
+                  - type: object
+                    properties:
+                      schools:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              $ref: '#/components/schemas/School/properties/id'
+                            name:
+                              $ref: '#/components/schemas/School/properties/name'
+  '/api/teacher/skills':
+    get:
+      tags:
+        - Utility
+      summary: Get all teacher skills
+      description: Get all the existing teacher skills (subjects and languages)
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: Teacher skills retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OkResponse'
+                  - type: object
+                    properties:
+                      subjects:
+                        $ref: '#/components/schemas/Teacher/properties/subjects'
+                      languages:
+                        $ref: '#/components/schemas/Teacher/properties/languages'
 components:
   securitySchemes:
     bearerAuth:
@@ -822,12 +861,18 @@ components:
           type: string
           example: 0e938d46-2125-4300-9dd4-9451b53b4fa9
           description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the user behind the teacher"
-        skills:
+        subjects:
           type: array
           items:
             type: string
           example: ["physics", "IT"]
-          description: "The skills of the teacher"
+          description: "The subject skills of the teacher"
+        languages:
+          type: array
+          items:
+            type: string
+          example: ["english", "finnish"]
+          description: "The language skills of the teacher"
         createdAt:
           type: number
           example: 1621065270077
@@ -877,8 +922,10 @@ components:
         - $ref: "#/components/schemas/Membership"
         - type: object
           properties:
-            skills:
-              $ref: "#/components/schemas/Teacher/properties/skills"
+            subjects:
+              $ref: "#/components/schemas/Teacher/properties/subjects"
+            languages:
+              $ref: "#/components/schemas/Teacher/properties/languages"
             firstName:
               $ref: "#/components/schemas/User/properties/firstName"
             lastName:

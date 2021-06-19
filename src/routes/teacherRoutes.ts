@@ -4,11 +4,18 @@ import { teacherControllers } from '../controllers';
 
 const router = Router();
 
+router.get(
+  '/skills',
+  authorization,
+  teacherControllers.getTeacherSkills,
+);
+
 router.put(
   '/',
   authorization,
   validate([
-    body('skills').isArray(),
+    body('subjects').isArray(),
+    body('languages').isArray(),
   ]),
   teacherControllers.createTeacher,
 );
@@ -23,7 +30,8 @@ router.post(
   '/:teacherId',
   authorization,
   validate([
-    body('skills').isArray().optional(),
+    body('subjects').isArray().optional(),
+    body('languages').isArray().optional(),
   ]),
   teacherControllers.updateTeacher,
 );

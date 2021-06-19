@@ -1,12 +1,23 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
 import { teacherService, abilityService, membershipService } from '../services';
+import { Subject, Language } from '../models';
+
+export const getTeacherSkills = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const subjects = Object.values(Subject);
+    const languages = Object.values(Language);
+    return res.status(HttpStatusCodes.OK).json({ ok: true, subjects, languages });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 export const createTeacher = async (req: Request, res: Response, next: NextFunction) => {
-  const { skills }: Body.CreateTeacher = req.body;
+  const { subjects, languages }: Body.CreateTeacher = req.body;
   try {
     abilityService.assureCan(req.user, 'create', 'Teacher');
-    const teacher = await teacherService.createTeacher(req.user, skills);
+    const teacher = await teacherService.createTeacher(req.user, subjects, languages);
     return res.status(HttpStatusCodes.CREATED).json({ ok: true, teacher });
   } catch (err) {
     return next(err);
@@ -26,11 +37,11 @@ export const getTeacher = async (req: Request, res: Response, next: NextFunction
 
 export const updateTeacher = async (req: Request, res: Response, next: NextFunction) => {
   const { teacherId } = req.params;
-  const { skills }: Body.UpdateTeacher = req.body;
+  const { subjects, languages }: Body.UpdateTeacher = req.body;
   try {
     const teacher = await teacherService.getTeacherById(teacherId);
     abilityService.assureCan(req.user, 'update', teacher);
-    const updatedTeacher = await teacherService.updateTeacher(teacher, skills);
+    const updatedTeacher = await teacherService.updateTeacher(teacher, subjects, languages);
     return res.status(HttpStatusCodes.OK).json({ ok: true, teacher: updatedTeacher });
   } catch (err) {
     return next(err);
