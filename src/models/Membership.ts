@@ -1,6 +1,8 @@
-import { Teacher, Subject, Language } from './Teacher';
+import { Teacher } from './Teacher';
 import { Address, School } from './School';
 import { User } from './User';
+import { Subject } from './Subject';
+import { Language } from './Language';
 
 export enum MembershipStatus {
   pending = 'pending',
