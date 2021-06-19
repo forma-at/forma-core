@@ -1,7 +1,5 @@
-import { Subject } from 'Subject';
-import { Language } from 'Language';
-
-export { Subject, Language };
+import { Subject } from './Subject';
+import { Language } from './Language';
 
 export class Teacher {
   id: string;
