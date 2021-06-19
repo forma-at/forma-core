@@ -36,13 +36,14 @@ export abstract class BaseRepository<T> {
   // Update entity
   async update(filter: FilterQuery<T>, params: Partial<T>): Promise<T> {
     const now = Date.now();
-    const options = { returnOriginal: false };
     const result = await this.db().findOneAndUpdate(filter, {
       $set: {
         ...params,
         updatedAt: now,
       },
-    }, options);
+    }, {
+      returnDocument: 'after',
+    });
     return new this.Entity(result.value);
   }
 
