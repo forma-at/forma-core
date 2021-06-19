@@ -30,6 +30,10 @@ tags:
     description: User management endpoints
   - name: School
     description: School management endpoints
+  - name: Membership
+    description: Membership management endpoints
+  - name: Teacher
+    description: Teacher management endpoints
 paths:
   '/api/user/auth':
     post:
@@ -465,7 +469,7 @@ components:
         type:
           type: string
           example: school
-          description: "The type of the user's account, can be `SCHOOL` or `TEACHER`"
+          description: "The type of the user's account, can be `school` or `teacher`"
         email:
           type: string
           example: john.doe@example.com
@@ -491,11 +495,6 @@ components:
           type: boolean
           example: true
           description: "The status of the user's email address confirmation"
-        schoolId:
-          type: string
-          nullable: true
-          example: bea1828d-0832-4588-a449-cd84b8c6bb60
-          description: "The id of the school the user owns, if they are of the user type `SCHOOL`"
         language:
           type: string
           example: en
@@ -515,6 +514,10 @@ components:
           type: string
           example: bea1828d-0832-4588-a449-cd84b8c6bb60
           description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the school"
+        userId:
+          type: string
+          example: 4937317f-e7ff-49c0-b9d0-34968c81a2d6
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the user behind the school"
         name:
           type: string
           example: Helsinki Metropolia University of Applied Sciences
@@ -560,6 +563,82 @@ components:
           type: number
           example: 1621065390465
           description: "The date of the school's last update in milliseconds"
+    Teacher:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 5ac46f3d-fc9c-43eb-ba1d-acbc81dcf77e
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the teacher"
+        userId:
+          type: string
+          example: 0e938d46-2125-4300-9dd4-9451b53b4fa9
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the user behind the teacher"
+        skills:
+          type: array
+          items:
+            type: string
+          example: ["physics", "IT"]
+          description: "The skills of the teacher"
+        createdAt:
+          type: number
+          example: 1621065270077
+          description: "The date of the teacher's creation in milliseconds"
+        updatedAt:
+          type: number
+          example: 1621065390465
+          description: "The date of the teacher's last update in milliseconds"
+    Membership:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          example: 4937317f-e7ff-49c0-b9d0-34968c81a2d6
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the school"
+        teacherId:
+          type: string
+          example: 5ac46f3d-fc9c-43eb-ba1d-acbc81dcf77e
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the teacher"
+        status:
+          type: string
+          example: pending
+          description: "The status of the membership, can be `pending`, `active`, or `rejected`"
+        createdAt:
+          type: number
+          example: 1621065270077
+          description: "The date of the membership's creation in milliseconds"
+        updatedAt:
+          type: number
+          example: 1621065390465
+          description: "The date of the membership's last update in milliseconds"
+    MembershipWithSchool:
+      allOf:
+        - $ref: "#/components/schemas/Membership"
+        - type: object
+          properties:
+            address:
+              $ref: "#/components/schemas/School/properties/address"
+            description:
+              $ref: "#/components/schemas/School/properties/description"
+            email:
+              $ref: "#/components/schemas/User/properties/email"
+            phone:
+              $ref: "#/components/schemas/User/properties/phone"
+    MembershipWithTeacher:
+      allOf:
+        - $ref: "#/components/schemas/Membership"
+        - type: object
+          properties:
+            skills:
+              $ref: "#/components/schemas/Teacher/properties/skills"
+            firstName:
+              $ref: "#/components/schemas/User/properties/firstName"
+            lastName:
+              $ref: "#/components/schemas/User/properties/lastName"
+            email:
+              $ref: "#/components/schemas/User/properties/email"
+            phone:
+              $ref: "#/components/schemas/User/properties/phone"
     Misc:
       type: object
       properties:
