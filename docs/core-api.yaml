@@ -20,6 +20,12 @@ info:
     perform an action that they do not have permission for, the server will automatically respond with a `403 Forbidden`
     error. With proper front-end implementation of the Forma Core API this error should never be sent to the client.
 
+    # Technical flow
+    Users have two types, `school` and `teacher`. Each user must have one and only one `School` or `Teacher` entity
+    associated with them (one-to-one mapping), these need to be created directly after the user is created and authenticated.
+    Schools and teachers are mapped to one another through `Membership` entities, which can be created/deleted by teachers,
+    and the `status` of the membership can be updated by the school.
+
 externalDocs:
   description: View the Forma Core API repository here
   url: https://github.com/Forma-AT/forma-core
@@ -30,10 +36,10 @@ tags:
     description: User management endpoints
   - name: School
     description: School management endpoints
-  - name: Membership
-    description: Membership management endpoints
   - name: Teacher
     description: Teacher management endpoints
+  - name: Membership
+    description: Membership management endpoints
 paths:
   '/api/user/auth':
     post:
