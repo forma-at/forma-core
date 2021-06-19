@@ -452,6 +452,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseWithDetails'
+  '/api/teacher':
+    put:
+      tags:
+        - Teacher
+      summary: Create teacher
+      description: Create a new teacher belonging to a user of type `teacher`
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - skills
+              properties:
+                skills:
+                  $ref: "#/components/schemas/Teacher/properties/skills"
+      responses:
+        200:
+          description: Teacher created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponseWithTeacher"
+        400:
+          description: One or more fields were invalid, erroneous fields are in `details`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseWithDetails'
+  '/api/teacher/{teacherId}':
+    get:
+      tags:
+        - Teacher
+      summary: Get teacher
+      description: Get a teacher's detailed information
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/teacherId'
+      responses:
+        200:
+          description: Teacher data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithTeacher'
+    post:
+      tags:
+        - Teacher
+      summary: Update teacher
+      description: Update a teacher's information with the provided fields
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/teacherId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                skills:
+                  $ref: '#/components/schemas/Teacher/properties/skills'
+      responses:
+        200:
+          description: Teacher updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithTeacher'
+        400:
+          description: One or more fields were invalid, erroneous fields are in `details`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseWithDetails'
 components:
   securitySchemes:
     bearerAuth:
@@ -690,6 +770,13 @@ components:
           $ref: '#/components/schemas/Misc/properties/ok'
         school:
           $ref: '#/components/schemas/School'
+    OkResponseWithTeacher:
+      type: object
+      properties:
+        ok:
+          $ref: '#/components/schemas/Misc/properties/ok'
+        teacher:
+          $ref: '#/components/schemas/Teacher'
     ErrorResponse:
       type: object
       properties:
@@ -718,6 +805,12 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/School/properties/id'
+    teacherId:
+      in: path
+      name: teacherId
+      required: true
+      schema:
+        $ref: '#/components/schemas/Teacher/properties/id'
   responses:
     UnauthorizedResponse:
       description: Unauthorized - the user must be logged in to perform this action
