@@ -452,6 +452,114 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseWithDetails'
+  '/api/school/{schoolId}/teachers':
+    get:
+      tags:
+        - School
+      summary: Get school's teachers
+      description: Get the teachers teaching at the school
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+      responses:
+        200:
+          description: School's teachers retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OkResponse'
+                  - type: object
+                    properties:
+                      teachers:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MembershipWithTeacher'
+  '/api/school/{schoolId}/membership':
+    put:
+      tags:
+        - Membership
+      summary: Create membership
+      description: Create a new membership at the provided school for the logged in teacher
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+      responses:
+        200:
+          description: Membership created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithMembership'
+  '/api/school/{schoolId}/membership/{teacherId}':
+    get:
+      tags:
+        - Membership
+      summary: Get membership
+      description: Get the details of a membership
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+        - $ref: '#/components/parameters/teacherId'
+      responses:
+        200:
+          description: Membership data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithMembership'
+    post:
+      tags:
+        - Membership
+      summary: Update membership
+      description: Update a membership's information with the provided fields
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+        - $ref: '#/components/parameters/teacherId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                skills:
+                  $ref: '#/components/schemas/Teacher/properties/skills'
+      responses:
+        200:
+          description: Membership created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithMembership'
+        400:
+          description: The status of the membership is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Membership
+      summary: Delete membership
+      description: Delete a membership
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+        - $ref: '#/components/parameters/teacherId'
+      responses:
+        200:
+          description: Membership deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
   '/api/teacher':
     put:
       tags:
@@ -532,6 +640,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseWithDetails'
+  '/api/teacher/{teacherId}/schools':
+    get:
+      tags:
+        - Teacher
+      summary: Get teacher's schools
+      description: Get the schools the teacher is teaching at
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/teacherId'
+      responses:
+        200:
+          description: Teacher's schools retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OkResponse'
+                  - type: object
+                    properties:
+                      schools:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MembershipWithSchool'
 components:
   securitySchemes:
     bearerAuth:
@@ -777,6 +909,13 @@ components:
           $ref: '#/components/schemas/Misc/properties/ok'
         teacher:
           $ref: '#/components/schemas/Teacher'
+    OkResponseWithMembership:
+      type: object
+      properties:
+        ok:
+          $ref: '#/components/schemas/Misc/properties/ok'
+        membership:
+          $ref: '#/components/schemas/Membership'
     ErrorResponse:
       type: object
       properties:
