@@ -65,11 +65,13 @@ export interface UpdateSchool {
 }
 
 export interface CreateTeacher {
-  skills: unknown[];
+  subjects: string[];
+  languages: string[];
 }
 
 export interface UpdateTeacher {
-  skills?: unknown[];
+  subjects?: string[];
+  languages?: string[];
 }
 
 export interface UpdateMembership {

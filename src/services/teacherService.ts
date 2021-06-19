@@ -1,7 +1,6 @@
 import { v4 as uuid } from 'uuid';
-import validator from 'validator';
 import { teacherRepository } from '../repositories';
-import { Teacher, Skill, User } from '../models';
+import { Teacher, Subject, Language, User } from '../models';
 import { NotFoundException, ValidationException } from '../exceptions';
 
 class TeacherService {
@@ -39,34 +38,44 @@ class TeacherService {
   }
 
   // Create a new teacher
-  async createTeacher(user: User, skills: unknown[]) {
+  async createTeacher(user: User, subjects: string[], languages: string[]) {
     const erroneousFields: Partial<Record<keyof Teacher, string>> = {};
-    const skillsError = this.validateSkills(skills);
-    if (skillsError) erroneousFields.skills = skillsError;
+    const subjectsError = this.validateSubjects(subjects);
+    if (subjectsError) erroneousFields.subjects = subjectsError;
+    const languagesError = this.validateLanguages(languages);
+    if (languagesError) erroneousFields.languages = languagesError;
     if (Object.keys(erroneousFields).length) {
       throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
       return teacherRepository.create({
         id: uuid(),
         userId: user.id,
-        skills: skills as Skill[],
+        subjects: subjects as Subject[],
+        languages: languages as Language[],
       });
     }
   }
 
   // Update a teacher
-  async updateTeacher(teacher: Teacher, skills?: unknown[]) {
+  async updateTeacher(teacher: Teacher, subjects?: string[], languages?: string[]) {
     const erroneousFields: Partial<Record<keyof Teacher, string>> = {};
-    if (skills) {
-      const skillsError = this.validateSkills(skills);
-      if (skillsError) erroneousFields.skills = skillsError;
+    if (subjects) {
+      const subjectsError = this.validateSubjects(subjects);
+      if (subjectsError) erroneousFields.subjects = subjectsError;
+    }
+    if (languages) {
+      const languagesError = this.validateLanguages(languages);
+      if (languagesError) erroneousFields.languages = languagesError;
     }
     if (Object.keys(erroneousFields).length) {
       throw new ValidationException('The provided data is invalid.', erroneousFields);
     } else {
       return teacherRepository.update(
         { id: teacher.id },
-        { skills: skills ? skills as Skill[] : teacher.skills },
+        {
+          subjects: subjects ? subjects as Subject[] : teacher.subjects,
+          languages: languages ? languages as Language[] : teacher.languages,
+        },
       );
     }
   }
@@ -76,15 +85,22 @@ class TeacherService {
     return teacherRepository.deleteOne({ id: teacher.id });
   }
 
-  // Validate a list of skills
-  validateSkills(skills: unknown[]) {
+  // Validate an array of subjects
+  validateSubjects(subjects: string[]) {
     let isValid = true;
-    skills.forEach((skill) => {
-      if (typeof skill !== 'string' || !validator.isAlphanumeric(skill)) {
-        isValid = false;
-      }
+    subjects.forEach((subject) => {
+      if (!(subject in Subject)) isValid = false;
     });
-    if (!isValid) return 'One or more skills are invalid.';
+    if (!isValid) return 'One or more subjects are invalid.';
+  }
+
+  // Validate an array of languages
+  validateLanguages(languages: string[]) {
+    let isValid = true;
+    languages.forEach((language) => {
+      if (!(language in Language)) isValid = false;
+    });
+    if (!isValid) return 'One or more languages are invalid.';
   }
 
 }

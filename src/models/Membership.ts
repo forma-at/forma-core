@@ -1,6 +1,6 @@
-import { Teacher, Skill } from './Teacher';
-import { User } from './User';
+import { Teacher, Subject, Language } from './Teacher';
 import { Address, School } from './School';
+import { User } from './User';
 
 export enum MembershipStatus {
   pending = 'pending',
@@ -23,7 +23,8 @@ export class Membership {
 export class MembershipWithTeacherData {
   id: string;
   status: MembershipStatus;
-  skills: Skill[];
+  subjects: Subject[];
+  languages: Language[];
   firstName: string;
   lastName: string;
   email: string;
@@ -32,7 +33,8 @@ export class MembershipWithTeacherData {
   constructor(membership: Membership, teacher: Teacher, user: User) {
     this.id = membership.teacherId;
     this.status = membership.status;
-    this.skills = teacher.skills;
+    this.subjects = teacher.subjects;
+    this.languages = teacher.languages;
     this.firstName = user.firstName;
     this.lastName = user.lastName;
     this.email = user.email;
