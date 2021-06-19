@@ -564,8 +564,8 @@ paths:
             schema:
               type: object
               properties:
-                skills:
-                  $ref: '#/components/schemas/Teacher/properties/skills'
+                status:
+                  $ref: '#/components/schemas/Membership/properties/status'
       responses:
         200:
           description: Membership created successfully
@@ -611,10 +611,13 @@ paths:
             schema:
               type: object
               required:
-                - skills
+                - subjects
+                - languages
               properties:
-                skills:
-                  $ref: "#/components/schemas/Teacher/properties/skills"
+                subjects:
+                  $ref: '#/components/schemas/Teacher/properties/subjects'
+                languages:
+                  $ref: '#/components/schemas/Teacher/properties/languages'
       responses:
         200:
           description: Teacher created successfully
@@ -661,8 +664,10 @@ paths:
             schema:
               type: object
               properties:
-                skills:
-                  $ref: '#/components/schemas/Teacher/properties/skills'
+                subjects:
+                  $ref: '#/components/schemas/Teacher/properties/subjects'
+                languages:
+                  $ref: '#/components/schemas/Teacher/properties/languages'
       responses:
         200:
           description: Teacher updated successfully
@@ -700,6 +705,28 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/MembershipWithSchool'
+  '/api/teacher/skills':
+    get:
+      tags:
+        - Teacher
+      summary: Get all teacher skills
+      description: Get all the existing teacher skills (subjects and languages)
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: Teacher skills retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OkResponse'
+                  - type: object
+                    properties:
+                      subjects:
+                        $ref: '#/components/schemas/Teacher/properties/subjects'
+                      languages:
+                        $ref: '#/components/schemas/Teacher/properties/languages'
 components:
   securitySchemes:
     bearerAuth:
@@ -822,12 +849,18 @@ components:
           type: string
           example: 0e938d46-2125-4300-9dd4-9451b53b4fa9
           description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the user behind the teacher"
-        skills:
+        subjects:
           type: array
           items:
             type: string
           example: ["physics", "IT"]
-          description: "The skills of the teacher"
+          description: "The subject skills of the teacher"
+        languages:
+          type: array
+          items:
+            type: string
+          example: ["english", "finnish"]
+          description: "The language skills of the teacher"
         createdAt:
           type: number
           example: 1621065270077
@@ -877,8 +910,10 @@ components:
         - $ref: "#/components/schemas/Membership"
         - type: object
           properties:
-            skills:
-              $ref: "#/components/schemas/Teacher/properties/skills"
+            subjects:
+              $ref: "#/components/schemas/Teacher/properties/subjects"
+            languages:
+              $ref: "#/components/schemas/Teacher/properties/languages"
             firstName:
               $ref: "#/components/schemas/User/properties/firstName"
             lastName:
