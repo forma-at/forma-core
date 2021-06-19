@@ -20,7 +20,7 @@ export class Membership {
   }
 }
 
-export class TeacherMembershipRecord {
+export class MembershipWithTeacherData {
   id: string;
   status: MembershipStatus;
   skills: Skill[];
@@ -40,7 +40,7 @@ export class TeacherMembershipRecord {
   }
 }
 
-export class SchoolMembershipRecord {
+export class MembershipWithSchoolData {
   id: string;
   status: MembershipStatus;
   name: string;

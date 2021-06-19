@@ -53,7 +53,7 @@ export const getTeachers = async (req: Request, res: Response, next: NextFunctio
   try {
     const school = await schoolService.getSchoolById(schoolId);
     abilityService.assureCan(req.user, 'read', school);
-    const teachers = await membershipService.getTeacherRecordsBySchool(school);
+    const teachers = await membershipService.getWithTeacherDataBySchool(school);
     return res.status(HttpStatusCodes.OK).json({ ok: true, teachers });
   } catch (err) {
     return next(err);

@@ -3,9 +3,9 @@ import {
   Membership,
   MembershipStatus,
   School,
-  SchoolMembershipRecord,
+  MembershipWithSchoolData,
   Teacher,
-  TeacherMembershipRecord,
+  MembershipWithTeacherData,
 } from '../models';
 import { NotFoundException, ValidationException } from '../exceptions';
 import { userService } from './userService';
@@ -73,27 +73,27 @@ class MembershipService {
     return membershipRepository.deleteMany({ teacherId });
   }
 
-  // Get teacher membership records by school
-  async getTeacherRecordsBySchool(school: School) {
+  // Get memberships with teacher data by school
+  async getWithTeacherDataBySchool(school: School) {
     const memberships = await membershipRepository.findMany({ schoolId: school.id });
     const teacherIds = memberships.map((membership) => membership.teacherId);
     const teachers = await teacherService.getTeachersByIds(teacherIds);
     const userIds = teachers.map((teacher) => teacher.userId);
     const users = await userService.getUsersByIds(userIds);
     return memberships.map((membership, index) => {
-      return new TeacherMembershipRecord(membership, teachers[index], users[index]);
+      return new MembershipWithTeacherData(membership, teachers[index], users[index]);
     });
   }
 
-  // Get school membership records by teacher
-  async getSchoolRecordsByTeacher(teacher: Teacher) {
+  // Get memberships with school data by teacher
+  async getWithSchoolDataByTeacher(teacher: Teacher) {
     const memberships = await membershipRepository.findMany({ teacherId: teacher.id });
     const schoolIds = memberships.map((membership) => membership.schoolId);
     const schools = await schoolService.getSchoolsByIds(schoolIds);
     const userIds = schools.map((school) => school.userId);
     const users = await userService.getUsersByIds(userIds);
     return memberships.map((membership, index) => {
-      return new SchoolMembershipRecord(membership, schools[index], users[index]);
+      return new MembershipWithSchoolData(membership, schools[index], users[index]);
     });
   }
 
