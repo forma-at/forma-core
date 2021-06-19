@@ -4,6 +4,12 @@ import { schoolControllers } from '../controllers';
 
 const router = Router();
 
+router.get(
+  '/public',
+  authorization,
+  schoolControllers.getPublicSchools,
+);
+
 router.put(
   '/',
   authorization,
@@ -38,6 +44,39 @@ router.post(
     body('description').isString().optional(),
   ]),
   schoolControllers.updateSchool,
+);
+
+router.get(
+  '/:schoolId/teachers',
+  authorization,
+  schoolControllers.getTeachers,
+);
+
+router.put(
+  '/:schoolId/membership',
+  authorization,
+  schoolControllers.createMembership,
+);
+
+router.get(
+  '/:schoolId/membership/:teacherId',
+  authorization,
+  schoolControllers.getMembership,
+);
+
+router.post(
+  '/:schoolId/membership/:teacherId',
+  authorization,
+  validate([
+    body('status').isString(),
+  ]),
+  schoolControllers.updateMembership,
+);
+
+router.delete(
+  '/:schoolId/membership/:teacherId',
+  authorization,
+  schoolControllers.deleteMembership,
 );
 
 export default router;

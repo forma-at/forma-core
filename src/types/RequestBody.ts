@@ -71,3 +71,7 @@ export interface CreateTeacher {
 export interface UpdateTeacher {
   skills?: unknown[];
 }
+
+export interface UpdateMembership {
+  status: string;
+}

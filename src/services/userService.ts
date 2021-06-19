@@ -4,7 +4,6 @@ import validator from 'validator';
 import { v4 as uuid } from 'uuid';
 import { JWTPayload } from 'Router';
 import { userRepository } from '../repositories';
-import { schoolService, teacherService } from '../services';
 import { User, UserType } from '../models';
 import { NotFoundException, ValidationException } from '../exceptions';
 
@@ -20,9 +19,11 @@ class UserService {
   };
 
   // Get a user by id
-  async getUserById(userId: string) {
+  async getUserById(userId: string, preserveUndefined?: false): Promise<User>;
+  async getUserById(userId: string, preserveUndefined?: true): Promise<User | void>;
+  async getUserById(userId: string, preserveUndefined = false) {
     const user = await userRepository.findOne({ id: userId });
-    if (!user) {
+    if (!user && !preserveUndefined) {
       throw new NotFoundException('The user was not found.');
     } else {
       return user;
@@ -30,8 +31,23 @@ class UserService {
   }
 
   // Get a user by email address
-  async getUserByEmail(email: string) {
-    return userRepository.findOne({ email });
+  async getUserByEmail(userId: string, preserveUndefined?: false): Promise<User>;
+  async getUserByEmail(userId: string, preserveUndefined?: true): Promise<User | void>;
+  async getUserByEmail(email: string, preserveUndefined = false) {
+    const user = await userRepository.findOne({ email });
+    if (!user && !preserveUndefined) {
+      throw new NotFoundException('The user was not found.');
+    } else {
+      return user;
+    }
+  }
+
+  // Get multiple users by ids
+  async getUsersByIds(userIds: string[]) {
+    const users = await userRepository.findMany({ id: { $in: userIds } });
+    return userIds.map((userId) => (
+      users.find((user) => user.id === userId)
+    ));
   }
 
   // Create a JsonWebToken for a user
@@ -173,20 +189,13 @@ class UserService {
     }
   }
 
-  // Delete a user's account and all their data
+  // Delete a user account
   async deleteUser(user: User, password: string) {
     const isPasswordCorrect = await this.comparePasswords(user, password);
     if (!isPasswordCorrect) {
       throw new ValidationException('The password is incorrect.');
     } else {
-      if (user.type === UserType.school) {
-        const school = await schoolService.getSchoolByUserId(user.id);
-        await schoolService.deleteSchool(school);
-      } else if (user.type === UserType.teacher) {
-        const teacher = await teacherService.getTeacherByUserId(user.id);
-        await teacherService.deleteTeacher(teacher);
-      }
-      await userRepository.delete({ id: user.id });
+      await userRepository.deleteOne({ id: user.id });
     }
   }
 
@@ -199,7 +208,7 @@ class UserService {
 
   // Validate an email address, including checking for usage
   async validateEmailAddress(email: string) {
-    const emailInUse = await this.getUserByEmail(email);
+    const emailInUse = await this.getUserByEmail(email, true);
     if (emailInUse) {
       return 'This email address is already in use.';
     } else if (!validator.isEmail(email)) {

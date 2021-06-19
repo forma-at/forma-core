@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 1.1.0
+  version: 1.3.1
   title: Forma Core API documentation
   description: |
     Documentation for Forma Core API, containing details about authorization, endpoints, request
@@ -20,6 +20,15 @@ info:
     perform an action that they do not have permission for, the server will automatically respond with a `403 Forbidden`
     error. With proper front-end implementation of the Forma Core API this error should never be sent to the client.
 
+    # Technical flow
+    Users have two types, `school` and `teacher`. Each user must have one and only one `School` or `Teacher` entity
+    associated with them (one-to-one mapping), these need to be created directly after the user is created and authenticated.
+    Schools and teachers are mapped to one another through `Membership` entities, which can be created/deleted by teachers,
+    and the `status` of the membership can be updated by the school. Users are only allowed to access their own user and
+    school/teacher data. School and teacher accounts can access partial information of their teachers and schools, respectively,
+    through membership records (see `/api/school/{schoolId}/teachers` and `/api/teacher/{teacherId}/schools` routes).
+    Teachers can obtain a complete list of all available schools using the `/api/school/public` endpoint.
+
 externalDocs:
   description: View the Forma Core API repository here
   url: https://github.com/Forma-AT/forma-core
@@ -30,6 +39,10 @@ tags:
     description: User management endpoints
   - name: School
     description: School management endpoints
+  - name: Teacher
+    description: Teacher management endpoints
+  - name: Membership
+    description: Membership management endpoints
 paths:
   '/api/user/auth':
     post:
@@ -448,6 +461,245 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseWithDetails'
+  '/api/school/{schoolId}/teachers':
+    get:
+      tags:
+        - School
+      summary: Get school's teachers
+      description: Get the teachers teaching at the school
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+      responses:
+        200:
+          description: School's teachers retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OkResponse'
+                  - type: object
+                    properties:
+                      teachers:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MembershipWithTeacher'
+  '/api/school/public':
+    get:
+      tags:
+        - School
+      summary: Get public school data
+      description: Get public data of all schools, including id and name
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Public school data retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OkResponse'
+                  - type: object
+                    properties:
+                      schools:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              $ref: '#/components/schemas/School/properties/id'
+                            name:
+                              $ref: '#/components/schemas/School/properties/name'
+  '/api/school/{schoolId}/membership':
+    put:
+      tags:
+        - Membership
+      summary: Create membership
+      description: Create a new membership at the provided school for the logged in teacher
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+      responses:
+        200:
+          description: Membership created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithMembership'
+  '/api/school/{schoolId}/membership/{teacherId}':
+    get:
+      tags:
+        - Membership
+      summary: Get membership
+      description: Get the details of a membership
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+        - $ref: '#/components/parameters/teacherId'
+      responses:
+        200:
+          description: Membership data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithMembership'
+    post:
+      tags:
+        - Membership
+      summary: Update membership
+      description: Update a membership's information with the provided fields
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+        - $ref: '#/components/parameters/teacherId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                skills:
+                  $ref: '#/components/schemas/Teacher/properties/skills'
+      responses:
+        200:
+          description: Membership created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithMembership'
+        400:
+          description: The status of the membership is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Membership
+      summary: Delete membership
+      description: Delete a membership
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+        - $ref: '#/components/parameters/teacherId'
+      responses:
+        200:
+          description: Membership deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+  '/api/teacher':
+    put:
+      tags:
+        - Teacher
+      summary: Create teacher
+      description: Create a new teacher belonging to a user of type `teacher`
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - skills
+              properties:
+                skills:
+                  $ref: "#/components/schemas/Teacher/properties/skills"
+      responses:
+        200:
+          description: Teacher created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponseWithTeacher"
+        400:
+          description: One or more fields were invalid, erroneous fields are in `details`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseWithDetails'
+  '/api/teacher/{teacherId}':
+    get:
+      tags:
+        - Teacher
+      summary: Get teacher
+      description: Get a teacher's detailed information
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/teacherId'
+      responses:
+        200:
+          description: Teacher data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithTeacher'
+    post:
+      tags:
+        - Teacher
+      summary: Update teacher
+      description: Update a teacher's information with the provided fields
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/teacherId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                skills:
+                  $ref: '#/components/schemas/Teacher/properties/skills'
+      responses:
+        200:
+          description: Teacher updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithTeacher'
+        400:
+          description: One or more fields were invalid, erroneous fields are in `details`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseWithDetails'
+  '/api/teacher/{teacherId}/schools':
+    get:
+      tags:
+        - Teacher
+      summary: Get teacher's schools
+      description: Get the schools the teacher is teaching at
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/teacherId'
+      responses:
+        200:
+          description: Teacher's schools retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OkResponse'
+                  - type: object
+                    properties:
+                      schools:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MembershipWithSchool'
 components:
   securitySchemes:
     bearerAuth:
@@ -465,7 +717,7 @@ components:
         type:
           type: string
           example: school
-          description: "The type of the user's account, can be `SCHOOL` or `TEACHER`"
+          description: "The type of the user's account, can be `school` or `teacher`"
         email:
           type: string
           example: john.doe@example.com
@@ -491,11 +743,6 @@ components:
           type: boolean
           example: true
           description: "The status of the user's email address confirmation"
-        schoolId:
-          type: string
-          nullable: true
-          example: bea1828d-0832-4588-a449-cd84b8c6bb60
-          description: "The id of the school the user owns, if they are of the user type `SCHOOL`"
         language:
           type: string
           example: en
@@ -515,6 +762,10 @@ components:
           type: string
           example: bea1828d-0832-4588-a449-cd84b8c6bb60
           description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the school"
+        userId:
+          type: string
+          example: 4937317f-e7ff-49c0-b9d0-34968c81a2d6
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the user behind the school"
         name:
           type: string
           example: Helsinki Metropolia University of Applied Sciences
@@ -560,6 +811,82 @@ components:
           type: number
           example: 1621065390465
           description: "The date of the school's last update in milliseconds"
+    Teacher:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 5ac46f3d-fc9c-43eb-ba1d-acbc81dcf77e
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the teacher"
+        userId:
+          type: string
+          example: 0e938d46-2125-4300-9dd4-9451b53b4fa9
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the user behind the teacher"
+        skills:
+          type: array
+          items:
+            type: string
+          example: ["physics", "IT"]
+          description: "The skills of the teacher"
+        createdAt:
+          type: number
+          example: 1621065270077
+          description: "The date of the teacher's creation in milliseconds"
+        updatedAt:
+          type: number
+          example: 1621065390465
+          description: "The date of the teacher's last update in milliseconds"
+    Membership:
+      type: object
+      properties:
+        schoolId:
+          type: string
+          example: 4937317f-e7ff-49c0-b9d0-34968c81a2d6
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the school"
+        teacherId:
+          type: string
+          example: 5ac46f3d-fc9c-43eb-ba1d-acbc81dcf77e
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the teacher"
+        status:
+          type: string
+          example: pending
+          description: "The status of the membership, can be `pending`, `active`, or `rejected`"
+        createdAt:
+          type: number
+          example: 1621065270077
+          description: "The date of the membership's creation in milliseconds"
+        updatedAt:
+          type: number
+          example: 1621065390465
+          description: "The date of the membership's last update in milliseconds"
+    MembershipWithSchool:
+      allOf:
+        - $ref: "#/components/schemas/Membership"
+        - type: object
+          properties:
+            address:
+              $ref: "#/components/schemas/School/properties/address"
+            description:
+              $ref: "#/components/schemas/School/properties/description"
+            email:
+              $ref: "#/components/schemas/User/properties/email"
+            phone:
+              $ref: "#/components/schemas/User/properties/phone"
+    MembershipWithTeacher:
+      allOf:
+        - $ref: "#/components/schemas/Membership"
+        - type: object
+          properties:
+            skills:
+              $ref: "#/components/schemas/Teacher/properties/skills"
+            firstName:
+              $ref: "#/components/schemas/User/properties/firstName"
+            lastName:
+              $ref: "#/components/schemas/User/properties/lastName"
+            email:
+              $ref: "#/components/schemas/User/properties/email"
+            phone:
+              $ref: "#/components/schemas/User/properties/phone"
     Misc:
       type: object
       properties:
@@ -611,6 +938,20 @@ components:
           $ref: '#/components/schemas/Misc/properties/ok'
         school:
           $ref: '#/components/schemas/School'
+    OkResponseWithTeacher:
+      type: object
+      properties:
+        ok:
+          $ref: '#/components/schemas/Misc/properties/ok'
+        teacher:
+          $ref: '#/components/schemas/Teacher'
+    OkResponseWithMembership:
+      type: object
+      properties:
+        ok:
+          $ref: '#/components/schemas/Misc/properties/ok'
+        membership:
+          $ref: '#/components/schemas/Membership'
     ErrorResponse:
       type: object
       properties:
@@ -639,6 +980,12 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/School/properties/id'
+    teacherId:
+      in: path
+      name: teacherId
+      required: true
+      schema:
+        $ref: '#/components/schemas/Teacher/properties/id'
   responses:
     UnauthorizedResponse:
       description: Unauthorized - the user must be logged in to perform this action

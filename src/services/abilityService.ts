@@ -1,10 +1,10 @@
 import { Ability, AbilityBuilder, AbilityClass } from '@casl/ability';
 import { ForbiddenException } from '../exceptions';
-import { UserWithAbility, UserType, User, School, Teacher } from '../models';
+import { UserWithAbility, UserType, User, School, Teacher, Membership } from '../models';
 
 // Define allowed actions and valid subjects
 type Actions = 'create' | 'read' | 'update' | 'delete';
-type Subjects = 'User' | User | 'School' | School | 'Teacher' | Teacher;
+type Subjects = 'User' | User | 'School' | School | 'Teacher' | Teacher | 'Membership' | Membership;
 
 // Define type for Ability class
 export type AppAbility = Ability<[Actions, Subjects]>;
@@ -39,6 +39,8 @@ class AbilityService {
         cannot(['create', 'read', 'update', 'delete'], 'School')
           .because('You cannot manage schools.');
       }
+      cannot(['create', 'read', 'update', 'delete'], 'Membership')
+        .because('You cannot manage memberships.');
     }
 
     // SCHOOL
@@ -52,9 +54,15 @@ class AbilityService {
         .because('You cannot create more than one school.');
 
       // Teacher management
-      can('read', 'Teacher');
-      cannot(['create', 'update', 'delete'], 'Teacher')
+      cannot(['create', 'read', 'update', 'delete'], 'Teacher')
         .because('You cannot manage teachers.');
+
+      // Membership management
+      can(['read', 'update'], 'Membership', { schoolId: { $eq: school.id } });
+      cannot(['read', 'update'], 'Membership', { schoolId: { $ne: school.id } })
+        .because('You cannot manage the memberships of another school.');
+      cannot(['create', 'delete'], 'Membership')
+        .because('You cannot create or delete memberships.');
 
     }
 
@@ -69,9 +77,16 @@ class AbilityService {
         .because('You cannot create more than one teacher.');
 
       // School management
-      can('read', 'School');
-      cannot(['create', 'update', 'delete'], 'School')
+      cannot(['create', 'read', 'update', 'delete'], 'School')
         .because('You cannot manage schools.');
+
+      // Membership management
+      can('create', 'Membership');
+      can(['read', 'delete'], 'Membership', { teacherId: { $eq: teacher.id } });
+      cannot(['read', 'delete'], 'Membership', { teacherId: { $ne: teacher.id } })
+        .because('You cannot manage the memberships of another teacher.');
+      cannot('update', 'Membership')
+        .because('You cannot update memberships.');
 
     }
 
