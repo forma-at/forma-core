@@ -14,7 +14,8 @@
     "postinstall": "npm run build",
     "lint": "npx eslint . --ext .ts && tsc --noEmit",
     "api": "npx -y redoc-cli serve docs/core-api.yaml",
-    "api:dev": "npx -y redoc-cli serve docs/core-api.yaml --watch"
+    "api:dev": "npx -y redoc-cli serve docs/core-api.yaml --watch",
+    "api:build": "npx -y redoc-cli bundle docs/core-api.yaml --output docs/index.html"
   },
   "dependencies": {
     "@casl/ability": "^5.3.1",
