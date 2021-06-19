@@ -24,7 +24,10 @@ info:
     Users have two types, `school` and `teacher`. Each user must have one and only one `School` or `Teacher` entity
     associated with them (one-to-one mapping), these need to be created directly after the user is created and authenticated.
     Schools and teachers are mapped to one another through `Membership` entities, which can be created/deleted by teachers,
-    and the `status` of the membership can be updated by the school.
+    and the `status` of the membership can be updated by the school. Users are only allowed to access their own user and
+    school/teacher data. School and teacher accounts can access partial information of their teachers and schools, respectively,
+    through membership records (see `/api/school/{schoolId}/teachers` and `/api/teacher/{teacherId}/schools` routes).
+    Teachers can obtain a complete list of all available schools using the `/api/school/public` endpoint.
 
 externalDocs:
   description: View the Forma Core API repository here
