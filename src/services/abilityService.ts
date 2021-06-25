@@ -1,10 +1,10 @@
 import { Ability, AbilityBuilder, AbilityClass } from '@casl/ability';
 import { ForbiddenException } from '../exceptions';
-import { UserWithAbility, UserType, User, School, Teacher, Membership } from '../models';
+import { UserWithAbility, UserType, User, School, Teacher, Membership, Class } from '../models';
 
 // Define allowed actions and valid subjects
 type Actions = 'create' | 'read' | 'update' | 'delete';
-type Subjects = 'User' | User | 'School' | School | 'Teacher' | Teacher | 'Membership' | Membership;
+type Subjects = 'User' | User | 'School' | School | 'Teacher' | Teacher | 'Membership' | Membership | 'Class' | Class;
 
 // Define type for Ability class
 export type AppAbility = Ability<[Actions, Subjects]>;
@@ -41,6 +41,8 @@ class AbilityService {
       }
       cannot(['create', 'read', 'update', 'delete'], 'Membership')
         .because('You cannot manage memberships.');
+      cannot(['create', 'read', 'update', 'delete'], 'Class')
+        .because('You cannot manage classes.');
     }
 
     // SCHOOL
@@ -63,6 +65,14 @@ class AbilityService {
         .because('You cannot manage the memberships of another school.');
       cannot(['create', 'delete'], 'Membership')
         .because('You cannot create or delete memberships.');
+
+      // Class management
+      can('create', 'Class');
+      can(['read', 'update', 'delete'], 'Class', { schoolId: { $eq: school.id } });
+      cannot(['read', 'update', 'delete'], 'Class', { schoolId: { $ne: school.id } })
+        .because('You cannot manage the classes of another school.');
+      cannot('update', 'Class', 'teacherId', { schoolId: { $eq: school.id } })
+        .because('You cannot assign teachers to your classes.');
 
     }
 
@@ -87,6 +97,9 @@ class AbilityService {
         .because('You cannot manage the memberships of another teacher.');
       cannot('update', 'Membership')
         .because('You cannot update memberships.');
+
+      // Class management
+      can('update', 'Class', 'teacherId', { schoolId: { $eq: 'asd' } });
 
     }
 

@@ -12,6 +12,21 @@ import {
 import { ValidationException, NotFoundException } from '../exceptions';
 import { UserType } from '../models';
 
+export const getOwnData = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await userService.getUserById(req.user.id);
+    if (user.type === UserType.school) {
+      const school = await schoolService.getSchoolByUserId(user.id, true);
+      return res.status(HttpStatusCodes.OK).json({ ok: true, user, school });
+    } else {
+      const teacher = await teacherService.getTeacherByUserId(user.id, true);
+      return res.status(HttpStatusCodes.OK).json({ ok: true, user, teacher });
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password }: Body.Authenticate = req.body;
   try {

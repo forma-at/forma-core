@@ -4,6 +4,12 @@ import { userControllers } from '../controllers';
 
 const router = Router();
 
+router.get(
+  '/',
+  authorization,
+  userControllers.getOwnData,
+);
+
 router.post(
   '/auth',
   validate([
