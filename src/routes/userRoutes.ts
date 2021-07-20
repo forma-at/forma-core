@@ -5,9 +5,9 @@ import { userControllers } from '../controllers';
 const router = Router();
 
 router.get(
-  '/',
+  '/self',
   authorization,
-  userControllers.getOwnData,
+  userControllers.getSelfData,
 );
 
 router.post(

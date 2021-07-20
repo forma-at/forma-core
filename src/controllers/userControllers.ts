@@ -12,7 +12,7 @@ import {
 import { ValidationException, NotFoundException } from '../exceptions';
 import { UserType } from '../models';
 
-export const getOwnData = async (req: Request, res: Response, next: NextFunction) => {
+export const getSelfData = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await userService.getUserById(req.user.id);
     if (user.type === UserType.school) {
