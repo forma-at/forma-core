@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 1.3.2
+  version: 1.3.3
   title: Forma Core API documentation
   description: |
     Technical and API documentation of the Forma Core API, detailing topics such as user management, authorization, endpoints, request
@@ -155,6 +155,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  '/api/user/self':
+    get:
+      tags:
+        - User
+      summary: Get self data
+      description: Get the logged in user's data along with the associated school/teacher account
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Data about self retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/OkResponseWithUser'
+                  - type: object
+                    properties:
+                      school:
+                        oneOf:
+                          - type: 'null'
+                          - $ref: '#/components/schemas/School'
+                      teacher:
+                        oneOf:
+                          - type: 'null'
+                          - $ref: '#/components/schemas/Teacher'
   '/api/user':
     put:
       tags:
@@ -762,8 +788,9 @@ components:
           example: john.doe@example.com
           description: "The user's email address in [E.123](https://en.wikipedia.org/wiki/E.123) format"
         phone:
-          type: string
-          nullable: true
+          type:
+            - string
+            - 'null'
           example: "+32460131530"
           description: "The user's phone number in [E.123](https://en.wikipedia.org/wiki/E.123) **international notation** and **without spaces**"
         firstName:
@@ -810,8 +837,9 @@ components:
           example: Helsinki Metropolia University of Applied Sciences
           description: "The name of the school"
         description:
-          type: string
-          nullable: true
+          type:
+            - string
+            - 'null'
           example: |
             Metropolia's new Developer Campus for Smart Solutions in Karamalmi, Espoo was opened
             in August 2019. On the ICT Campus people are number one, not zero. The Campus has good
