@@ -56,7 +56,19 @@ export const reserveClass = async (req: Request, res: Response, next: NextFuncti
     const foundClass = await classService.getClassById(classId);
     abilityService.assureCan(req.user, 'update', foundClass, 'teacherId');
     const teacher = await teacherService.getTeacherByUserId(req.user.id);
-    const updatedClass = await classService.reserve(foundClass, teacher.id);
+    const updatedClass = await classService.assign(foundClass, teacher.id);
+    return res.status(HttpStatusCodes.OK).json({ ok: true, class: updatedClass });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const dropClass = async (req: Request, res: Response, next: NextFunction) => {
+  const { classId } = req.params;
+  try {
+    const foundClass = await classService.getClassById(classId);
+    abilityService.assureCan(req.user, 'update', foundClass, 'teacherId');
+    const updatedClass = await classService.assign(foundClass, null);
     return res.status(HttpStatusCodes.OK).json({ ok: true, class: updatedClass });
   } catch (err) {
     return next(err);

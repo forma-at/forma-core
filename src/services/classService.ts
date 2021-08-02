@@ -118,8 +118,8 @@ class ClassService {
     await classRepository.deleteOne({ id: classInstance.id });
   }
 
-  // Reserve a class
-  async reserve(classInstance: Class, teacherId: string) {
+  // Assign a teacher to a class
+  async assign(classInstance: Class, teacherId: string | null) {
     return classRepository.update({ id: classInstance.id }, { teacherId });
   }
 

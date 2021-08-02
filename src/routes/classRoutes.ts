@@ -50,4 +50,10 @@ router.post(
   classControllers.reserveClass,
 );
 
+router.post(
+  '/:classId/drop',
+  authorization,
+  classControllers.dropClass,
+);
+
 export default router;
