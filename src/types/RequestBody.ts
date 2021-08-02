@@ -84,7 +84,7 @@ export interface CreateClass {
   grade: number;
   start: number;
   end: number;
-  language?: string;
+  language: string;
   subgrade?: string;
   description?: string;
 }

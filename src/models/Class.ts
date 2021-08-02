@@ -10,7 +10,7 @@ export class Class {
   schoolId: string;
   teacherId?: string;
   subject: Subject;
-  language?: Language;
+  language: Language;
   grade: Grade;
   subgrade?: Subgrade;
   description?: string;
