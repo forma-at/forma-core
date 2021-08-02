@@ -81,20 +81,20 @@ export interface UpdateMembership {
 export interface CreateClass {
   schoolId: string;
   subject: string;
-  grade: number;
-  start: number;
-  end: number;
   language: string;
+  grade: number;
   subgrade?: string;
   description?: string;
+  start: number;
+  end: number;
 }
 
 export interface UpdateClass {
   subject?: string;
-  grade?: number;
-  start?: number;
-  end?: number;
   language?: string;
+  grade?: number;
   subgrade?: string;
   description?: string;
+  start?: number;
+  end?: number;
 }
