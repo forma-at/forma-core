@@ -12,7 +12,7 @@ const AppAbility = Ability as AbilityClass<AppAbility>;
 
 class AbilityService {
 
-  defineFor(user: User, role: { school?: School, teacher?: Teacher }) {
+  defineFor(user: User, role: { school?: School, teacher?: Teacher }, memberships: Membership[]) {
     const { can, cannot, build } = new AbilityBuilder(AppAbility);
     const { school, teacher } = role;
 
@@ -25,24 +25,16 @@ class AbilityService {
 
     // DEFAULT
     if (user.id !== school?.userId && user.id !== teacher?.userId) {
-      if (user.type === UserType.school) {
-        can('create', 'School');
-        cannot(['read', 'update', 'delete'], 'School')
-          .because('You cannot manage schools.');
-        cannot(['create', 'read', 'update', 'delete'], 'Teacher')
-          .because('You cannot manage teachers.');
-      }
-      if (user.type === UserType.teacher) {
-        can('create', 'Teacher');
-        cannot(['read', 'update', 'delete'], 'Teacher')
-          .because('You cannot manage teachers.');
-        cannot(['create', 'read', 'update', 'delete'], 'School')
-          .because('You cannot manage schools.');
-      }
+      cannot(['create', 'read', 'update', 'delete'], 'School')
+        .because('You cannot manage schools.');
+      cannot(['create', 'read', 'update', 'delete'], 'Teacher')
+        .because('You cannot manage teachers.');
       cannot(['create', 'read', 'update', 'delete'], 'Membership')
         .because('You cannot manage memberships.');
       cannot(['create', 'read', 'update', 'delete'], 'Class')
         .because('You cannot manage classes.');
+      if (user.type === UserType.school) can('create', 'School');
+      if (user.type === UserType.teacher) can('create', 'Teacher');
     }
 
     // SCHOOL
@@ -78,6 +70,7 @@ class AbilityService {
 
     // TEACHER
     if (user.type === UserType.teacher && user.id === teacher?.userId) {
+      const schools = memberships.map((membership) => membership.schoolId);
 
       // Teacher management
       can(['read', 'update', 'delete'], 'Teacher', { id: { $eq: teacher.id } });
@@ -99,7 +92,14 @@ class AbilityService {
         .because('You cannot update memberships.');
 
       // Class management
-      can('update', 'Class', 'teacherId', { schoolId: { $eq: 'asd' } });
+      can('read', 'Class', { schoolId: { $in: schools } });
+      cannot('read', 'Class', { schoolId: { $nin: schools } })
+        .because('You cannot view classes from another school.');
+      cannot(['create', 'update', 'delete'], 'Class')
+        .because('You cannot manage classes.');
+      can('update', 'Class', 'teacherId', { schoolId: { $in: schools } });
+      cannot('update', 'Class', 'teacherId', { schoolId: { $nin: schools } })
+        .because('You cannot reserve classes from another school.');
 
     }
 
