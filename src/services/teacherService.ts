@@ -82,7 +82,7 @@ class TeacherService {
 
   // Delete a teacher
   async deleteTeacher(teacher: Teacher) {
-    return teacherRepository.deleteOne({ id: teacher.id });
+    await teacherRepository.deleteOne({ id: teacher.id });
   }
 
   // Validate an array of subjects

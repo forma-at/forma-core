@@ -67,7 +67,7 @@ class MembershipService {
 
   // Delete a membership
   async delete(membership: Membership) {
-    return membershipRepository.deleteOne({
+    await membershipRepository.deleteOne({
       schoolId: membership.schoolId,
       teacherId: membership.teacherId,
     });
