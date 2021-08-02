@@ -8,14 +8,12 @@ router.put(
   '/',
   authorization,
   validate([
-    body('schoolId').isString(),
     body('subject').isString(),
     body('language').isString(),
     body('grade').isNumeric(),
-    body('subgrade').isString().optional(),
-    body('description').isString().optional(),
     body('start').isNumeric(),
     body('end').isNumeric(),
+    body('description').isString().optional(),
   ]),
   classControllers.createClass,
 );
@@ -33,10 +31,9 @@ router.post(
     body('subject').isString().optional(),
     body('language').isString().optional(),
     body('grade').isNumeric().optional(),
-    body('subgrade').isString().optional(),
-    body('description').isString().optional(),
     body('start').isNumeric().optional(),
     body('end').isNumeric().optional(),
+    body('description').isString().optional(),
   ]),
   classControllers.updateClass,
 );
