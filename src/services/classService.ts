@@ -2,8 +2,9 @@ import { v4 as uuid } from 'uuid';
 import validator from 'validator';
 import moment from 'moment';
 import { classRepository } from '../repositories';
-import { Class, School, Language, Subject } from '../models';
+import { Class, School, Language, Subject, Teacher } from '../models';
 import { NotFoundException, ValidationException } from '../exceptions';
+import { membershipService } from './membershipService';
 
 class ClassService {
 
@@ -17,6 +18,22 @@ class ClassService {
     } else {
       return classInstance;
     }
+  }
+
+  // Get multiple classes by schoolId
+  async getClassesBySchool(school: School) {
+    return classRepository.findMany({ schoolId: school.id });
+  }
+
+  // Get multiple classes by schoolIds
+  async getClassesByTeacher(teacher: Teacher) {
+    const memberships = await membershipService.getManyByTeacherId(teacher.id);
+    const schools = memberships.map((membership) => membership.schoolId);
+    return classRepository.findMany({
+      schoolId: { $in: schools },
+      subject: { $in: teacher.subjects },
+      language: { $in: teacher.languages },
+    });
   }
 
   // Create a new class

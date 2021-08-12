@@ -8,6 +8,7 @@ import {
   schoolService,
   teacherService,
   membershipService,
+  classService,
 } from '../services';
 import { ValidationException, NotFoundException } from '../exceptions';
 import { UserType } from '../models';
@@ -19,16 +20,18 @@ export const getSelfData = async (req: Request, res: Response, next: NextFunctio
       const school = await schoolService.getSchoolByUserId(user.id, true);
       if (school) {
         const teachers = await membershipService.getWithTeacherDataBySchool(school);
-        return res.status(HttpStatusCodes.OK).json({ ok: true, user, school, teachers });
+        const classes = await classService.getClassesBySchool(school);
+        return res.status(HttpStatusCodes.OK).json({ ok: true, user, school, teachers, classes });
       }
-      return res.status(HttpStatusCodes.OK).json({ ok: true, user, school });
+      return res.status(HttpStatusCodes.OK).json({ ok: true, user });
     } else {
       const teacher = await teacherService.getTeacherByUserId(user.id, true);
       if (teacher) {
         const schools = await membershipService.getWithSchoolDataByTeacher(teacher);
-        return res.status(HttpStatusCodes.OK).json({ ok: true, user, teacher, schools });
+        const classes = await classService.getClassesByTeacher(teacher);
+        return res.status(HttpStatusCodes.OK).json({ ok: true, user, teacher, schools, classes });
       }
-      return res.status(HttpStatusCodes.OK).json({ ok: true, user, teacher });
+      return res.status(HttpStatusCodes.OK).json({ ok: true, user });
     }
   } catch (err) {
     return next(err);
