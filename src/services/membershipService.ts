@@ -83,6 +83,20 @@ class MembershipService {
     return membershipRepository.deleteMany({ teacherId });
   }
 
+  // Get a membership with teacher data
+  async withTeacherData(membership: Membership) {
+    const teacher = await teacherService.getTeacherById(membership.teacherId);
+    const user = await userService.getUserById(teacher.userId);
+    return new MembershipWithTeacherData(membership, teacher, user);
+  }
+
+  // Get a membership with school data
+  async withSchoolData(membership: Membership) {
+    const school = await schoolService.getSchoolById(membership.schoolId);
+    const user = await userService.getUserById(school.userId);
+    return new MembershipWithSchoolData(membership, school, user);
+  }
+
   // Get memberships with teacher data by school
   async getWithTeacherDataBySchool(school: School) {
     const memberships = await membershipRepository.findMany({ schoolId: school.id });
