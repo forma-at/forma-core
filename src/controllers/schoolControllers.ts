@@ -67,7 +67,8 @@ export const createMembership = async (req: Request, res: Response, next: NextFu
     abilityService.assureCan(req.user, 'create', 'Membership');
     const teacher = await teacherService.getTeacherByUserId(req.user.id);
     const membership = await membershipService.create(school.id, teacher.id);
-    return res.status(HttpStatusCodes.CREATED).json({ ok: true, membership });
+    const withSchoolData = await membershipService.withSchoolData(membership);
+    return res.status(HttpStatusCodes.CREATED).json({ ok: true, membership: withSchoolData });
   } catch (err) {
     return next(err);
   }
@@ -95,7 +96,8 @@ export const updateMembership = async (req: Request, res: Response, next: NextFu
     const membership = await membershipService.getOne(school.id, teacher.id);
     abilityService.assureCan(req.user, 'update', membership);
     const updatedMembership = await membershipService.update(membership, status);
-    res.status(HttpStatusCodes.OK).json({ ok: true, membership: updatedMembership });
+    const withTeacherData = await membershipService.withTeacherData(updatedMembership);
+    res.status(HttpStatusCodes.OK).json({ ok: true, membership: withTeacherData });
   } catch (err) {
     return next(err);
   }
