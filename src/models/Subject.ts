@@ -20,6 +20,6 @@ export enum Subject {
   swedishLanguage = 'swedishLanguage',
   socialStudies = 'socialStudies',
   healthEducation = 'healthEducation',
-  domesticScience = 'domesticScience',
+  homeEconomics = 'homeEconomics',
   studentGuidance = 'studentGuidance',
 }

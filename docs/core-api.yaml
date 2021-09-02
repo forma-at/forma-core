@@ -539,7 +539,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OkResponseWithMembership'
+                $ref: '#/components/schemas/OkResponseWithMembershipWithSchoolData'
   '/api/school/{schoolId}/membership/{teacherId}':
     get:
       tags:
@@ -583,7 +583,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OkResponseWithMembership'
+                $ref: '#/components/schemas/OkResponseWithMembershipWithTeacherData'
         400:
           description: The status of the membership is invalid
           content:
@@ -1027,6 +1027,20 @@ components:
           $ref: '#/components/schemas/Misc/properties/ok'
         membership:
           $ref: '#/components/schemas/Membership'
+    OkResponseWithMembershipWithSchoolData:
+      type: object
+      properties:
+        ok:
+          $ref: '#/components/schemas/Misc/properties/ok'
+        membership:
+          $ref: '#/components/schemas/MembershipWithSchool'
+    OkResponseWithMembershipWithTeacherData:
+      type: object
+      properties:
+        ok:
+          $ref: '#/components/schemas/Misc/properties/ok'
+        membership:
+          $ref: '#/components/schemas/MembershipWithTeacher'
     ErrorResponse:
       type: object
       properties:
