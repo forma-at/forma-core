@@ -15,7 +15,8 @@
     "lint": "npx eslint . --ext .ts && tsc --noEmit",
     "api": "npx -y redoc-cli serve docs/core-api.yaml",
     "api:dev": "npx -y redoc-cli serve docs/core-api.yaml --watch",
-    "api:build": "npx -y redoc-cli bundle docs/core-api.yaml --output docs/index.html"
+    "api:build": "npx -y redoc-cli bundle docs/core-api.yaml --output docs/index.html",
+    "gen-mock-data": "node scripts/gen-mock-data.js"
   },
   "dependencies": {
     "@casl/ability": "^5.3.1",

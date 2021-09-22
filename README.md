@@ -45,3 +45,23 @@ and then open the documentation server in the browser at
 ```bash
 http://localhost:8080/
 ```
+
+## Generate mock data
+
+When testing the API endpoints or the front-end UI it can come in handy to have test users ready, and manual creation can be tedious. The following command will generate 15 school and 15 teacher accounts, all fully configured and set up. None of the users will have memberships or classes by default.
+```bash
+npm run gen-mock-data
+```
+Keep in mind that this should only be run once, otherwise you might end up with duplicate users. To customize the mock data before running the command you can edit the files under `scripts/mock`. The generated users will have the following format by default:
+|Type|Email|Password|
+|--|--|--|
+|school|school1@forma.fi|Testing123|
+|school|school2@forma.fi|Testing123|
+|...|...|...|
+|school|school14@forma.fi|Testing123|
+|school|school15@forma.fi|Testing123|
+|teacher|teacher1@forma.fi|Testing123|
+|teacher|teacher2@forma.fi|Testing123|
+|...|...|...|
+|teacher|teacher14@forma.fi|Testing123|
+|teacher|teacher15@forma.fi|Testing123|
