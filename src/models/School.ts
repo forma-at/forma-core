@@ -24,10 +24,12 @@ export class SchoolPublicData {
   id: string;
   name: string;
   address: Address;
+  description: string;
 
   constructor(school: School) {
     this.id = school.id;
     this.name = school.name;
 	this.address = school.address;
+	this.description = school.description;
   }
 }

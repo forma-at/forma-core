@@ -745,6 +745,8 @@ paths:
                               $ref: '#/components/schemas/School/properties/name'
                             address:
                               $ref: '#/components/schemas/School/properties/address'
+                            description:
+                              $ref: '#/components/schemas/School/properties/description'
   '/api/teacher/skills':
     get:
       tags:
