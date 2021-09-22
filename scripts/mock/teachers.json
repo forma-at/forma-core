@@ -1,0 +1,204 @@
+[
+  {
+    "id": "2e682d0b-80a8-4df9-adc0-575921b9192f",
+    "userId": "1a5212e8-8d93-4e41-919b-45d5ae102795",
+    "subjects": [
+      "homeEconomics",
+      "finnishForForeigners",
+      "swedishLanguage"
+    ],
+    "languages": [
+      "french",
+      "chinese"
+    ]
+  },
+  {
+    "id": "3c24b0d1-7f27-4c00-ac96-cf4e79b75a2d",
+    "userId": "6da9df2e-1fa0-4a0f-8cc7-040b08b6c0c8",
+    "subjects": [
+      "informationTechnology",
+      "ethics"
+    ],
+    "languages": [
+      "german",
+      "estonian",
+      "swedish",
+      "chinese",
+      "spanish",
+      "french",
+      "finnish",
+      "hungarian"
+    ]
+  },
+  {
+    "id": "24c5a70e-a080-49a6-81b6-5e00e5d7b82d",
+    "userId": "c543cb8a-5a2b-4365-b7a5-f4a6a788720e",
+    "subjects": [
+      "swedishLanguage",
+      "spanishLanguage",
+      "finnishForForeigners",
+      "englishLanguage",
+      "russianLanguage",
+      "finnishLanguage"
+    ],
+    "languages": [
+      "german",
+      "english"
+    ]
+  },
+  {
+    "id": "663cc26c-73f3-4984-8338-ff22d7bd3d3a",
+    "userId": "627f585c-46e4-4555-a589-f1e1f16baa6c",
+    "subjects": [
+      "history",
+      "studentGuidance"
+    ],
+    "languages": [
+      "finnish"
+    ]
+  },
+  {
+    "id": "be7dcc2c-f61c-4485-839e-243a01e861be",
+    "userId": "2018733a-1a27-4d6c-9439-16fdd01238c3",
+    "subjects": [
+      "chemistry",
+      "biology"
+    ],
+    "languages": [
+      "finnish",
+      "english",
+      "swedish"
+    ]
+  },
+  {
+    "id": "6f2a8874-cdeb-4b57-824b-4aac20fc35a6",
+    "userId": "051ae096-f947-44c6-b201-f23f65876676",
+    "subjects": [
+      "physics",
+      "mathematics"
+    ],
+    "languages": [
+      "english",
+      "swedish",
+      "finnish"
+    ]
+  },
+  {
+    "id": "ad8e6a91-0dea-4540-afd8-6a3e9736849c",
+    "userId": "25dae7d4-217a-4ba0-a035-42f723c4b638",
+    "subjects": [
+      "studentGuidance",
+      "homeEconomics",
+      "healthEducation",
+      "socialStudies",
+      "swedishLanguage",
+      "spanishLanguage",
+      "finnishForForeigners",
+      "englishLanguage",
+      "finnishLanguage",
+      "russianLanguage"
+    ],
+    "languages": [
+      "spanish",
+      "swedish",
+      "finnish"
+    ]
+  },
+  {
+    "id": "44c4db41-ef32-434d-8606-9be8e2e247d5",
+    "userId": "21423600-aa1f-4428-9cbf-a4ee2b04c61d",
+    "subjects": [
+      "religion"
+    ],
+    "languages": [
+      "finnish"
+    ]
+  },
+  {
+    "id": "afebde94-71b9-4c99-ad2b-22448c735adc",
+    "userId": "1c1c17aa-0ca8-4675-8653-83682ee29f74",
+    "subjects": [
+      "ethics",
+      "religion"
+    ],
+    "languages": [
+      "finnish"
+    ]
+  },
+  {
+    "id": "d35def22-0db3-4c7b-af2c-ecf32cb9492d",
+    "userId": "436e9d93-9a12-4cb4-afcd-6a8fbaa43834",
+    "subjects": [
+      "socialStudies"
+    ],
+    "languages": [
+      "finnish",
+      "swedish"
+    ]
+  },
+  {
+    "id": "413af759-b525-4ff8-88c0-c2c6479d198c",
+    "userId": "19aa71e7-6f6d-4166-859b-eb792ec88e41",
+    "subjects": [
+      "biology",
+      "chemistry",
+      "physics"
+    ],
+    "languages": [
+      "german",
+      "english"
+    ]
+  },
+  {
+    "id": "ccbeb653-23e3-46e4-9358-fd8b8ffb9ba7",
+    "userId": "22e846c0-50d8-4313-9e7e-3cf84ff518e7",
+    "subjects": [
+      "informationTechnology"
+    ],
+    "languages": [
+      "english",
+      "finnish",
+      "swedish",
+      "french",
+      "german"
+    ]
+  },
+  {
+    "id": "38d2aecc-6462-49aa-94fd-e7599a74fa98",
+    "userId": "38639d3a-9f6d-4f70-bfd1-f9a3c49adbf2",
+    "subjects": [
+      "finnishForForeigners"
+    ],
+    "languages": [
+      "finnish",
+      "english"
+    ]
+  },
+  {
+    "id": "4370a6ca-c8d6-4165-8e38-1d9d20727100",
+    "userId": "6bd67cb3-9c73-4978-b2a7-c0f00e4304c2",
+    "subjects": [
+      "healthEducation"
+    ],
+    "languages": [
+      "finnish",
+      "french"
+    ]
+  },
+  {
+    "id": "4400fa2b-14cb-415d-851f-d907d638e599",
+    "userId": "302eb742-4077-4d2d-bbdc-f690351d7d70",
+    "subjects": [
+      "informationTechnology",
+      "mathematics",
+      "physics",
+      "studentGuidance"
+    ],
+    "languages": [
+      "english",
+      "finnish",
+      "swedish",
+      "german"
+    ]
+  }
+]

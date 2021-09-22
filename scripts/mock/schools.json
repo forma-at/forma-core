@@ -1,0 +1,197 @@
+[
+  {
+    "id": "892515de-700f-449a-b445-f7e7d1ea1926",
+    "userId": "c8b41cb6-594b-4663-bf2b-4cd0f1b4d8b3",
+    "name": "International School of Helsinki",
+    "address": {
+      "street": "Selkämerenkatu 11",
+      "city": "Helsinki",
+      "zip": "00180",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": "Nulla sed dolor dolor. In semper convallis odio, quis eleifend est laoreet vel. Aliquam ullamcorper nulla eget ultricies porttitor. Vivamus placerat convallis eros, at elementum nisl blandit nec. Aliquam lobortis turpis libero, quis tincidunt dolor iaculis quis. Quisque ultrices dui quis dignissim euismod. Duis pharetra risus et sapien sollicitudin sagittis. Nunc interdum consequat metus in ullamcorper."
+  },
+  {
+    "id": "a7743c9d-f316-4493-ab24-77197851c4b6",
+    "userId": "6a295ccd-0cbb-4bfa-a324-c87ee74d65a6",
+    "name": "Kielo International School",
+    "address": {
+      "street": "Vanha Helsingintie 2",
+      "city": "Helsinki",
+      "zip": "00700",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": "Vestibulum vitae nibh a tellus blandit facilisis. Pellentesque ut erat quis ante maximus dapibus. Donec ut mollis libero. Etiam imperdiet consectetur magna in fringilla. Fusce lobortis dictum venenatis. Fusce et sapien quis diam finibus molestie. Proin ut euismod orci. Morbi maximus felis eget ante malesuada pharetra. Nulla elit ligula, tempor vel massa in, commodo rutrum tellus. Quisque quis eros pellentesque, accumsan orci ultrices, elementum nunc. Etiam varius gravida dui, sed dictum ex ultrices eu. Donec nec leo quam."
+  },
+  {
+    "id": "c5238917-df33-4a4d-ba63-e1b0d421db6b",
+    "userId": "a4561b62-38e3-471c-8e46-65f7c77ede16",
+    "name": "Kulosaari Elementary School",
+    "address": {
+      "street": "Kyösti Kallion tie 1",
+      "city": "Helsinki",
+      "zip": "00570",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": null
+  },
+  {
+    "id": "afe638af-43e4-40fa-a21e-8531063fd7ba",
+    "userId": "c94ebbc8-4b0f-492d-a26f-81b9a21635b6",
+    "name": "Kulosaari Secondary School",
+    "address": {
+      "street": "Ståhlberginkuja 1",
+      "city": "Helsinki",
+      "zip": "00570",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": "Nam sed condimentum quam, et bibendum justo. Ut eget finibus purus. Pellentesque lacinia a est eu vehicula. Integer quis consequat leo. Phasellus pharetra odio eget efficitur faucibus. Nam finibus, neque a scelerisque dapibus, elit nunc tristique augue, non pretium nulla odio egestas lacus. Nulla pretium urna a nisi porta malesuada. Praesent scelerisque eu elit sit amet pharetra. Sed ullamcorper ante sem, a aliquet est ornare vel. Morbi condimentum, arcu non vehicula vehicula, risus nisl pharetra dui, quis euismod risus dolor eu magna. Sed commodo feugiat molestie. Morbi ultricies lectus at ipsum commodo, tincidunt semper ex cursus. Nam ultrices ac tortor eu rutrum. Nulla scelerisque, ante eu sodales mattis, nisl ex scelerisque sem, dictum egestas erat arcu condimentum ante."
+  },
+  {
+    "id": "cfaf3ce9-cd8e-40dd-a273-ad38f09ebd0d",
+    "userId": "a60b850a-31d1-466d-a2d8-b11c4d5e4560",
+    "name": "Maunula Elementary School",
+    "address": {
+      "street": "Maunulanmäki 5",
+      "city": "Helsinki",
+      "zip": "00630",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": "Etiam rutrum nibh augue, nec semper ipsum iaculis vel. Pellentesque tempor, quam at finibus pulvinar, ligula leo gravida dolor, nec sagittis metus mauris vel neque. Donec a tempus turpis. Vivamus viverra, eros id maximus dictum, velit ipsum viverra dui, vitae scelerisque libero justo sed mauris. Vivamus at lacinia nisl, eget imperdiet sem. Curabitur accumsan tincidunt est consequat lacinia. Nulla eget ipsum sit amet quam placerat lobortis vitae eget urna. Vivamus eu arcu a turpis lobortis maximus. Etiam et fringilla quam, vel dignissim diam. Aenean pharetra massa erat, a tincidunt quam convallis nec."
+  },
+  {
+    "id": "431782be-7223-4c14-b118-97fbb9f500b3",
+    "userId": "5ff18ff1-4326-4103-8f8e-9db8b793c7ed",
+    "name": "Maunula Secondary School",
+    "address": {
+      "street": "Kuusikkotie 3",
+      "city": "Helsinki",
+      "zip": "00630",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": null
+  },
+  {
+    "id": "eddcc8c6-5d68-4cb8-baf4-bd7fba4fdd09",
+    "userId": "8719d6ff-9373-4a00-979d-d1be0440f4f4",
+    "name": "Ressu Comprehensive School",
+    "address": {
+      "street": "Lapinlahdenkatu 10",
+      "city": "Helsinki",
+      "zip": "00180",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": "Nunc molestie vulputate ipsum, in luctus purus mollis eget. Curabitur id ante eleifend velit laoreet scelerisque. Pellentesque malesuada, metus ut aliquam sodales, orci magna suscipit quam, ut efficitur ante nunc suscipit lectus. Fusce facilisis, libero tincidunt elementum tincidunt, orci elit tempus magna, at pretium lectus velit sed felis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eu est pulvinar, consectetur mi eget, dapibus sapien. Fusce suscipit nisl a elit ultricies, sed tincidunt purus dictum. Curabitur vitae interdum felis. Duis sit amet dolor sem."
+  },
+  {
+    "id": "00508d50-f37d-4abe-9af4-882512e523b5",
+    "userId": "b394df2e-621d-4102-8903-38c3786d8565",
+    "name": "The Deutsche Schule",
+    "address": {
+      "street": "Malminkatu 14",
+      "city": "Helsinki",
+      "zip": "00100",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": "Integer a tempus odio. Pellentesque interdum congue est, non tempor justo accumsan euismod. Ut maximus, risus ac fringilla pellentesque, ex felis vulputate odio, in varius risus orci a augue. Vestibulum sed tellus magna. Phasellus augue est, consectetur et laoreet eget, suscipit non mauris. Nunc cursus consectetur quam eu molestie. Suspendisse blandit euismod augue, sed accumsan felis aliquam sit amet. Vivamus scelerisque elit eu laoreet luctus. Curabitur porttitor, lacus porttitor eleifend suscipit, ipsum urna accumsan nunc, ac tempor sem augue ut ex. Phasellus in hendrerit sem. Nullam at consequat orci. Morbi nibh nulla, mollis nec quam eu, egestas vestibulum tellus."
+  },
+  {
+    "id": "9e2fd6b4-0171-42a1-bf98-f7e0f23dc94c",
+    "userId": "139b7355-ca99-4ad0-9dd0-77dcf64b9d3d",
+    "name": "Espoo International School",
+    "address": {
+      "street": "Lillhemtintie 1",
+      "city": "Espoo",
+      "zip": "02250",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": "Cras ut dui viverra, consequat ex semper, ultricies felis. Suspendisse et risus nisi. Nulla pretium ex et enim efficitur fermentum. Etiam sed mi vestibulum, pulvinar eros vel, consectetur augue. Proin bibendum turpis sit amet ultrices commodo. Vivamus cursus, massa vitae molestie posuere, quam enim sollicitudin libero, non varius libero sapien quis lectus. Duis eu mauris nisi. Phasellus condimentum dui bibendum convallis bibendum. Aliquam sit amet orci ultricies, eleifend augue tempor, rhoncus elit. Nam tempus vestibulum tortor quis dignissim. Pellentesque pellentesque consectetur orci ut ultrices. Suspendisse blandit consequat ligula, sed consectetur tellus dictum ac. Integer aliquam quam at quam semper vestibulum."
+  },
+  {
+    "id": "6f4f9969-c0ad-4012-bf22-a1aa39a72175",
+    "userId": "4a07aecb-b8d3-43eb-b24b-1923a02a9c5f",
+    "name": "International School of Vantaa",
+    "address": {
+      "street": "Hagelstamintie 1",
+      "city": "Vantaa",
+      "zip": "01520",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": null
+  },
+  {
+    "id": "0204b561-5d65-4ff2-bdba-526a3a6ae734",
+    "userId": "15e9688d-4871-4f8a-86a9-7de4402cec4c",
+    "name": "Oulu International School",
+    "address": {
+      "street": "Kasarmintie 4",
+      "city": "Oulu",
+      "zip": "90130",
+      "state": "Pohjois-Pohjanmaa",
+      "country": "Finland"
+    },
+    "description": null
+  },
+  {
+    "id": "c373a9bb-eee4-452e-9b88-257042e298a2",
+    "userId": "123d9cdc-c3bd-4f55-88f5-72d3ffa99561",
+    "name": "Finnish International School of Tampere",
+    "address": {
+      "street": "Satakunnankatu 60",
+      "city": "Tampere",
+      "zip": "33230",
+      "state": "Pirkanmaa",
+      "country": "Finland"
+    },
+    "description": "Duis in nibh gravida, congue metus eu, hendrerit quam. Ut malesuada turpis nec interdum bibendum. Fusce sit amet interdum ante, eu venenatis felis. Morbi ligula enim, fermentum eget consequat quis, dignissim vel libero. Duis vel diam nibh. Nunc vitae magna vitae mauris blandit luctus. Cras leo nibh, tempor in efficitur nec, commodo sed eros. Pellentesque metus magna, finibus et justo eget, mollis rhoncus eros. Cras luctus arcu at enim tristique, sed rutrum lacus auctor. Mauris hendrerit sagittis neque, nec aliquam lectus tincidunt eget. Donec malesuada auctor molestie. Nullam convallis ex risus, ac rutrum eros gravida ut. Vivamus malesuada diam a tempor lobortis. Maecenas et lobortis ipsum."
+  },
+  {
+    "id": "77ddb137-ea25-4315-9534-4a0865b36b2b",
+    "userId": "6c08202a-eeb3-457a-b437-851195f4fb82",
+    "name": "Turku International School",
+    "address": {
+      "street": "Kraatarinkatu 4",
+      "city": "Turku",
+      "zip": "20610",
+      "state": "Varsinais-Suomi",
+      "country": "Finland"
+    },
+    "description": null
+  },
+  {
+    "id": "b2e19a59-bf5d-4bb1-a08f-6f3d06ef6c28",
+    "userId": "0ee22abb-85e4-48ee-99f8-811dd562f356",
+    "name": "L'école Française Jules Verne",
+    "address": {
+      "street": "Ratakatu 6A",
+      "city": "Helsinki",
+      "zip": "00120",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": "Maecenas condimentum risus vitae nisi luctus, a placerat nibh feugiat. Aenean orci orci, imperdiet et faucibus ut, venenatis ut risus. Sed euismod diam varius, tempor mauris non, luctus nisi. Nulla non mauris tempor velit laoreet pellentesque. Aliquam sagittis ornare commodo. Donec vehicula, nunc a blandit facilisis, mauris metus fringilla diam, in rutrum quam tortor sed tellus. Donec vitae iaculis felis. Integer felis lorem, elementum at tincidunt non, rhoncus eu lacus. Quisque volutpat fermentum est, ac rhoncus dolor viverra in."
+  },
+  {
+    "id": "6bed2c02-08dc-431f-872a-c7b2621326d6",
+    "userId": "2a8cbcc2-8deb-4008-b0f3-caa479d9e6a9",
+    "name": "Lycée Franco-Finlandais d'Helsinki",
+    "address": {
+      "street": "Raumantie 4",
+      "city": "Helsinki",
+      "zip": "00350",
+      "state": "Uusimaa",
+      "country": "Finland"
+    },
+    "description": "Nunc vel tempus dui, vel tempor dolor. Donec nec viverra velit, eget elementum turpis. Praesent vitae tempor elit. Ut mattis tempor enim sed egestas. Sed vel tincidunt eros. Quisque nec nisi massa. Integer ullamcorper lobortis scelerisque. Vivamus placerat lacus ante, at aliquet sapien mollis nec. Suspendisse non orci at magna volutpat ornare. Vivamus tincidunt lorem sit amet viverra semper. Suspendisse potenti. Mauris ullamcorper dui nisl, non blandit risus lobortis et. Vivamus varius sed massa sed efficitur."
+  }
+]

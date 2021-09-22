@@ -52,11 +52,11 @@ class AbilityService {
         .because('You cannot manage teachers.');
 
       // Membership management
-      can(['read', 'update'], 'Membership', { schoolId: { $eq: school.id } });
-      cannot(['read', 'update'], 'Membership', { schoolId: { $ne: school.id } })
+      can(['read', 'update', 'delete'], 'Membership', { schoolId: { $eq: school.id } });
+      cannot(['read', 'update', 'delete'], 'Membership', { schoolId: { $ne: school.id } })
         .because('You cannot manage the memberships of another school.');
-      cannot(['create', 'delete'], 'Membership')
-        .because('You cannot create or delete memberships.');
+      cannot(['create'], 'Membership')
+        .because('You cannot create memberships.');
 
       // Class management
       can('create', 'Class');
