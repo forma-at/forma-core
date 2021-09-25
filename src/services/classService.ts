@@ -41,7 +41,7 @@ class ClassService {
     school: School,
     subject: string,
     language: string,
-    grade: string,
+    group: string,
     start: number,
     end: number,
     description?: string,
@@ -51,8 +51,8 @@ class ClassService {
     if (subjectError) erroneousFields.subject = subjectError;
     const languageError = this.validateLanguage(language);
     if (languageError) erroneousFields.language = languageError;
-    const gradeError = this.validateGrade(grade);
-    if (gradeError) erroneousFields.grade = gradeError;
+    const groupError = this.validateGroup(group);
+    if (groupError) erroneousFields.group = groupError;
     const startError = this.validateStart(start, end);
     if (startError) erroneousFields.start = startError;
     const endError = this.validateEnd(end, start);
@@ -70,7 +70,7 @@ class ClassService {
         teacherId: null,
         subject: subject as Subject,
         language: language as Language,
-        grade,
+        group,
         start,
         end,
         description: description || null,
@@ -83,7 +83,7 @@ class ClassService {
     classInstance: Class,
     subject?: string,
     language?: string,
-    grade?: string,
+    group?: string,
     start?: number,
     end?: number,
     description?: string,
@@ -97,9 +97,9 @@ class ClassService {
       const languageError = this.validateLanguage(language);
       if (languageError) erroneousFields.language = languageError;
     }
-    if (typeof grade === 'string') {
-      const gradeError = this.validateGrade(grade);
-      if (gradeError) erroneousFields.grade = gradeError;
+    if (typeof group === 'string') {
+      const groupError = this.validateGroup(group);
+      if (groupError) erroneousFields.group = groupError;
     }
     if (typeof start === 'number') {
       const startError = this.validateStart(start, end || classInstance.end);
@@ -121,7 +121,7 @@ class ClassService {
         {
           subject: (subject ?? classInstance.subject) as Subject,
           language: (language ?? classInstance.language) as Language,
-          grade: grade ?? classInstance.grade,
+          group: group ?? classInstance.group,
           start: start ?? classInstance.start,
           end: end ?? classInstance.end,
           description: description === '' ? null : description ?? classInstance.description,
@@ -154,13 +154,12 @@ class ClassService {
     }
   }
 
-  // Validate a class grade
-  validateGrade(grade: string) {
-    const pattern = /^[0-9]+[a-zA-Z]*$/gi;
-    if (!grade.match(pattern)) {
-      return 'The grade is invalid.';
-    } else if (grade.length > 10) {
-      return 'The grade is too long.';
+  // Validate a class group
+  validateGroup(group: string) {
+    if (validator.isEmpty(group)) {
+      return 'The group is invalid.';
+    } else if (group.length > 10) {
+      return 'The group is too long.';
     }
   }
 

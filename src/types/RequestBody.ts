@@ -81,7 +81,7 @@ export interface UpdateMembership {
 export interface CreateClass {
   subject: string;
   language: string;
-  grade: string;
+  group: string;
   start: number;
   end: number;
   description?: string;
@@ -90,7 +90,7 @@ export interface CreateClass {
 export interface UpdateClass {
   subject?: string;
   language?: string;
-  grade?: string;
+  group?: string;
   start?: number;
   end?: number;
   description?: string;

@@ -3,11 +3,11 @@ import HttpStatusCodes from 'http-status-codes';
 import { abilityService, classService, schoolService, teacherService } from '../services';
 
 export const createClass = async (req: Request, res: Response, next: NextFunction) => {
-  const { subject, language, grade, start, end, description }: Body.CreateClass = req.body;
+  const { subject, language, group, start, end, description }: Body.CreateClass = req.body;
   try {
     abilityService.assureCan(req.user, 'create', 'Class');
     const school = await schoolService.getSchoolByUserId(req.user.id);
-    const createdClass = await classService.create(school, subject, language, grade, start, end, description);
+    const createdClass = await classService.create(school, subject, language, group, start, end, description);
     return res.status(HttpStatusCodes.CREATED).json({ ok: true, class: createdClass });
   } catch (err) {
     return next(err);
@@ -27,11 +27,11 @@ export const getClass = async (req: Request, res: Response, next: NextFunction) 
 
 export const updateClass = async (req: Request, res: Response, next: NextFunction) => {
   const { classId } = req.params;
-  const { subject, language, grade, start, end, description }: Body.UpdateClass = req.body;
+  const { subject, language, group, start, end, description }: Body.UpdateClass = req.body;
   try {
     const foundClass = await classService.getClassById(classId);
     abilityService.assureCan(req.user, 'update', foundClass);
-    const updatedClass = await classService.update(foundClass, subject, language, grade, start, end, description);
+    const updatedClass = await classService.update(foundClass, subject, language, group, start, end, description);
     return res.status(HttpStatusCodes.OK).json({ ok: true, class: updatedClass });
   } catch (err) {
     return next(err);

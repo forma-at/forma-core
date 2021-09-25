@@ -7,7 +7,7 @@ export class Class {
   teacherId?: string;
   subject: Subject;
   language: Language;
-  grade: string;
+  group: string;
   start: number;
   end: number;
   description?: string;
