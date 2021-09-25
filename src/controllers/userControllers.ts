@@ -8,7 +8,6 @@ import {
   schoolService,
   teacherService,
   membershipService,
-  classService,
 } from '../services';
 import { ValidationException, NotFoundException } from '../exceptions';
 import { UserType } from '../models';
@@ -20,16 +19,14 @@ export const getSelfData = async (req: Request, res: Response, next: NextFunctio
       const school = await schoolService.getSchoolByUserId(user.id, true);
       if (school) {
         const teachers = await membershipService.getWithTeacherDataBySchool(school);
-        const classes = await classService.getClassesBySchool(school);
-        return res.status(HttpStatusCodes.OK).json({ ok: true, user, school, teachers, classes });
+        return res.status(HttpStatusCodes.OK).json({ ok: true, user, school, teachers });
       }
       return res.status(HttpStatusCodes.OK).json({ ok: true, user });
     } else if (user.type === UserType.teacher) {
       const teacher = await teacherService.getTeacherByUserId(user.id, true);
       if (teacher) {
         const schools = await membershipService.getWithSchoolDataByTeacher(teacher);
-        const classes = await classService.getClassesByTeacher(teacher);
-        return res.status(HttpStatusCodes.OK).json({ ok: true, user, teacher, schools, classes });
+        return res.status(HttpStatusCodes.OK).json({ ok: true, user, teacher, schools });
       }
       return res.status(HttpStatusCodes.OK).json({ ok: true, user });
     }
