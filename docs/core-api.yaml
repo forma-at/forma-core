@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 1.3.4
+  version: 1.4.0
   title: Forma Core API documentation
   description: |
     Technical and API documentation of the Forma Core API, detailing topics such as user management, authorization, endpoints, request
@@ -53,6 +53,8 @@ tags:
     description: Teacher management endpoints
   - name: Membership
     description: Membership management endpoints
+  - name: Classes
+    description: Class management endpoints
   - name: Utility
     description: Utility endpoints serving helpful data
 paths:
@@ -523,6 +525,25 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/MembershipWithTeacher'
+  '/api/school/{schoolId}/classes':
+    get:
+      tags:
+        - School
+      summary: Get school's classes
+      description: Get all of the school's classes
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/schoolId'
+        - $ref: '#/components/parameters/classStart'
+        - $ref: '#/components/parameters/classEnd'
+      responses:
+        200:
+          description: School's classes retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithClassArray'
   '/api/school/{schoolId}/membership':
     put:
       tags:
@@ -716,6 +737,179 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/MembershipWithSchool'
+  '/api/teacher/{teacherId}/classes':
+    get:
+      tags:
+        - Teacher
+      summary: Get teacher's classes
+      description: Get all of the classes available to the teacher
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/teacherId'
+        - $ref: '#/components/parameters/classStart'
+        - $ref: '#/components/parameters/classEnd'
+      responses:
+        200:
+          description: Classes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithClassArray'
+  '/api/class':
+    put:
+      tags:
+        - Classes
+      summary: Create class
+      description: Create a new class belonging to the user's school
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - subject
+                - language
+                - group
+                - start
+                - end
+              properties:
+                subject:
+                  $ref: '#/components/schemas/Class/properties/subject'
+                language:
+                  $ref: '#/components/schemas/Class/properties/language'
+                group:
+                  $ref: '#/components/schemas/Class/properties/group'
+                start:
+                  $ref: '#/components/schemas/Class/properties/start'
+                end:
+                  $ref: '#/components/schemas/Class/properties/end'
+                description:
+                  $ref: '#/components/schemas/Class/properties/description'
+      responses:
+        201:
+          description: Class created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithClass'
+        400:
+          description: One or more fields were invalid, erroneous fields are in `details`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseWithDetails'
+  '/api/class/{classId}':
+    get:
+      tags:
+        - Classes
+      summary: Get class
+      description: Get a class' detailed information
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/classId'
+      responses:
+        200:
+          description: Class data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithClass'
+    post:
+      tags:
+        - Classes
+      summary: Update class
+      description: Update a class' information with the provided fields
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/classId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  $ref: '#/components/schemas/Class/properties/subject'
+                language:
+                  $ref: '#/components/schemas/Class/properties/language'
+                group:
+                  $ref: '#/components/schemas/Class/properties/group'
+                start:
+                  $ref: '#/components/schemas/Class/properties/start'
+                end:
+                  $ref: '#/components/schemas/Class/properties/end'
+                description:
+                  $ref: '#/components/schemas/Class/properties/description'
+      responses:
+        200:
+          description: Class updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithClass'
+        400:
+          description: One or more fields were invalid, erroneous fields are in `details`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseWithDetails'
+    delete:
+      tags:
+        - Classes
+      summary: Delete class
+      description: Delete a class
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/classId'
+      responses:
+        200:
+          description: Class deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+  '/api/class/{classId}/reserve':
+    post:
+      tags:
+        - Classes
+      summary: Reserve class
+      description: Reserve a class for oneself as a user with type `teacher`, only classes that have a matching school, subject and language can be reserved
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/classId'
+      responses:
+        200:
+          description: Class reserved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithClass'
+  '/api/class/{classId}/drop':
+    post:
+      tags:
+        - Classes
+      summary: Drop class
+      description: Drop a reserved class as a user with type `teacher`
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/classId'
+      responses:
+        200:
+          description: Class dropped successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponseWithClass'
   '/api/school/public':
     get:
       tags:
@@ -966,6 +1160,57 @@ components:
               $ref: "#/components/schemas/User/properties/email"
             phone:
               $ref: "#/components/schemas/User/properties/phone"
+    Class:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 460e0cdc-2bb8-43cb-976e-7be0be4a5c18
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the class"
+        schoolId:
+          type: string
+          example: f39b17e8-3404-4f77-a65f-a2107ce83a85
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the school"
+        teacherId:
+          type:
+            - string
+            - 'null'
+          example: fafdc44d-7cfc-47ce-b3c0-d2294602e1fb
+          description: "The universally unique id ([UUIDv4](https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random))) of the teacher"
+        subject:
+          type: string
+          example: informationTechnology
+          description: "The subject of the class"
+        language:
+          type: string
+          example: english
+          description: "The language of the class"
+        group:
+          type: string
+          example: 6A
+          description: "The group of the class in the format [class][optional sub-class]"
+        start:
+          type: number
+          example: 1632726000000
+          description: "The start timestamp of the class in milliseconds"
+        end:
+          type: number
+          example: 1632729600000
+          description: "The end timestamp of the class in milliseconds"
+        description:
+          type:
+            - string
+            - 'null'
+          example: "Basics of web development, cover basic html and css."
+          description: "The description of the class, such as class topic, required materials, activities, etc."
+        createdAt:
+          type: number
+          example: 1621065270077
+          description: "The date of the class' creation in milliseconds"
+        updatedAt:
+          type: number
+          example: 1621065390465
+          description: "The date of the class' last update in milliseconds"
     Misc:
       type: object
       properties:
@@ -1045,6 +1290,22 @@ components:
           $ref: '#/components/schemas/Misc/properties/ok'
         membership:
           $ref: '#/components/schemas/MembershipWithTeacher'
+    OkResponseWithClass:
+      type: object
+      properties:
+        ok:
+          $ref: '#/components/schemas/Misc/properties/ok'
+        class:
+          $ref: '#/components/schemas/Class'
+    OkResponseWithClassArray:
+      type: object
+      properties:
+        ok:
+          $ref: '#/components/schemas/Misc/properties/ok'
+        classes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Class'
     ErrorResponse:
       type: object
       properties:
@@ -1079,6 +1340,26 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Teacher/properties/id'
+    classId:
+      in: path
+      name: classId
+      required: true
+      schema:
+        $ref: '#/components/schemas/Class/properties/id'
+    classStart:
+      in: query
+      name: start
+      required: true
+      schema:
+        $ref: '#/components/schemas/Class/properties/start'
+      description: 'The start of the timestamp range from which classes will be returned'
+    classEnd:
+      in: query
+      name: end
+      required: true
+      schema:
+        $ref: '#/components/schemas/Class/properties/end'
+      description: 'The end of the timestamp range from which classes will be returned'
   responses:
     UnauthorizedResponse:
       description: Unauthorized - the user must be logged in to perform this action
