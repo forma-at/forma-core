@@ -10,7 +10,7 @@ router.put(
   validate([
     body('subject').isString(),
     body('language').isString(),
-    body('grade').isNumeric(),
+    body('grade').isString(),
     body('start').isNumeric(),
     body('end').isNumeric(),
     body('description').isString().optional(),
@@ -30,7 +30,7 @@ router.post(
   validate([
     body('subject').isString().optional(),
     body('language').isString().optional(),
-    body('grade').isNumeric().optional(),
+    body('grade').isString().optional(),
     body('start').isNumeric().optional(),
     body('end').isNumeric().optional(),
     body('description').isString().optional(),

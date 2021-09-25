@@ -24,7 +24,7 @@ export const getSelfData = async (req: Request, res: Response, next: NextFunctio
         return res.status(HttpStatusCodes.OK).json({ ok: true, user, school, teachers, classes });
       }
       return res.status(HttpStatusCodes.OK).json({ ok: true, user });
-    } else {
+    } else if (user.type === UserType.teacher) {
       const teacher = await teacherService.getTeacherByUserId(user.id, true);
       if (teacher) {
         const schools = await membershipService.getWithSchoolDataByTeacher(teacher);
