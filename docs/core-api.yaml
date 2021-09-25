@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  version: 1.3.3
+  version: 1.3.4
   title: Forma Core API documentation
   description: |
     Technical and API documentation of the Forma Core API, detailing topics such as user management, authorization, endpoints, request
@@ -743,6 +743,10 @@ paths:
                               $ref: '#/components/schemas/School/properties/id'
                             name:
                               $ref: '#/components/schemas/School/properties/name'
+                            address:
+                              $ref: '#/components/schemas/School/properties/address'
+                            description:
+                              $ref: '#/components/schemas/School/properties/description'
   '/api/teacher/skills':
     get:
       tags:
