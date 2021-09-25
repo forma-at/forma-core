@@ -107,9 +107,9 @@ class AbilityService {
         .because('You cannot reserve classes from another school.');
       cannot('update', 'Class', 'teacherId', { teacherId: { $nin: [null, teacher.id] } })
         .because('You cannot reserve classes that have already been reserved.');
-      cannot('update', 'Class', 'teacherId', { subjects: { $nin: teacher.subjects } })
+      cannot('update', 'Class', 'teacherId', { subject: { $nin: teacher.subjects } })
         .because('You cannot reserve classes with subjects that do not match yours.');
-      cannot('update', 'Class', 'teacherId', { languages: { $nin: teacher.languages } })
+      cannot('update', 'Class', 'teacherId', { language: { $nin: teacher.languages } })
         .because('You cannot reserve classes with languages that do not match yours.');
 
     }
