@@ -13,4 +13,8 @@ export class Class {
   description?: string;
   createdAt: number;
   updatedAt: number;
+
+  constructor(classData: Class) {
+    Object.assign(this, classData);
+  }
 }
