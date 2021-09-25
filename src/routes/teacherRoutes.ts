@@ -46,8 +46,8 @@ router.get(
   '/:teacherId/classes',
   authorization,
   validate([
-    query('start').isNumeric(),
-    query('end').isNumeric(),
+    query('start').isString(),
+    query('end').isString(),
   ]),
   teacherControllers.getClasses,
 );

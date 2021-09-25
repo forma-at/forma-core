@@ -62,10 +62,11 @@ export const getTeachers = async (req: Request, res: Response, next: NextFunctio
 
 export const getClasses = async (req: Request, res: Response, next: NextFunction) => {
   const { schoolId } = req.params;
+  const { start, end } = req.query as { [key: string]: string };
   try {
     const school = await schoolService.getSchoolById(schoolId);
     abilityService.assureCan(req.user, 'read', school);
-    const classes = await classService.getClassesBySchool(school);
+    const classes = await classService.getClassesBySchool(school, parseInt(start, 10), parseInt(end, 10));
     return res.status(HttpStatusCodes.OK).json({ ok: true, classes });
   } catch (err) {
     return next(err);

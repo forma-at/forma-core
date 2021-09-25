@@ -21,18 +21,20 @@ class ClassService {
   }
 
   // Get multiple classes by schoolId
-  async getClassesBySchool(school: School) {
-    return classRepository.findMany({ schoolId: school.id });
+  async getClassesBySchool(school: School, start: number, end: number) {
+    return classRepository.findMany({ schoolId: school.id, start: { $gte: start }, end: { $lte: end } });
   }
 
   // Get multiple classes by schoolIds
-  async getClassesByTeacher(teacher: Teacher) {
+  async getClassesByTeacher(teacher: Teacher, start: number, end: number) {
     const memberships = await membershipService.getManyByTeacherId(teacher.id);
     const schools = memberships.map((membership) => membership.schoolId);
     return classRepository.findMany({
       schoolId: { $in: schools },
       subject: { $in: teacher.subjects },
       language: { $in: teacher.languages },
+      start: { $gte: start },
+      end: { $lte: end },
     });
   }
 
