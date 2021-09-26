@@ -19,8 +19,8 @@ class SchoolService {
   }
 
   // Get a school by user id
-  async getSchoolByUserId(schoolId: string, preserveUndefined?: false): Promise<School>;
-  async getSchoolByUserId(schoolId: string, preserveUndefined?: true): Promise<School | void>;
+  async getSchoolByUserId(userId: string, preserveUndefined?: false): Promise<School>;
+  async getSchoolByUserId(userId: string, preserveUndefined?: true): Promise<School | void>;
   async getSchoolByUserId(userId: string, preserveUndefined = false) {
     const school = await schoolRepository.findOne({ userId });
     if (!school && !preserveUndefined) {

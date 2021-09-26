@@ -1,3 +1,4 @@
+export * from './Class';
 export * from './ExpiringCode';
 export * from './Language';
 export * from './Membership';

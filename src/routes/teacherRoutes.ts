@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { validate, body, authorization } from '../middlewares';
+import { validate, body, authorization, query } from '../middlewares';
 import { teacherControllers } from '../controllers';
 
 const router = Router();
@@ -40,6 +40,16 @@ router.get(
   '/:teacherId/schools',
   authorization,
   teacherControllers.getSchools,
+);
+
+router.get(
+  '/:teacherId/classes',
+  authorization,
+  validate([
+    query('start').isString(),
+    query('end').isString(),
+  ]),
+  teacherControllers.getClasses,
 );
 
 export default router;

@@ -1,10 +1,10 @@
 import { Ability, AbilityBuilder, AbilityClass } from '@casl/ability';
 import { ForbiddenException } from '../exceptions';
-import { UserWithAbility, UserType, User, School, Teacher, Membership } from '../models';
+import { UserWithAbility, UserType, User, School, Teacher, Membership, Class } from '../models';
 
 // Define allowed actions and valid subjects
 type Actions = 'create' | 'read' | 'update' | 'delete';
-type Subjects = 'User' | User | 'School' | School | 'Teacher' | Teacher | 'Membership' | Membership;
+type Subjects = 'User' | User | 'School' | School | 'Teacher' | Teacher | 'Membership' | Membership | 'Class' | Class;
 
 // Define type for Ability class
 export type AppAbility = Ability<[Actions, Subjects]>;
@@ -12,7 +12,7 @@ const AppAbility = Ability as AbilityClass<AppAbility>;
 
 class AbilityService {
 
-  defineFor(user: User, role: { school?: School, teacher?: Teacher }) {
+  defineFor(user: User, role: { school?: School, teacher?: Teacher }, memberships: Membership[]) {
     const { can, cannot, build } = new AbilityBuilder(AppAbility);
     const { school, teacher } = role;
 
@@ -25,22 +25,16 @@ class AbilityService {
 
     // DEFAULT
     if (user.id !== school?.userId && user.id !== teacher?.userId) {
-      if (user.type === UserType.school) {
-        can('create', 'School');
-        cannot(['read', 'update', 'delete'], 'School')
-          .because('You cannot manage schools.');
-        cannot(['create', 'read', 'update', 'delete'], 'Teacher')
-          .because('You cannot manage teachers.');
-      }
-      if (user.type === UserType.teacher) {
-        can('create', 'Teacher');
-        cannot(['read', 'update', 'delete'], 'Teacher')
-          .because('You cannot manage teachers.');
-        cannot(['create', 'read', 'update', 'delete'], 'School')
-          .because('You cannot manage schools.');
-      }
+      cannot(['create', 'read', 'update', 'delete'], 'School')
+        .because('You cannot manage schools.');
+      cannot(['create', 'read', 'update', 'delete'], 'Teacher')
+        .because('You cannot manage teachers.');
       cannot(['create', 'read', 'update', 'delete'], 'Membership')
         .because('You cannot manage memberships.');
+      cannot(['create', 'read', 'update', 'delete'], 'Class')
+        .because('You cannot manage classes.');
+      if (user.type === UserType.school) can('create', 'School');
+      if (user.type === UserType.teacher) can('create', 'Teacher');
     }
 
     // SCHOOL
@@ -64,10 +58,19 @@ class AbilityService {
       cannot(['create'], 'Membership')
         .because('You cannot create memberships.');
 
+      // Class management
+      can('create', 'Class');
+      can(['read', 'update', 'delete'], 'Class', { schoolId: { $eq: school.id } });
+      cannot(['read', 'update', 'delete'], 'Class', { schoolId: { $ne: school.id } })
+        .because('You cannot manage the classes of another school.');
+      cannot('update', 'Class', 'teacherId', { schoolId: { $eq: school.id } })
+        .because('You cannot assign teachers to your classes.');
+
     }
 
     // TEACHER
     if (user.type === UserType.teacher && user.id === teacher?.userId) {
+      const schools = memberships.map((membership) => membership.schoolId);
 
       // Teacher management
       can(['read', 'update', 'delete'], 'Teacher', { id: { $eq: teacher.id } });
@@ -88,17 +91,38 @@ class AbilityService {
       cannot('update', 'Membership')
         .because('You cannot update memberships.');
 
+      // Class management
+      can('read', 'Class', { schoolId: { $in: schools } });
+      cannot('read', 'Class', { schoolId: { $nin: schools } })
+        .because('You cannot view classes from another school.');
+      cannot(['create', 'update', 'delete'], 'Class')
+        .because('You cannot manage classes.');
+      can('update', 'Class', 'teacherId', {
+        schoolId: { $in: schools },
+        teacherId: { $in: [null, teacher.id] },
+        subject: { $in: teacher.subjects },
+        language: { $in: teacher.languages },
+      });
+      cannot('update', 'Class', 'teacherId', { schoolId: { $nin: schools } })
+        .because('You cannot reserve classes from another school.');
+      cannot('update', 'Class', 'teacherId', { teacherId: { $nin: [null, teacher.id] } })
+        .because('You cannot reserve classes that have already been reserved.');
+      cannot('update', 'Class', 'teacherId', { subject: { $nin: teacher.subjects } })
+        .because('You cannot reserve classes with subjects that do not match yours.');
+      cannot('update', 'Class', 'teacherId', { language: { $nin: teacher.languages } })
+        .because('You cannot reserve classes with languages that do not match yours.');
+
     }
 
     return build();
   }
 
   // Throws ForbiddenException if ability is missing
-  assureCan(user: UserWithAbility, action: Actions, subject: Subjects) {
-    if (user.ability.cannot(action, subject)) {
+  assureCan(user: UserWithAbility, action: Actions, subject: Subjects, field?: string) {
+    if (user.ability.cannot(action, subject, field)) {
       const subjectName = typeof subject === 'object' ? subject.constructor.name : String(subject);
       const defaultReason = `You cannot perform action '${action}' on subject '${subjectName}'.`;
-      const reason = user.ability.relevantRuleFor(action, subject)?.reason;
+      const reason = user.ability.relevantRuleFor(action, subject, field)?.reason;
       throw new ForbiddenException(reason || defaultReason);
     }
   }

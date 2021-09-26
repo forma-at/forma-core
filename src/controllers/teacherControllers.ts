@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, Body } from 'Router';
 import HttpStatusCodes from 'http-status-codes';
-import { teacherService, abilityService, membershipService } from '../services';
+import { teacherService, abilityService, membershipService, classService } from '../services';
 import { Subject, Language } from '../models';
 
 export const getTeacherSkills = async (req: Request, res: Response, next: NextFunction) => {
@@ -55,6 +55,19 @@ export const getSchools = async (req: Request, res: Response, next: NextFunction
     abilityService.assureCan(req.user, 'read', teacher);
     const schools = await membershipService.getWithSchoolDataByTeacher(teacher);
     return res.status(HttpStatusCodes.OK).json({ ok: true, schools });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getClasses = async (req: Request, res: Response, next: NextFunction) => {
+  const { teacherId } = req.params;
+  const { start, end } = req.query as { [key: string]: string };
+  try {
+    const teacher = await teacherService.getTeacherById(teacherId);
+    abilityService.assureCan(req.user, 'read', teacher);
+    const classes = await classService.getClassesByTeacher(teacher, parseInt(start, 10), parseInt(end, 10));
+    return res.status(HttpStatusCodes.OK).json({ ok: true, classes });
   } catch (err) {
     return next(err);
   }

@@ -17,10 +17,18 @@ export const getSelfData = async (req: Request, res: Response, next: NextFunctio
     const user = await userService.getUserById(req.user.id);
     if (user.type === UserType.school) {
       const school = await schoolService.getSchoolByUserId(user.id, true);
-      return res.status(HttpStatusCodes.OK).json({ ok: true, user, school });
-    } else {
+      if (school) {
+        const teachers = await membershipService.getWithTeacherDataBySchool(school);
+        return res.status(HttpStatusCodes.OK).json({ ok: true, user, school, teachers });
+      }
+      return res.status(HttpStatusCodes.OK).json({ ok: true, user });
+    } else if (user.type === UserType.teacher) {
       const teacher = await teacherService.getTeacherByUserId(user.id, true);
-      return res.status(HttpStatusCodes.OK).json({ ok: true, user, teacher });
+      if (teacher) {
+        const schools = await membershipService.getWithSchoolDataByTeacher(teacher);
+        return res.status(HttpStatusCodes.OK).json({ ok: true, user, teacher, schools });
+      }
+      return res.status(HttpStatusCodes.OK).json({ ok: true, user });
     }
   } catch (err) {
     return next(err);

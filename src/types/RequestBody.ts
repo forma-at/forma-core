@@ -77,3 +77,21 @@ export interface UpdateTeacher {
 export interface UpdateMembership {
   status: string;
 }
+
+export interface CreateClass {
+  subject: string;
+  language: string;
+  group: string;
+  start: number;
+  end: number;
+  description?: string;
+}
+
+export interface UpdateClass {
+  subject?: string;
+  language?: string;
+  group?: string;
+  start?: number;
+  end?: number;
+  description?: string;
+}

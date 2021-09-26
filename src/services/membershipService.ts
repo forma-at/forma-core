@@ -26,6 +26,16 @@ class MembershipService {
     }
   }
 
+  // Get memberships by school id
+  async getManyBySchoolId(schoolId: string) {
+    return membershipRepository.findMany({ schoolId });
+  }
+
+  // Get memberships by teacher id
+  async getManyByTeacherId(teacherId: string) {
+    return membershipRepository.findMany({ teacherId });
+  }
+
   // Create a new membership
   async create(schoolId: string, teacherId: string) {
     const exists = await membershipRepository.findOne({ schoolId, teacherId });
@@ -57,7 +67,7 @@ class MembershipService {
 
   // Delete a membership
   async delete(membership: Membership) {
-    return membershipRepository.deleteOne({
+    await membershipRepository.deleteOne({
       schoolId: membership.schoolId,
       teacherId: membership.teacherId,
     });
