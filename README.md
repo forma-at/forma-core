@@ -14,7 +14,7 @@ git clone https://github.com/Forma-AT/forma-core.git
 npm i
 ```
 
-**3.** Create a file in the project root directory named .env and place the following content in it. Make sure to replace these placeholder values with the actual secrets and connection details you wish to use. The recommended JWT secret is an at least 20 characters long random generated string.
+**3.** Create a file in the project root directory named `.env` and place the following content in it. Make sure to replace these placeholder values with the actual secrets and connection details you wish to use. The recommended JWT secret is an at least 20 characters long random generated string.
 ```dotenv
 PORT=5000
 MONGODB_HOST="localhost"
