@@ -8,24 +8,37 @@ RESTful API service to create, read, update and delete data from the web and mob
 ```bash
 git clone https://github.com/Forma-AT/forma-core.git
 ```
+
 **2.** Install the dependencies using npm
 ```bash
 npm i
 ```
-**3.** Get the `.env` file containing the environment variables and place it in the root directory of the project.
+
+**3.** Create a file in the project root directory named `.env` and place the following content in it. Make sure to replace these placeholder values with the actual secrets and connection details you wish to use. The recommended JWT secret is an at least 20 characters long random generated string.
+```dotenv
+PORT=5000
+MONGODB_HOST="localhost"
+MONGODB_PORT=27017
+MONGODB_POOLSIZE=20
+MONGODB_NAME="forma"
+JWT_SECRET=""
+```
 
 **4.** Start the server in development mode with TypeScript compilation and hot-reloading enabled
 ```bash
 npm run dev
 ```
+
 **5a. (optional)** Compile source code manually
 ```bash
 npm run build
 ```
+
 **5b. (optional)** Start the server in production mode
 ```bash
 npm run prod
 ```
+
 **6.** Access the API using any client (e.g. Postman) at
 ```bash
 http://localhost:5000/api
