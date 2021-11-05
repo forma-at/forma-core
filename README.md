@@ -33,7 +33,7 @@ http://localhost:5000/api
 
 ## API endpoints
 
-For an exhaustive list of all available API endpoints, authorization information, request and response parameters, as well as request and response samples view the API documentation written in OpenAPI 3 format at `api/core-api.yml`. To run a user-friendly API documentation server using `redoc-cli` run the following command:
+For an exhaustive list of all available API endpoints, authorization information, request and response parameters, as well as request and response samples view the API documentation written in OpenAPI 3 format at `docs/core-api.yaml`. To run a user-friendly API documentation server using `redoc-cli` run the following command:
 ```bash
 npm run api
 ```
